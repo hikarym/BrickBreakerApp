@@ -30,5 +30,10 @@
     <string name="button_ranking">Ranking</string>
     <string name="button_exit">Exit</string>
     <string name="title_activity_breakout">BreakoutActivity</string>
+    <string name="button_reset_score">Reset Score</string>
+    <string name="button_change_user">User: Master</string>
+    <string name="check_sound">Sound</string>
+    <string name="check_vibration">Vibration</string>
+    <string name="button_back">Back</string>
 
 </resources>

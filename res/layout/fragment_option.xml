@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <Button
+        android:id="@+id/btBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="@string/button_back" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:orientation="vertical" 
+    	android:gravity="center">
+        
+        <CheckBox
+	        android:id="@+id/checkSound"
+	        android:layout_width="98dp"
+	        android:layout_height="wrap_content"
+	        android:onClick="onCheckboxClicked"
+	        android:text="@string/check_sound" />
+
+	    <CheckBox
+	        android:id="@+id/checkVibration"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/check_vibration" 
+	        android:onClick="onCheckboxClicked"/>
+	
+	    <Button
+	        android:id="@+id/btResetScore"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/button_reset_score" />
+	
+	    <Button
+	        android:id="@+id/btChangeUsername"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/button_change_user" />
+        
+        
+    </LinearLayout>
+
+    
+
+</LinearLayout>

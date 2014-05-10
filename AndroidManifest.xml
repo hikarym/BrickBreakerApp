@@ -15,6 +15,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <!-- MainActivity -->
         <activity
             android:name="br.usp.ime.brickbreakerapp.MainActivity"
             android:label="@string/app_name" >
@@ -24,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- BrickBreaker activity. -->
+        <activity
+            android:name="br.usp.ime.brickbreakerapp.BrickBreakerActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
     </application>
 
 </manifest>

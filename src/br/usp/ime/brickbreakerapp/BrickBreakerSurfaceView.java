@@ -1,110 +1,83 @@
 package br.usp.ime.brickbreakerapp;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
-import android.opengl.Matrix;
 import android.view.MotionEvent;
 
-class BrickBreakerSurfaceView extends GLSurfaceView {
+import android.os.ConditionVariable;
 
-    private Renderer renderer;
-    
-    private int screenWidth;
-    private int screenHeight;
+/**
+ * View object for the GL surface.  Wraps the renderer.
+ */
+public class BrickBreakerSurfaceView extends GLSurfaceView {
+    private static final String TAG = MainActivity.TAG;
 
-    private float[] unprojectViewMatrix = new float[16];
-    private float[] unprojectProjMatrix = new float[16];
-    
+    private BrickBreakerSurfaceRenderer mRenderer;
+    private final ConditionVariable syncObj = new ConditionVariable();
 
-    private class Renderer implements GLSurfaceView.Renderer {
+    /**
+     * Prepares the OpenGL context and starts the Renderer thread.
+     */
+    public BrickBreakerSurfaceView(Context context, BrickBreakerState BrickBreakerState,
+            TextResources.Configuration textConfig) {
+        super(context);
 
-        private Quad quad;
+        setEGLContextClientVersion(2);      // Request OpenGL ES 2.0
 
-
-        public Renderer() {
-            quad = new Quad();
-        }
-
-
-        @Override
-        public void onDrawFrame( GL10 gl ) {
-            gl.glClear( GL10.GL_COLOR_BUFFER_BIT );
-            quad.draw( gl );
-        }
-
-
-        @Override
-        public void onSurfaceChanged( GL10 gl, int width, int height ) {
-            gl.glViewport( 0, 0, width, height );
-            screenWidth = width;
-            screenHeight = height;
-
-            float ratio = (float) width / height;
-            gl.glMatrixMode( GL10.GL_PROJECTION );
-            gl.glLoadIdentity();
-            gl.glOrthof( -ratio, ratio, -1.0f, 1.0f, -1.0f, 1.0f );
-
-            Matrix.orthoM( unprojectProjMatrix, 0, -ratio, ratio, -1.0f, 1.0f, -1.0f, 1.0f );
-            Matrix.setIdentityM( unprojectViewMatrix, 0 );
-        }
-
-
-        @Override
-        public void onSurfaceCreated( GL10 gl, EGLConfig config ) {
-            gl.glDisable( GL10.GL_DITHER );
-            gl.glHint( GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST );
-
-            gl.glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
-            gl.glDisable( GL10.GL_CULL_FACE );
-            gl.glShadeModel( GL10.GL_SMOOTH );
-            gl.glDisable( GL10.GL_DEPTH_TEST );
-        }
-
-
-        public void updateQuadPosition( final float x, final float y ) {
-            queueEvent( new Runnable() {
-                @Override
-                public void run() {
-                    quad.setPosition( x, y );
-                }
-            } );
-        }
+        // Create our Renderer object, and tell the GLSurfaceView code about it.  This also
+        // starts the renderer thread, which will be calling the various callback methods
+        // in the BrickBreakerSurfaceRenderer class.
+        mRenderer = new BrickBreakerSurfaceRenderer(BrickBreakerState, this, textConfig);
+        setRenderer(mRenderer);
     }
-
-
-    public BrickBreakerSurfaceView( Context context ) {
-        super( context );
-        renderer = new Renderer();
-        setRenderer( renderer );
-    }
-
 
     @Override
-    public boolean onTouchEvent( MotionEvent e ) {
-        switch ( e.getAction() ) {
+    public void onPause() {
+        /*
+         * We call a "pause" function in our Renderer class, which tells it to save state and
+         * go to sleep.  Because it's running in the Renderer thread, we call it through
+         * queueEvent(), which doesn't wait for the code to actually execute.  In theory the
+         * application could be killed shortly after we return from here, which would be bad if
+         * it happened while the Renderer thread was still saving off important state.  We need
+         * to wait for it to finish.
+         */
+
+        super.onPause();
+
+        //Log.d(TAG, "asking renderer to pause");
+        syncObj.close();
+        queueEvent(new Runnable() {
+            @Override public void run() {
+                mRenderer.onViewPause(syncObj);
+            }});
+        syncObj.block();
+
+        //Log.d(TAG, "renderer pause complete");
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        /*
+         * Forward touch events to the game loop.  We don't want to call Renderer methods
+         * directly, because they manipulate state that is "owned" by a different thread.  We
+         * use the GLSurfaceView queueEvent() function to execute it there.
+         *
+         * This increases the latency of our touch response slightly, but it shouldn't be
+         * noticeable.
+         */
+
+        switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                final float screenX = e.getX();
-                final float screenY = screenHeight - e.getY();
-                
-                final int[] viewport = {
-                        0, 0, screenWidth, screenHeight
-                };
-                
-                float[] resultWorldPos = {
-                        0.0f, 0.0f, 0.0f, 0.0f
-                };
-
-                GLU.gluUnProject( screenX, screenY, 0, unprojectViewMatrix, 0, unprojectProjMatrix, 0, viewport, 0, resultWorldPos, 0 );
-                resultWorldPos[0] /= resultWorldPos[3];
-                resultWorldPos[1] /= resultWorldPos[3];
-                resultWorldPos[2] /= resultWorldPos[3];
-                resultWorldPos[3] = 1.0f;
-
-                renderer.updateQuadPosition( resultWorldPos[0], resultWorldPos[1] );
+                final float x, y;
+                x = e.getX();
+                y = e.getY();
+                //Log.d(TAG, "BrickBreakerSurfaceView onTouchEvent x=" + x + " y=" + y);
+                queueEvent(new Runnable() {
+                    @Override public void run() {
+                        mRenderer.touchEvent(x, y);
+                    }});
+                break;
+            default:
                 break;
         }
 
