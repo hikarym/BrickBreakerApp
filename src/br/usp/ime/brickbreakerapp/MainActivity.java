@@ -95,7 +95,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
     /**
      * onClick handler for "never lose ball".
      */
-    public void clickNeverLoseBall(View view) {
+    public void clickVibrationMode(View view) {
         /*
          * This method only gets called if the state changes, and any state change invalidates
          * a game in progress.  Call updateControls() to dim the "resume" button.
@@ -106,6 +106,21 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
 
         BrickBreakerActivity.setNeverLoseBall(((CheckBox) view).isChecked());
         updateControls();       // dim the "resume" button
+    }
+    
+    /**
+     * onClick handler for "sound effects enabled".
+     */
+    public void clickSoundEffectsEnabled(View view) {
+        /*
+         * The call to updateControls() isn't really necessary, because changing this value
+         * doesn't invalidate the saved game.  In general though it's up to BrickBreakerActivity to
+         * decide what does and doesn't spoil a game, and it's possible the behavior could
+         * change in the future, so we call it to be safe.
+         */
+
+        BrickBreakerActivity.setSoundEffectsEnabled(((CheckBox) view).isChecked());
+        updateControls();
     }
     
     /**
@@ -129,20 +144,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
     }
     
 
-    /**
-     * onClick handler for "sound effects enabled".
-     */
-    public void clickSoundEffectsEnabled(View view) {
-        /*
-         * The call to updateControls() isn't really necessary, because changing this value
-         * doesn't invalidate the saved game.  In general though it's up to BrickBreakerActivity to
-         * decide what does and doesn't spoil a game, and it's possible the behavior could
-         * change in the future, so we call it to be safe.
-         */
-
-        BrickBreakerActivity.setSoundEffectsEnabled(((CheckBox) view).isChecked());
-        updateControls();
-    }
+    
     
     /**
      * Copies settings to the saved preferences.
@@ -177,7 +179,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
         // might be out of range.  The code in BrickBreakerActivity will reset it to default.
         BrickBreakerActivity.setDifficultyIndex(prefs.getInt(DIFFICULTY_KEY,
                 BrickBreakerActivity.getDefaultDifficultyIndex()));
-        //BrickBreakerActivity.setNeverLoseBall(prefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
+        //BrickBreakerActivit/y.setNeverLoseBall(prefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
         BrickBreakerActivity.setSoundEffectsEnabled(prefs.getBoolean(SOUND_EFFECTS_ENABLED_KEY, true));
 
         mHighScore = prefs.getInt(HIGH_SCORE_KEY, 0);
