@@ -28,12 +28,12 @@
 	        android:onClick="clickSoundEffectsEnabled"
 	        android:text="@string/check_sound" />
 
-	    <CheckBox
+	    <!-- <CheckBox
 	        android:id="@+id/checkVibration"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/check_vibration" 
-	        android:onClick="clickVibrationMode"/>
+	        android:onClick="clickVibrationMode"/>-->
 	
 	    <Button
 	        android:id="@+id/btResetScore"

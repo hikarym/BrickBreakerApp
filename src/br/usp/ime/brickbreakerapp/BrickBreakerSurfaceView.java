@@ -29,6 +29,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
         // in the BrickBreakerSurfaceRenderer class.
         mRenderer = new BrickBreakerSurfaceRenderer(BrickBreakerState, this, textConfig);
         setRenderer(mRenderer);
+        //onPause();
     }
 
     @Override
@@ -65,6 +66,8 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
          * This increases the latency of our touch response slightly, but it shouldn't be
          * noticeable.
          */
+    	if (!mRenderer.getStarted())
+    		mRenderer.setStarted(true);
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:

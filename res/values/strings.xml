@@ -11,7 +11,7 @@
     <string name="checkbox_soundEffectsEnabled">Sound effects</string>
     <string name="text_highScoreLabel">High Score:</string>
     <string name="about_text">\nA simple \'breakout\' app, inspired by Little Brick Out.\n\nhttp://www.android.com/\n</string>
-    <string name="msg_ready">Ready?</string>
+    <string name="msg_ready">Touch to Start</string>
     <string name="msg_game_over">Game Over</string>
     <string name="msg_winner">Winner!</string>
     <string name="difficulty">Difficulty: </string>
@@ -32,7 +32,7 @@
     <string name="title_activity_breakout">BreakoutActivity</string>
     <string name="button_reset_score">Reset Score</string>
     <string name="button_change_user">User: Master</string>
-    <string name="check_sound">Sound</string>
+    <string name="check_sound">Sound Effects</string>
     <string name="check_vibration">Vibration</string>
     <string name="button_back">Back</string>
 

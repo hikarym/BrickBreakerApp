@@ -1,8 +1,13 @@
 package br.usp.ime.brickbreakerapp;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +27,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
     public static final String HIGH_SCORE_KEY = "high-score";
     // Highest score seen so far.
     private int mHighScore;
-    
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -86,28 +90,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
     
     }
     
-    /*
-     * Greatest. Method. Evar.
-     */
-    //@Override
-    //public void onNothingSelected(AdapterView<?> parent) {}
-    
-    /**
-     * onClick handler for "never lose ball".
-     */
-    public void clickVibrationMode(View view) {
-        /*
-         * This method only gets called if the state changes, and any state change invalidates
-         * a game in progress.  Call updateControls() to dim the "resume" button.
-         *
-         * We could combine handlers with the other checkbox and switch on view.getId() to see
-         * which one was hit.  For our needs, having separate methods is cleaner.
-         */
-
-        BrickBreakerActivity.setNeverLoseBall(((CheckBox) view).isChecked());
-        updateControls();       // dim the "resume" button
-    }
-    
+        
     /**
      * onClick handler for "sound effects enabled".
      */
@@ -121,6 +104,8 @@ public class MainActivity extends Activity implements OnItemSelectedListener{
 
         BrickBreakerActivity.setSoundEffectsEnabled(((CheckBox) view).isChecked());
         updateControls();
+      
+        
     }
     
     /**

@@ -1,6 +1,9 @@
 package br.usp.ime.brickbreakerapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,10 +18,12 @@ public class BrickBreakerActivity extends Activity {
     private static final int DIFFICULTY_MAX = 3;        // inclusive
     private static final int DIFFICULTY_DEFAULT = 1;
     private static int sDifficultyIndex = 1;
-
-    private static boolean sNeverLoseBall;
-
+        
+    //private static boolean sNeverLoseBall;
+    // Enabled Sounds effects of game 
     private static boolean sSoundEffectsEnabled;
+    // 
+    private static boolean sVibrationMode;
 
 
     // The Activity has one View, a GL surface.
@@ -43,6 +48,22 @@ public class BrickBreakerActivity extends Activity {
         // Initialize data that depends on Android resources.
         SoundResources.initialize(this);
         TextResources.Configuration textConfig = TextResources.configure(this);
+        
+        /*new AlertDialog.Builder(this)
+        .setTitle("Delete entry")
+        .setMessage("Are you sure you want to delete this entry?")
+        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { 
+                // continue with delete
+            }
+         })
+        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { 
+                // do nothing
+            }
+         })
+        .setIcon(android.R.drawable.ic_dialog_alert)
+         .show();*/
 
         mBrickBreakerState = new BrickBreakerState();
         configureBrickBreakerState();
@@ -169,7 +190,7 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setBallInitialSpeed(minSpeed);
         mBrickBreakerState.setBallMaximumSpeed(maxSpeed);
 
-        mBrickBreakerState.setNeverLoseBall(sNeverLoseBall);
+        //mBrickBreakerState.setNeverLoseBall(sNeverLoseBall);
 
         SoundResources.setSoundEffectsEnabled(sSoundEffectsEnabled);
     }
@@ -210,9 +231,9 @@ public class BrickBreakerActivity extends Activity {
     /**
      * Gets the "never lose a ball" option.
      */
-    public static boolean getNeverLoseBall() {
+    /*public static boolean getNeverLoseBall() {
         return sNeverLoseBall;
-    }
+    }*/
 
     /**
      * Configures the "never lose a ball" option.  If set, the ball bounces off the bottom
@@ -220,12 +241,14 @@ public class BrickBreakerActivity extends Activity {
      * <p>
      * Changing the value will cause a game in progress to reset.
      */
-    public static void setNeverLoseBall(boolean neverLoseBall) {
+    /*public static void setNeverLoseBall(boolean neverLoseBall) {
         if (sNeverLoseBall != neverLoseBall) {
             sNeverLoseBall = neverLoseBall;
             invalidateSavedGame();
         }
-    }
+    }*/
+    
+    
 
     /**
      * Gets sound effect status.
