@@ -1,6 +1,8 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -46,6 +48,35 @@ public class Library {
 
         return textureHandle;
     }
+    
+    public static int createImageTexture(Bitmap bmp) {
+		int[] textureHandles = new int[1];
+		int textureHandle;
+
+		GLES20.glGenTextures(1, textureHandles, 0);
+		textureHandle = textureHandles[0];
+		Library.checkGlError("glGenTextures");
+
+		// Bind the texture handle to the 2D texture target.
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+
+		// Configure min/mag filtering, i.e. what scaling method do we use if what we're rendering
+		// is smaller or larger than the source image.
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+				GLES20.GL_LINEAR);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
+				GLES20.GL_LINEAR);
+		Library.checkGlError("loadImageTexture");
+		
+		// Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+		Library.checkGlError("loadImageTexture");
+		
+		// We are done using the bitmap so we should recycle it.
+		//bmp.recycle();
+
+		return textureHandle;
+	}
 
     /**
      * Loads a shader from a string and compiles it.

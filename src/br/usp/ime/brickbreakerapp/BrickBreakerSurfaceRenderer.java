@@ -1,7 +1,8 @@
 package br.usp.ime.brickbreakerapp;
 
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -34,6 +35,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     private BrickBreakerSurfaceView mSurfaceView;
     private BrickBreakerState mBrickBreakerState;
     private TextResources.Configuration mTextConfig;
+    private Context mContext;
     
     private boolean started=false;
 
@@ -49,8 +51,9 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
      * update and draw things, and to the SurfaceView, so we can tell it to stop animating
      * when the game is over.
      */
-    public BrickBreakerSurfaceRenderer(BrickBreakerState BrickBreakerState, BrickBreakerSurfaceView surfaceView,
+    public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState, BrickBreakerSurfaceView surfaceView,
             TextResources.Configuration textConfig) {
+    	mContext = context;
         mSurfaceView = surfaceView;
         mBrickBreakerState = BrickBreakerState;
         mTextConfig = textConfig;
@@ -70,13 +73,15 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         // Generate programs and data.
         BasicAlignedRect.createProgram();
         TexturedAlignedRect.createProgram();
+        TexturedBasicAlignedRect.createProgram();
 
         // Allocate objects associated with the various graphical elements.
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
         BrickBreakerState.setTextResources(new TextResources(mTextConfig));
-        BrickBreakerState.allocBorders();
-        BrickBreakerState.allocBricks();
-        BrickBreakerState.allocPaddle();
+        BrickBreakerState.allocBorders();        
+        BrickBreakerState.allocBackground(mContext);
+        BrickBreakerState.allocBricks(mContext);
+        BrickBreakerState.allocPaddle(mContext);
         BrickBreakerState.allocBall();
         BrickBreakerState.allocScore();
         BrickBreakerState.allocMessages();
@@ -199,38 +204,32 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Draw the various elements.  These are all BasicAlignedRect.
+     // Draw the various elements.  These are all BasicAlignedRect.
         BasicAlignedRect.prepareToDraw();
         BrickBreakerState.drawBorders();
-        BrickBreakerState.drawBricks();
-        BrickBreakerState.drawPaddle();
         BasicAlignedRect.finishedDrawing();
         
+        // Enable alpha blending.
+        GLES20.glEnable(GLES20.GL_BLEND);
+        // Blend based on the fragment's alpha value.
+        GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         
-        /*
-         * Draw alpha-blended components, notably the ball and score.
-         *
-         * We have to know if the images use pre-multiplied alpha or not so we can choose the
-         * appropriate blend mode.  The linear interpolation performed by our fragment shader
-         * is going to interpolate across all four RGBA color components if we use GL_LINEAR
-         * for our texture filter, which means the anti-aliased edges will effectively be
-         * premultiplied.  (An interpolated transition from opaque white 0xffffffff to
-         * transparent black 0x00000000 might be 0x7f7f7f7f; we want that to be 50% transparent
-         * white, not 50% transparent medium-gray.)  If we blend with (GL_SRC_ALPHA,
-         * GL_ONE_MINUS_SRC_ALPHA), we will see grey edges on the white ball, very noticeable on
-         * lighter backgrounds.  We want to use GL_ONE for the first parameter instead (a/k/a
-         * "1, 1-src").
-         *
-         * The ball texture itself uses only two colors, transparent black and opaque white, so
-         * we could avoid the edge artifacts we see with GL_SRC_ALPHA by filtering with
-         * GL_NEAREST instead, since that keeps us from sampling multiple texels to determine
-         * the fragment color.  It's generally easier to work with premultiplied alpha though,
-         * and we really want to use GL_LINEAR to avoid chunkiness when the ball is scaled.
-         *
-         * (If we rendered the score digit texture data on top of the background color,
-         * rather than transparent black, we wouldn't need to alpha-blend it here since we
-         * know it's never near anything but the ball.  Drawing without blending would likely
-         * be faster.)
-         */
+        TexturedBasicAlignedRect.prepareToDraw();
+        BrickBreakerState.drawBackground();    
+        BrickBreakerState.drawPaddle();
+        TexturedBasicAlignedRect.finishedDrawing();
+        // Enable alpha blending.
+        GLES20.glEnable(GLES20.GL_BLEND);
+        // Blend based on the fragment's alpha value.
+        GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+
+        BasicAlignedRect.prepareToDraw();
+        BrickBreakerState.drawBricks();
+//        BrickBreakerState.drawPaddle();
+        BasicAlignedRect.finishedDrawing();
+        
+              
 
         // Enable alpha blending.
         GLES20.glEnable(GLES20.GL_BLEND);

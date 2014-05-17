@@ -1,5 +1,8 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -36,167 +39,48 @@ public class BrickBreakerState {
     private static SavedGame sSavedGame = new SavedGame();
 
 
-    /*
-     * Size of the "arena".  We pretend we have a fixed-size screen with this many pixels in it.
-     * Everything gets scaled to the viewport before display, so this is just an artificial
-     * construct that allows us to work with integer values.  It also allows us to save and
-     * restore values in a screen-dimension-independent way, which would be useful if a saved
-     * game were moved between devices through The Cloud.
-     *
-     * The values here are completely arbitrary.  I find it easier to read debug output with
-     * 3-digit integer values than, say, floating point numbers between 0.0 and 1.0.  What
-     * really matters is the proportion of width to height, since that defines the shape of
-     * the play area.
-     */
     static final float ARENA_WIDTH = 768.0f;
     static final float ARENA_HEIGHT = 1024.0f;
 
-    /*
-     * The arena looks something like this (remember, GL coordinates start in lower-left corner):
-     *
-     * +-----------------------------+
-     * |          (empty)      score |  <- 90%
-     * |                             |  <- 80%
-     * | brick brick brick brick ... |  <- 70%
-     * | brick brick brick brick ... |  <- 60%
-     * | brick brick brick brick ... |  <- 50%
-     * | brick brick brick brick ... |  <- 40%
-     * |                             |  <- 30%
-     * |          (empty)            |  <- 20%
-     * |          !paddle!           |  <- 10%
-     * |          (empty)            |  <-  0%
-     * +-----------------------------+
-     *
-     * We scale bricks so they fill the middle area, split into 8 rows and 16 columns.
-     *
-     * The arena has a (width * 2%) border on three sides (bottom is open).  The border is
-     * inside the arena, not an external decoration.
-     *
-     * The size of the ball is flexible, except that we require it to be round (looks nicer
-     * than a square).  Knowing the shape is important for collision detection, which must
-     * treat the ball as a circle rather than a rectangle.
-     *
-     * The paddle is another simple rect, and the size can change based on the current
-     * difficulty level.
-     *
-     * Positions and sizes are specified in percentages, because it's easier to get a sense for
-     * how things are laid out when reading the constants than it would with absolute coordinate
-     * values.  It also means things will adjust automatically if we decide to change the
-     * proportions of the arena.
-     */
+    
     private static final float BRICK_TOP_PERC = 85 / 100.0f;
     private static final float BRICK_BOTTOM_PERC = 43 / 100.0f;
     private static final float BORDER_WIDTH_PERC = 2 / 100.0f;
-    private static final int BRICK_COLUMNS = 12;
-    private static final int BRICK_ROWS = 8;
+    private static final int BRICK_COLUMNS = 7;//12
+    private static final int BRICK_ROWS = 4;//8
 
     private static final float BORDER_WIDTH = (int) (BORDER_WIDTH_PERC * ARENA_WIDTH);
-
-    /*
-     * The top / right position of the score digits.  The digits are part of the arena, drawn
-     * "under" the ball, and we want them to be as far up and to the right as possible without
-     * interfering with the border.
-     *
-     * The text size is specified in terms of the height of a single digit.  That is, we scale
-     * the font texture proportionally so the height matches the target.  The idea is to
-     * have N fixed-width "cells" for the digits, where N is determined by the highest possible
-     * score.
-     */
     private static final float SCORE_TOP = ARENA_HEIGHT - BORDER_WIDTH * 2;
     private static final float SCORE_RIGHT = ARENA_WIDTH - BORDER_WIDTH * 2;
     private static final float SCORE_HEIGHT_PERC = 5 / 100.0f;
-
-    /*
-     * We compute the size of each "brick zone" based on the amount of space available.  A
-     * brick zone is a single brick plus the blank area around it.  The size of the border gap is
-     * determined by these two constants.  If we use 5% on each side, we get a 10% gap between
-     * bricks (except at the outer edges).
-     *
-     * If the gap between bricks is large enough, the ball can "tunnel" between rows or
-     * columns if it hits at the right angle.
-     *
-     * Set these to zero to have a solid block of bricks.
-     */
     private static final float BRICK_HORIZONTAL_GAP_PERC = 20 / 100.0f;
     private static final float BRICK_VERTICAL_GAP_PERC = 50 / 100.0f;
-
-    /*
-     * Vertical position for the paddle, and paddle dimensions.  The height (i.e. thickness) is
-     * a % of the arena height, and the width is a unit size, based on % of arena width.  The
-     * width can be increased or decreased based on skill level.
-     *
-     * We want the paddle to be a little higher up on the screen than it would be in a
-     * mouse-based game because there needs to be enough room for the player's finger under the
-     * paddle.  Depending on the screen dimensions and orientation there may or may not be some
-     * touch space outside the viewport, but we can't rely on that.
-     */
+    
     private static final float PADDLE_VERTICAL_PERC = 12 / 100.0f;
-    private static final float PADDLE_HEIGHT_PERC = 1 / 100.0f;
+    private static final float PADDLE_HEIGHT_PERC = 3 / 100.0f; //1/100.0f
     private static final float PADDLE_WIDTH_PERC = 2 / 100.0f;
     private static final int PADDLE_DEFAULT_WIDTH = 6;
-
-    /*
-     * Ball dimensions.  Internally it's just a rect, but we'll give it a circular texture so
-     * it looks round.  Size is a percentage of the arena width.  This can also be adjusted
-     * for skill level, up to a fairly goofy level.
-     */
     private static final float BALL_WIDTH_PERC = 2.5f / 100.0f;
 
-    /*
-     * Rects used for drawing the border and background.  We want the background to be a solid
-     * not-quite-black color, with easily visible borders that the ball will bounce off of.  We
-     * have a few options:
-     *
-     *  - We can draw a full-screen rect in the border color, then an inset rect in the
-     *    background color.  This does a rather massive amount of overdraw and isn't going
-     *    to work well on fill-rate-limited devices.
-     *  - We can glClear to the border color and then draw the background inset.  Better
-     *    performance, but it has an unwanted side-effect: glClear sets the color in the entire
-     *    framebuffer, not just the viewport area.  We want the area outside the game arena to
-     *    be black.
-     *  - We can draw the arena background and borders separately.  We will touch each pixel
-     *    only once (not including the glClear).
-     *
-     * The last option gives us the best performance for the visual appearance we want.  Also,
-     * by defining the border rects as individual entities, we have something to hand to the
-     * collision detection code, so we can use the general rect collision algorithm instead of
-     * having separate "did I hit a border" tests.
-     *
-     * Border 0 is special -- it's the bottom of the screen, and colliding with it means you
-     * lose the ball.  A more general solution would be to create a "Border" class and define
-     * any special characteristics there, but that's overkill for this game.
-     */
     private static final int NUM_BORDERS = 4;
     private static final int BOTTOM_BORDER = 0;
     private BasicAlignedRect mBorders[] = new BasicAlignedRect[NUM_BORDERS];
-    private BasicAlignedRect mBackground;
+    private BasicAlignedRect mBackgroundColor;
+    private TexturedBasicAlignedRect mBackgroundImg;
+    private TexturedBasicAlignedRect mButtonRestart;
+    private TexturedBasicAlignedRect mButtonMenu;
+    private TexturedBasicAlignedRect mButtonQuit;
 
-    /*
-     * Our brick collection, in a single linear array.  To stay in the theme of OpenGL, this is
-     * in column-major order, i.e. the first N blocks on the left side are the first N members
-     * of the array.
-     */
     private Brick mBricks[] = new Brick[BRICK_COLUMNS * BRICK_ROWS];
     private int mLiveBrickCount;
-
-    /*
-     * The paddle.  The width of the paddle is configurable based on skill level.
-     */
+    
     private static final int DEFAULT_PADDLE_WIDTH =
             (int) (ARENA_WIDTH * PADDLE_WIDTH_PERC * PADDLE_DEFAULT_WIDTH);
-    private BasicAlignedRect mPaddle;
-
-    /*
-     * The ball.  The diameter is configurable, either for different skill levels or for
-     * amusement value.
-     */
+    private TexturedBasicAlignedRect mPaddle;
+    
     private static final int DEFAULT_BALL_DIAMETER = (int) (ARENA_WIDTH * BALL_WIDTH_PERC);
     private Ball mBall;
-
-    /*
-     * Timestamp of previous frame.  Used for animation.  We cap the maximum inter-frame delta
-     * at 0.5 seconds, so that a major hiccup won't cause things to behave too crazily.
-     */
+    
     private static final double NANOS_PER_SECOND = 1000000000.0;
     private static final double MAX_FRAME_DELTA_SEC = 0.5;
     private long mPrevFrameWhenNsec;
@@ -205,13 +89,7 @@ public class BrickBreakerState {
      * Pause briefly on certain transitions, e.g. before launching a new ball after one was lost.
      */
     private float mPauseDuration;
-
-    /*
-     * Debug feature: do the next N frames in slow motion.  Useful when examining collisions.
-     * The speed will ramp up to normal over the last 60 frames.  (This is a debug feature, not
-     * part of the game, so we just count frames and assume the panel is somewhere near 60fps.)
-     * See DEBUG_COLLISIONS for example usage.
-     */
+   
     private int mDebugSlowMotionFrames;
 
     // If FRAME_RATE_SMOOTHING is true, then the rest of these fields matter.
@@ -520,15 +398,57 @@ public class BrickBreakerState {
     public boolean isAnimating() {
         return mIsAnimating;
     }
+    
+    /**
+     * Allocates the background texture to game
+     */
+    void allocBackground(Context context) {
+        /*
+         * The messages (e.g. "won" and "lost") are stored in the same texture, so the choice
+         * of which text to show is determined by the texture coordinates stored in the
+         * TexturedAlignedRect.  We can update those without causing an allocation, so there's
+         * no need to allocate a separate drawable rect for every possible message.
+         */
+
+        mBackgroundImg = new TexturedBasicAlignedRect();
+        int id = context.getResources().getIdentifier("drawable/background", null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);        
+        
+        TexturedBasicAlignedRect rectBack = new TexturedBasicAlignedRect();
+        //Log.d(TAG, "paddle y=" + rect.getYPosition());
+        rectBack.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT/2);
+        rectBack.setScale(ARENA_WIDTH - BORDER_WIDTH * 2, ARENA_HEIGHT - BORDER_WIDTH * 2);
+        //rectBack.setColor(0.1f, 0.1f, 0.1f);
+        rectBack.setTexture(bmp);
+        
+
+        mBackgroundImg = rectBack;
+    }
+    
+    
+    /**
+     * If appropriate, draw a message in the middle of the screen.
+     */
+    void drawBackground() {
+    	mBackgroundImg.draw();              
+    }
 
     /**
      * Allocates the bricks, setting their sizes and positions.  Sets mLiveBrickCount.
      */
-    void allocBricks() {
+    void allocBricks(Context context) {
+    	    	
+        int id = context.getResources().getIdentifier("drawable/brick_rock_b", null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+    	//------------------------
         final float totalBrickWidth = ARENA_WIDTH - BORDER_WIDTH * 2;
         final float brickWidth = totalBrickWidth / BRICK_COLUMNS;
+        //final float brickWidth = 100;
         final float totalBrickHeight = ARENA_HEIGHT * (BRICK_TOP_PERC - BRICK_BOTTOM_PERC);
-        final float brickHeight = totalBrickHeight / BRICK_ROWS;
+        //final float brickHeight = totalBrickHeight / BRICK_ROWS;
+        final float brickHeight = 100;
 
         final float zoneBottom = ARENA_HEIGHT * BRICK_BOTTOM_PERC;
         final float zoneLeft = BORDER_WIDTH;
@@ -560,7 +480,8 @@ public class BrickBreakerState {
             // because that makes everything MORE EXCITING!!!
             brick.setScoreValue((row + 1) * 100);
             brick.setAlive(true);
-
+            //brick.setTexture(bmp);
+            
             mBricks[i] = brick;
         }
 
@@ -608,7 +529,7 @@ public class BrickBreakerState {
         rect.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT/2);
         rect.setScale(ARENA_WIDTH, ARENA_HEIGHT);
         rect.setColor(0.1f, 0.1f, 0.1f);
-        mBackground = rect;
+        mBackgroundColor = rect;
 
         // This rect is just off the bottom of the arena.  If we collide with it, the ball is
         // lost.  This must be BOTTOM_BORDER (zero).
@@ -642,7 +563,7 @@ public class BrickBreakerState {
      * Draws the border and background rects.
      */
     void drawBorders() {
-        mBackground.draw();
+    	mBackgroundColor.draw();
         for (int i = 0; i < mBorders.length; i++) {
             mBorders[i].draw();
         }
@@ -651,14 +572,19 @@ public class BrickBreakerState {
     /**
      * Creates the paddle.
      */
-    void allocPaddle() {
-        BasicAlignedRect rect = new BasicAlignedRect();
+    void allocPaddle(Context context) {
+        TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
+        int id = context.getResources().getIdentifier("drawable/paddle", null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		
         rect.setScale(DEFAULT_PADDLE_WIDTH * mPaddleSizeMultiplier,
                 ARENA_HEIGHT * PADDLE_HEIGHT_PERC);
         rect.setColor(1.0f, 1.0f, 1.0f);        // note color is cycled during pauses
 
         rect.setPosition(ARENA_WIDTH / 2.0f, ARENA_HEIGHT * PADDLE_VERTICAL_PERC);
         //Log.d(TAG, "paddle y=" + rect.getYPosition());
+        rect.setTexture(bmp);
 
         mPaddle = rect;
     }

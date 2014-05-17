@@ -3,7 +3,6 @@ package br.usp.ime.brickbreakerapp;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
-
 import android.os.ConditionVariable;
 
 /**
@@ -27,7 +26,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
         // Create our Renderer object, and tell the GLSurfaceView code about it.  This also
         // starts the renderer thread, which will be calling the various callback methods
         // in the BrickBreakerSurfaceRenderer class.
-        mRenderer = new BrickBreakerSurfaceRenderer(brickBreakerState, this, textConfig);
+        mRenderer = new BrickBreakerSurfaceRenderer(context, brickBreakerState, this, textConfig);
         setRenderer(mRenderer);
         //onPause();
     }
@@ -80,9 +79,17 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
                         mRenderer.touchEvent(x, y);
                     }});
                 break;
-            default:
-                break;
-        }
+            case MotionEvent.ACTION_DOWN:
+    			x = e.getX();
+    			y = e.getY();
+    			queueEvent(new Runnable() {
+    				@Override public void run() {
+    					//mRenderer.actionDownTouchEvent();
+    				}});
+    			break;
+    		default:
+    			break;
+    		}        
 
         return true;
     }

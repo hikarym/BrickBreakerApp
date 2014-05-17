@@ -22,8 +22,6 @@ public class BrickBreakerActivity extends Activity {
     //private static boolean sNeverLoseBall;
     // Enabled Sounds effects of game 
     private static boolean sSoundEffectsEnabled;
-    // 
-    private static boolean sVibrationMode;
 
 
     // The Activity has one View, a GL surface.

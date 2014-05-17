@@ -60,6 +60,7 @@ public class BaseRect {
     private static FloatBuffer sVertexArray = BaseRect.createVertexArray(COORDS);
     private static FloatBuffer sTexArray = BaseRect.createVertexArray(TEX_COORDS);
     private static FloatBuffer sOutlineVertexArray = BaseRect.createVertexArray(OUTLINE_COORDS);
+	private static FloatBuffer sUVSArray = BaseRect.createVertexArray(TEX_COORDS);
 
 
     public static final int COORDS_PER_VERTEX = 2;         // x,y
@@ -97,6 +98,13 @@ public class BaseRect {
     public static FloatBuffer getVertexArray() {
         return sVertexArray;
     }
+    
+    /**
+	 * Returns a FloatBuffer with the texture coordinate.
+	 */ 
+	public static FloatBuffer getUVSArray() {
+		return sUVSArray;
+	}
 
     /**
      * Returns a FloatBuffer with the texture coordinate data for an image with (0,0) in the
