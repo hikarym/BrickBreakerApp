@@ -1,5 +1,7 @@
 package br.usp.ime.brickbreakerapp;
 
+import java.nio.ByteBuffer;
+
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -168,10 +170,13 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         // Nudge game state after the surface change.
         mBrickBreakerState.surfaceChanged();
+        
+        
 
         if (EXTRA_CHECK) Library.checkGlError("onSurfaceChanged end");
-    }
-
+    }  
+    
+    //-----------------------
     /**
      * Advances game state, then draws the new frame.
      */

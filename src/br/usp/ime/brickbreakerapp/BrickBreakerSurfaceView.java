@@ -18,7 +18,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
     /**
      * Prepares the OpenGL context and starts the Renderer thread.
      */
-    public BrickBreakerSurfaceView(Context context, BrickBreakerState BrickBreakerState,
+    public BrickBreakerSurfaceView(Context context, BrickBreakerState brickBreakerState,
             TextResources.Configuration textConfig) {
         super(context);
 
@@ -27,7 +27,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
         // Create our Renderer object, and tell the GLSurfaceView code about it.  This also
         // starts the renderer thread, which will be calling the various callback methods
         // in the BrickBreakerSurfaceRenderer class.
-        mRenderer = new BrickBreakerSurfaceRenderer(BrickBreakerState, this, textConfig);
+        mRenderer = new BrickBreakerSurfaceRenderer(brickBreakerState, this, textConfig);
         setRenderer(mRenderer);
         //onPause();
     }
