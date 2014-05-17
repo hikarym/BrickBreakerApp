@@ -26,6 +26,7 @@ public class TextResources {
 
     // Messages we show to the user, and a set of digits for the score.  Pass one of these
     // as the argument to getTextureRect().
+    public static final int PAUSE = -2;
     public static final int NO_MESSAGE = -1;        // used to indicate no message shown
     public static final int READY = 0;
     public static final int GAME_OVER = 1;
@@ -75,7 +76,7 @@ public class TextResources {
          * colors for text strings.
          */
         private Configuration(Context context) {
-            setString(context, READY, R.string.msg_ready, 0x0000ff);
+            setString(context, READY, R.string.msg_ready, 0xe15c1b);
             setString(context, GAME_OVER, R.string.msg_game_over, 0xff0000);
             setString(context, WINNER, R.string.msg_winner, 0x00ff00);
             for (int i = 0; i < 10; i++) {

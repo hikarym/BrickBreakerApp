@@ -2,6 +2,7 @@ package br.usp.ime.brickbreakerapp;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.os.ConditionVariable;
 
@@ -76,15 +77,16 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
                 //Log.d(TAG, "BrickBreakerSurfaceView onTouchEvent x=" + x + " y=" + y);
                 queueEvent(new Runnable() {
                     @Override public void run() {
-                        mRenderer.touchEvent(x, y);
+                        mRenderer.actionMoveTouchEvent(x, y);
                     }});
                 break;
             case MotionEvent.ACTION_DOWN:
     			x = e.getX();
     			y = e.getY();
+    			Log.d(TAG, "BrickBreakerSurfaceView TOUCH DOWN");
     			queueEvent(new Runnable() {
     				@Override public void run() {
-    					//mRenderer.actionDownTouchEvent();
+    					mRenderer.actionDownTouchEvent();
     				}});
     			break;
     		default:

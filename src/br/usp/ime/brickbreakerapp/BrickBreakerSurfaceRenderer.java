@@ -170,8 +170,10 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     	
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
 
-        if (started)     		
+        //if (started){     		
+        	Log.v(TAG, "CREIANDO NUEVO FRAME");
         	BrickBreakerState.calculateNextFrame();
+        //}
 
         // Simulate slow game state update, to see impact on animation.
         // try { Thread.sleep(33); }
@@ -228,9 +230,18 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         // and that class doesn't otherwise need to call back into us or have access to the
         // GLSurfaceView.
         if (!BrickBreakerState.isAnimating()) {
-            Log.d(TAG, "Game over, stopping animation");
-            mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        	/*if (BrickBreakerState.getGamePlayState() == 1) {
+        		 Log.d(TAG, "Game over, stopping animation");
+                 mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			}
+        	else{
+                Log.d(TAG, "Game over, stopping animation");
+                mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        	}*/
+        	 Log.d(TAG, "Game over, stopping animation");
+             mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         }
+        
     }
 
     /**
@@ -254,12 +265,24 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Updates state after the player touches the screen.  Call through queueEvent().
      */
-    public void touchEvent(float x, float y) {        
+    public void actionMoveTouchEvent(float x, float y) {        
 
         float arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
         float arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
         //Log.v(TAG, "touch at x=" + (int) x + " y=" + (int) y + " --> arenaX=" + (int) arenaX);
 
         mBrickBreakerState.movePaddle(arenaX);
+    }
+    
+    public void actionDownTouchEvent(){
+    	Log.v(TAG, "reanudando o jogodd"+ String.valueOf(mBrickBreakerState.getGamePlayState()));
+        
+        if (mBrickBreakerState.isGamePaused()) {
+        	Log.v(TAG, "reanudando o jogo");
+        	mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        	mBrickBreakerState.RestartGame();
+        	
+        	
+		}
     }
 }

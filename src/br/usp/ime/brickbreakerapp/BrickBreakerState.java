@@ -120,6 +120,7 @@ public class BrickBreakerState {
     private static final int GAME_PLAYING = 2;
     private static final int GAME_WON = 3;
     private static final int GAME_LOST = 4;
+    private static final int GAME_PAUSE = 5;
     private int mGamePlayState;
 
     private boolean mIsAnimating;
@@ -141,41 +142,24 @@ public class BrickBreakerState {
     private int mGameStatusMessageNum;
     private int mDebugFramedString;
 
-    /*
-     * Score display.
-     *
-     * The maximum score for a 12x8 grid of bricks is 43200.  In "hard" mode the score is
-     * multiplied by 1.25.  floor(log10(43200*1.25))+1 is 5.
-     *
-     * If the number of bricks or score values isn't fixed at compile time, we will need to
-     * compute this at runtime, and allocate the score rects in the constructor.  It is fixed,
-     * though, so we can be lazy and just hard-code a value here.
-     */
+    /* Score display */
     private static final int NUM_SCORE_DIGITS = 5;
     private TexturedAlignedRect[] mScoreDigits = new TexturedAlignedRect[NUM_SCORE_DIGITS];
 
-    /*
-     * Text resources, notably including an image texture for our various text strings.
-     */
+    /* Text resources, notably including an image texture for our various text strings. */
     private TextResources mTextRes;
+    
+    public void setGamePlayState(int state){
+    	mGamePlayState = state; 
+    }
+    
+    public int getGamePlayState(){
+    	return mGamePlayState;
+    }
 
 
     public BrickBreakerState() {}
-
-    /*
-     * Trivial setters for configurables.  Changing any of these values will invalidate the
-     * current saved game.  If a game is being played when the value changes, unpredictable
-     * behavior may result.
-     *
-     * We can check to see if the value has changed, and invalidate the save if so.  We can
-     * throw an exception if a game is in progress.  Or we can be lazy and assume that the
-     * higher-level code in GameActivity is managing this correctly.  (Currently doing the latter.)
-     *
-     * These are called from a non-Renderer thread, before the Renderer thread starts.
-     */
-    /*public void setVibrationMode(boolean vibrationMode) {
-        mVibrationMode = vibrationMode;
-    }*/
+    
     public void setMaxLives(int maxLives) {
         mMaxLives = maxLives;
     }
@@ -206,9 +190,12 @@ public class BrickBreakerState {
         * does exist, we'll never call here, so don't treat this like a constructor.
         */
 
-        mGamePlayState = GAME_INITIALIZING;
-        mIsAnimating = true;
-        mGameStatusMessageNum = TextResources.NO_MESSAGE;
+        //mGamePlayState = GAME_INITIALIZING;
+    	mGamePlayState = GAME_PAUSE;
+        //mIsAnimating = true;
+        mIsAnimating = false;
+        //mGameStatusMessageNum = TextResources.NO_MESSAGE;
+        mGameStatusMessageNum = TextResources.READY;
         mPrevFrameWhenNsec = 0;
         mPauseDuration = 0.0f;
         mRecentTimeDeltaNext = -1;
@@ -607,35 +594,6 @@ public class BrickBreakerState {
      * side-contact with the ball.
      */
     void movePaddle(float arenaX) {
-        /*
-         * If we allow the paddle to be moved inside the ball (e.g. a quick sideways motion at a
-         * time when the ball is on the same horizontal line), the collision detection code may
-         * react badly.  This can happen if we move the paddle without regard for the position
-         * of the ball.
-         *
-         * The problem is easy to demonstrate with a ball that has a large radius and a slow
-         * speed.  If the paddle deeply intersects the ball, you either have to ignore the
-         * collision and let the ball pass through the paddle (which looks weird), or bounce off.
-         * When bouncing off we have to adjust the ball position so it no longer intersects with
-         * the paddle, which means a large jarring jump in position, or ignoring additional
-         * collisions, since they could cause the ball to reverse direction repeatedly
-         * (essentially just vibrating in place).
-         *
-         * We can handle this by running the paddle movement through the same collision
-         * detection code that the ball uses, and stopping it when we collide with something
-         * (the ball or walls).  That would work well if the paddle were smoothly sliding, but
-         * our control scheme allows absolute jumps -- the paddle instantly goes wherever you
-         * touch on the screen.  If the paddle were on the far right, and you touched the far
-         * left, you'd expect it to go to the far left even if the ball was "in the way" in
-         * the middle of the screen.  (This is mitigated if you arrange it so that the paddle
-         * appears to knock the ball sideways when it collides -- then it's apparent to the user
-         * that the paddle was stopped by a collision with the ball.)
-         *
-         * The visual artifacts of making the ball leap are minor given the speed of animation
-         * and the size of objects on screen, so I'm currently just ignoring the problem.  The
-         * moral of the story is that everything that moves needs to tested for collisions
-         * with all objects.
-         */
 
         float paddleWidth = mPaddle.getXScale() / 2;
         final float minX = BORDER_WIDTH + paddleWidth;
@@ -683,7 +641,7 @@ public class BrickBreakerState {
         float xpos = BORDER_WIDTH * 2 + radius;
         float ypos = BORDER_WIDTH + radius;
         int lives = mLivesRemaining;
-        boolean ballIsLive = (mGamePlayState != GAME_INITIALIZING && mGamePlayState != GAME_READY);
+        boolean ballIsLive = (mGamePlayState != GAME_PAUSE && mGamePlayState != GAME_READY);
         if (ballIsLive) {
             // In READY state we show the "live" ball next to the "remaining" balls, rather than
             // in the play area.
@@ -799,36 +757,51 @@ public class BrickBreakerState {
      * If appropriate, draw a message in the middle of the screen.
      */
     void drawMessages() {
-        if (mGameStatusMessageNum != TextResources.NO_MESSAGE) {
+    	Log.v(TAG,"MESSAGE NUM "+ String.valueOf(mGameStatusMessageNum) + "state: "+String.valueOf(mGamePlayState));
+        if ((mGameStatusMessageNum != TextResources.NO_MESSAGE)) {
+        	//mGameStatusMessageNum = 
             TexturedAlignedRect msgBox = mGameStatusMessages;
 
             Rect boundsRect = mTextRes.getTextureRect(mGameStatusMessageNum);
             msgBox.setTextureCoords(boundsRect);
-
-            /*
-             * We need to scale the text to be easily readable.  We have a basic choice to
-             * make: do we want the message text to always be the same size (e.g. always at
-             * 50 points), or should it be as large as it can be on the screen?
-             *
-             * For the mid-screen message, which is one or two words, we want it to be as large
-             * as it can get.  The expected strings will be much wider than they are tall, so
-             * we scale the width of the bounding box to be a fixed percentage of the arena
-             * width.  This means the glyphs in "hello" will be much larger than they would be
-             * in "hello, world", but that's exactly what we want.
-             *
-             * If we wanted consistent-size text, we'd need to change the way the TextResource
-             * code works.  It doesn't attempt to preserve the font metrics, and the bounding
-             * boxes are based on the heights of the glyphs used in a given string (i.e. not
-             * all possible glyphs in the font) so we just don't have enough information in
-             * here to do that.
-             */
+            
 
             float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
             msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
 
             //Log.d(TAG, "drawing " + mGameStatusMessageNum);
             msgBox.draw();
-        }
+        }   	
+        
+    	/*if (mGameStatusMessageNum != TextResources.NO_MESSAGE) {
+        	if(mGameStatusMessageNum != TextResources.READY){
+	            TexturedAlignedRect msgBox = mGameStatusMessages;
+	
+	            Rect boundsRect = mTextRes.getTextureRect(mGameStatusMessageNum);
+	            msgBox.setTextureCoords(boundsRect);
+	
+	            float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
+	            msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
+	
+	            //Log.d(TAG, "drawing " + mGameStatusMessageNum);
+	            msgBox.draw();
+        	}
+        }        
+        else {    
+        	if (mGamePlayState == GAME_INITIALIZING) {
+        	TexturedAlignedRect msgBox = mGameStatusMessages;
+        	
+
+            Rect boundsRect = mTextRes.getTextureRect(TextResources.READY);
+            msgBox.setTextureCoords(boundsRect);
+            
+            float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
+            msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
+
+            //Log.d(TAG, "drawing " + mGameStatusMessageNum);
+            msgBox.draw();
+        	}
+        }*/
     }
 
     /**
@@ -925,33 +898,13 @@ public class BrickBreakerState {
      * and checking for collisions.
      */
     void calculateNextFrame() {
+    	Log.v(TAG, "calcula frma");
         // First frame has no time delta, so make it a no-op.
         if (mPrevFrameWhenNsec == 0) {
             mPrevFrameWhenNsec = System.nanoTime();     // use monotonic clock
             mRecentTimeDeltaNext = -1;                  // reset saved values
             return;
         }
-
-        /*
-         * The distance the ball must travel is determined by the time between frames and the
-         * current speed (expressed in arena-units per second).  What we actually want to know
-         * is how much time will elapse between the *display* of the previous frame and the
-         * *display* of the current frame, but this is close enough.
-         *
-         * If onDrawFrame() is being called immediately after vsync, we should get a pretty
-         * steady pace (e.g. a device with 60fps refresh will call the method every 16.7ms).
-         * If we're getting called on some other schedule the span for each frame could vary
-         * by quite a bit.  Also note that not all devices operate at 60fps.
-         *
-         * Smoothing frames by averaging the last few deltas can reduce noticeable jumps,
-         * but create the possibility that you won't be animating at exactly the right
-         * speed.  For our purposes it doesn't seem to matter.
-         *
-         * It's interesting to note that, because "deltaSec" varies, and our collision handling
-         * isn't perfectly precise, the game is not deterministic.  Variations in frame rate
-         * lead to minor variations in the ball's path.  If you want reproducible behavior
-         * for debugging, override deltaSec with a fixed value (e.g. 1/60).
-         */
 
         long nowNsec = System.nanoTime();
         double curDeltaSec = (nowNsec - mPrevFrameWhenNsec) / NANOS_PER_SECOND;
@@ -1012,10 +965,12 @@ public class BrickBreakerState {
         // Do something appropriate based on our current state.
         switch (mGamePlayState) {
             case GAME_INITIALIZING:
-                mGamePlayState = GAME_READY;
+                //mGamePlayState = GAME_READY;
+            	//mGamePlayState = GAME_PAUSE;
                 break;
             case GAME_READY:
                 mGameStatusMessageNum = TextResources.READY;
+                Log.v(TAG,"advanceFrame"+ String.valueOf(advanceFrame));
                 if (advanceFrame) {
                     // "ready" has expired, move ball to starting position
                     mGamePlayState = GAME_PLAYING;
@@ -1035,6 +990,10 @@ public class BrickBreakerState {
                 advanceFrame = false;
                 break;
             case GAME_PLAYING:
+                break;
+            case GAME_PAUSE:
+            	mIsAnimating = false;
+                advanceFrame = false;
                 break;
             default:
                 Log.e(TAG, "GLITCH: bad state " + mGamePlayState);
@@ -1059,7 +1018,8 @@ public class BrickBreakerState {
                         mGamePlayState = GAME_LOST;
                     } else {
                         // switch back to "ready" state, reset ball position
-                        mGamePlayState = GAME_READY;
+                        //mGamePlayState = GAME_READY;
+                    	mGamePlayState = GAME_PAUSE;
                         mGameStatusMessageNum = TextResources.READY;
                         setPauseTime(1.5f);
                         resetBall();
@@ -1399,37 +1359,7 @@ public class BrickBreakerState {
      * @return true if we might collide with this object.
      */
     private boolean checkCoarseCollision(BaseRect target, float left, float right,
-            float bottom, float top) {
-        /*
-         * This is a "coarse" detection, so we can play fast and loose.  One approach is to
-         * essentially draw a circle around each object, and see if the circles intersect.
-         * This requires a simple distance test -- if the distance between the center points
-         * of the objects is greater than their combined radii, there's no chance of collision.
-         * Mathematically, each test is two multiplications and a compare.
-         *
-         * This is a very sloppy test for a fast-moving ball, though, because we're drawing
-         * it around the current and final position.  If the ball is moving quickly from left
-         * to right, we will end up testing for collisions in a large area above and below
-         * the ball, because the circle extends in all directions.
-         *
-         * A better test, given the generally rectangular nature of all of our objects, would
-         * be to test the draw rects for overlap.  This is precise for all objects except the
-         * ball itself, and even for that it has a better-confined region.  Each test requires
-         * a handful of additions and comparisons, and on a device with an FPU will be slower.
-         *
-         * If we're really concerned about performance, we can skip brick collision detection
-         * entirely at the top and bottom of the board with a simple range check.  The brick
-         * area can then be divided into a grid with 64 cells, and each brick can hold a long
-         * integer that has bits set based on what cells it is a part of.  We set up a bit
-         * vector with the set of cells that the ball could touch as it moves between the old
-         * and new positions, and do a quick bit mask to check for collisions.
-         *
-         * And so on.
-         *
-         * At the end of the day we've got about a hundred bricks, the four edges of the screen,
-         * and the paddle.  We just want to do something simple that will cut the number of
-         * objects we need to check in the "fine" pass to a handful.
-         */
+            float bottom, float top) {       
 
         // Convert position+scale into l/r/b/t.
         float xpos, ypos, xscale, yscale;
@@ -1489,61 +1419,7 @@ public class BrickBreakerState {
     private BaseRect findFirstCollision(BaseRect[] rects, final int numRects, final float curX,
             final float curY, final float dirX, final float dirY, final float distance,
             final float radius) {
-        /*
-         * The "coarse" function has indicated that a collision is possible.  We need to get
-         * an exact determination of what we're hitting.
-         *
-         * We can either use some math to compute the time of intersection of each rect with
-         * the moving ball (a "sweeping" collision test, perhaps even straying into
-         * "continuous collision detection"), or we can just step the ball forward until
-         * it collides with something or reaches the end point.  The latter isn't as precise,
-         * but is much simpler, so we'll do that.
-         *
-         * We can use a test similar to the Separating Axis Theorem, but with a circle vs.
-         * rectangle collision it's possible for the axis-aligned projections to overlap but
-         * not have a collision (e.g. the circle is near one corner).  We need to perform an
-         * additional test to check the distance from the closest vertex to the center of the
-         * circle.  The fancy way to figure out which corner is closest is with Voronoi regions,
-         * but we don't really need that: since we're colliding with axis-aligned rects, we can
-         * just collapse the whole thing into a single quadrant.
-         *
-         * Nice illustration here:
-         *  http://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
-         *
-         * Once we determine that a collision has occurred, we need to determine where we hit
-         * so that we can decide how to bounce.  For our bricks we're either hitting a vertical
-         * or horizontal surface; these will cause us to invert the X component or Y component
-         * of our direction vector.  It also makes sense visually to reverse direction when
-         * you run into a corner.
-         *
-         * It's possible to get "tunneling" effects, which may look weird but are actually
-         * legitimate.  Two common scenarios:
-         *
-         *  (1) Suppose the ball is moving upward and slightly to the left.  If it
-         *      squeezes between the gap in the bricks and hits a right edge, it will
-         *      do a vertical-surface bounce (i.e. start moving back to the right), and
-         *      almost immediately hit the vertical surface of the brick to the right.
-         *      With the right angle, this can repeat in a nearby column and climb up through
-         *      several layers.  (Unless the ball is small relative to the gap between bricks,
-         *      this is hard to do in practice.)
-         *  (2) A "sharp corner" bounce can keep the ball moving upward.  For
-         *      example, a ball moving up and right hits the bottom of a brick,
-         *      and heads down and to the right.  It hits the top-left corner of
-         *      a brick, and reverses direction (up and left).  It hits the bottom
-         *      of another brick, and while moving down and left it hits the
-         *      top-right corner of a fourth brick.  If the angle is right, this
-         *      pattern will continue, knocking out a vertical tunnel.  Because it's
-         *      hitting on corners, this is easy to do even if the horizontal gap
-         *      between bricks is fairly narrow.
-         *
-         * The smaller the inter-brick gap is, the less likely the tunneling
-         * effects are to occur.  With a small enough gap (and a reasonable MAX_STEP)
-         * it's impossible to hit an "inside" corner or surface.
-         *
-         * It's possible to collide with two shapes at once.  We ignore this situation.
-         * Whichever object we happen to examine first gets credit.
-         */
-
+        
         // Maximum distance, in arena coordinates, we advance the ball on each iteration of
         // the loop.  If this is too small, we'll do a lot of unnecessary iterations.  If it's
         // too large (e.g. more than the ball's radius), the ball can end up inside an object,
@@ -1593,18 +1469,7 @@ public class BrickBreakerState {
                 }
 
                 /*
-                 * Check to see if the center of the circle is inside the rect on one axis.  The
-                 * previous test eliminated anything that was too far on either axis, so
-                 * if this passes then we must have a collision.
-                 *
-                 * We're not moving the ball fast enough (limited by MAX_STEP) to get the center
-                 * of the ball completely inside the rect (i.e. we shouldn't see a case where the
-                 * center is inside the rect on *both* axes), so if we're inside in the X axis we
-                 * can conclude that we just collided due to vertical motion, and have hit a
-                 * horizontal surface.
-                 *
-                 * If the center isn't inside on either axis, we've hit the corner case, and
-                 * need to do a distance test.
+                 * Check to see if the center of the circle is inside the rect on one axis.  
                  */
                 if (circleX <= rectXScaleHalf) {
                     faceToAdjust = faceHit = HIT_FACE_HORIZONTAL;
@@ -1619,49 +1484,7 @@ public class BrickBreakerState {
                         //Log.d(TAG, "COL: corner miss");
                         continue;
                     }
-
-                    /*
-                     * The center point of the ball is outside both edges of the rectangle,
-                     * but the corner is inside the radius of the circle, so this is a corner
-                     * hit.  We need to decide how to bounce off.
-                     *
-                     * One approach is to see which edge is closest.  We know we're within a
-                     * ball-radius of both edges.  If you imagine a ball moving straight upward,
-                     * hitting just to the left of the bottom-left corner of a brick, you'll
-                     * note that the impact occurs when the X distance (from brick edge to
-                     * center of ball) is very small, and the Y distance is close to the ball
-                     * radius.  So if X < Y, it's a horizontal-surface hit.
-                     *
-                     * However, there's a nasty edge case: imagine the ball is traveling up and
-                     * to the right.  It skims past the top-left corner of a brick.  If the ball
-                     * is positioned just barely outside the collision radius to the left of the
-                     * brick in the current frame, our next step could take us to the other side
-                     * of the ball -- at which point we "collide" with the horizontal *top*
-                     * surface of the brick.  The brick is destroyed and the ball "bounces" down
-                     * and to the right (because we reverse Y direction on a horizontal hit).
-                     * Decreasing MAX_STEP makes this less likely, but we can't make it impossible.
-                     *
-                     * Another approach is to compare the direction the ball was moving with
-                     * which corner we hit.  Consider the bottom-left corner of a brick.  There
-                     * are three ways to hit it: straight in (ball moving up and right), skimming
-                     * from the left (ball moving down and right), and skimming from below
-                     * (ball moving up and left).  By comparing just the sign of the components
-                     * of the ball's direction vector with the sign of a vector drawn from the
-                     * corner to the center of the rect, we can decide what sort of impact
-                     * we've had.
-                     *
-                     * If the signs match, it's a "sharp" corner impact, and we want to bounce
-                     * straight back.  If only X matches, we're approaching from the side, and
-                     * it's a vertical side impact.  If only Y matches, we're approaching from
-                     * the bottom, and it's a horizontal impact.  The collision behavior no
-                     * longer depends on which side we're actually touching, concealing the
-                     * fact that the ball has effectively passed through the corner of the brick
-                     * and we're catching the collision a bit late.
-                     *
-                     * If bouncing straight back off of a corner is undesirable, we can just
-                     * use the computation done in the faceToAdjust assignment for "sharp
-                     * "corner" impacts instead.
-                     */
+                    
                     float dirXSign = Math.signum(dirX);
                     float dirYSign = Math.signum(dirY);
                     float cornerXSign = Math.signum(rectXWorld - circleXWorld);
@@ -1808,5 +1631,15 @@ public class BrickBreakerState {
         public int mScore;
 
         public boolean mIsValid = false;        // set when state has been written out
+    }
+    
+    public void RestartGame(){
+    	mGamePlayState = GAME_READY;
+    	mIsAnimating = true;
+    	//calculateNextFrame();
+    }
+    
+    public boolean isGamePaused(){
+    	return (mGamePlayState == GAME_PAUSE) ? true : false;
     }
 }
