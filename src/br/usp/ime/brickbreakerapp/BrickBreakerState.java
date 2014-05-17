@@ -480,7 +480,7 @@ public class BrickBreakerState {
             // because that makes everything MORE EXCITING!!!
             brick.setScoreValue((row + 1) * 100);
             brick.setAlive(true);
-            //brick.setTexture(bmp);
+            brick.setTexture(bmp);
             
             mBricks[i] = brick;
         }
@@ -528,7 +528,8 @@ public class BrickBreakerState {
         rect = new BasicAlignedRect();
         rect.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT/2);
         rect.setScale(ARENA_WIDTH, ARENA_HEIGHT);
-        rect.setColor(0.1f, 0.1f, 0.1f);
+        //rect.setColor(0.1f, 0.1f, 0.1f);
+        rect.setColor(0.451f, 0.541f, 0.322f);
         mBackgroundColor = rect;
 
         // This rect is just off the bottom of the arena.  If we collide with it, the ball is
@@ -536,7 +537,9 @@ public class BrickBreakerState {
         rect = new BasicAlignedRect();
         rect.setPosition(ARENA_WIDTH/2, -BORDER_WIDTH/2);
         rect.setScale(ARENA_WIDTH, BORDER_WIDTH);
-        rect.setColor(1.0f, 0.65f, 0.0f);
+        //rect.setColor(1.0f, 0.65f, 0.0f);
+        //rect.setColor(0.451f, 0.541f, 0.322f);
+        rect.setColor(0.1f, 0.1f, 0.1f);
         mBorders[BOTTOM_BORDER] = rect;
 
         // Need one rect each for left / right / top.
@@ -650,11 +653,16 @@ public class BrickBreakerState {
     /**
      * Creates the ball.
      */
-    void allocBall() {
+    void allocBall(Context context) {
         Ball ball = new Ball();
+        int id = context.getResources().getIdentifier("drawable/ball", null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		
         int diameter = (int) (DEFAULT_BALL_DIAMETER * mBallSizeMultiplier);
         // ovals don't work right -- collision detection requires a circle
         ball.setScale(diameter, diameter);
+        ball.setTexture(bmp);
         mBall = ball;
     }
 

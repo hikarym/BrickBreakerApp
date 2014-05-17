@@ -3,7 +3,7 @@ package br.usp.ime.brickbreakerapp;
 /**
  * Represents an immobile, destructible brick.
  */
-public class Brick extends BasicAlignedRect {
+public class Brick extends TexturedBasicAlignedRect {
     /*
      * It's worth noting that the position, size, color, and score value of a brick is fixed,
      * and could be computed on the fly while drawing.  We don't need a Brick object per brick;

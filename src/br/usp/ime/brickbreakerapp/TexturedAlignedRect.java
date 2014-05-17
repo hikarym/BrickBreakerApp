@@ -1,5 +1,6 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -116,7 +117,7 @@ public class TexturedAlignedRect extends BaseRect {
         GLES20.glUseProgram(0);
 
         Library.checkGlError("TexturedAlignedRect setup complete");
-   }
+    }    
 
     /**
      * Sets the texture data by creating a new texture from a buffer of data.
@@ -126,6 +127,12 @@ public class TexturedAlignedRect extends BaseRect {
                 Library.createImageTexture(buf, width, height, format);
         mTextureWidth = width;
         mTextureHeight = height;
+    }
+    
+    public void setTexture(Bitmap bmp) {
+        mTextureDataHandle = Library.createImageTexture(bmp);
+        //mTextureWidth = width;
+        //mTextureHeight = height;
     }
 
     /**

@@ -82,7 +82,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocBackground(mContext);
         BrickBreakerState.allocBricks(mContext);
         BrickBreakerState.allocPaddle(mContext);
-        BrickBreakerState.allocBall();
+        BrickBreakerState.allocBall(mContext);
         BrickBreakerState.allocScore();
         BrickBreakerState.allocMessages();
         BrickBreakerState.allocDebugStuff();
@@ -115,27 +115,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
      * called, but this method will.
      */
     @Override
-    public void onSurfaceChanged(GL10 unused, int width, int height) {
-        /*
-         * We want the viewport to be proportional to the arena size.  That way a 10x10
-         * object in arena coordinates will look square on the screen, and our round ball
-         * will look round.
-         *
-         * If we wanted to fill the entire screen with our game, we would want to adjust the
-         * size of the arena itself, not just stretch it to fit the boundaries.  This can have
-         * subtle effects on gameplay, e.g. the time it takes the ball to travel from the top
-         * to the bottom of the screen will be different on a device with a 16:9 display than on
-         * a 4:3 display.  Other games might address this differently, e.g. a side-scroller
-         * could display a bit more of the level on the left and right.
-         *
-         * We do want to fill as much space as we can, so we should either be pressed up against
-         * the left/right edges or top/bottom.
-         *
-         * Our game plays best in portrait mode.  We could force the app to run in portrait
-         * mode (by setting a value in AndroidManifest, or by setting the projection to rotate
-         * the world to match the longest screen dimension), but that's annoying, especially
-         * on devices that don't rotate easily (e.g. plasma TVs).
-         */
+    public void onSurfaceChanged(GL10 unused, int width, int height) {      
 
         if (EXTRA_CHECK) Library.checkGlError("onSurfaceChanged start");
 
@@ -188,15 +168,14 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 unused) {
     	
-    	
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
 
         if (started)     		
         	BrickBreakerState.calculateNextFrame();
 
         // Simulate slow game state update, to see impact on animation.
-//        try { Thread.sleep(33); }
-//        catch (InterruptedException ie) {}
+        // try { Thread.sleep(33); }
+        // catch (InterruptedException ie) {}
 
         if (EXTRA_CHECK) Library.checkGlError("onDrawFrame start");
 
@@ -204,7 +183,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Draw the various elements.  These are all BasicAlignedRect.
-     // Draw the various elements.  These are all BasicAlignedRect.
         BasicAlignedRect.prepareToDraw();
         BrickBreakerState.drawBorders();
         BasicAlignedRect.finishedDrawing();
@@ -215,22 +193,10 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         
         TexturedBasicAlignedRect.prepareToDraw();
-        BrickBreakerState.drawBackground();    
+        BrickBreakerState.drawBackground();  
+        BrickBreakerState.drawBricks();
         BrickBreakerState.drawPaddle();
         TexturedBasicAlignedRect.finishedDrawing();
-        // Enable alpha blending.
-        GLES20.glEnable(GLES20.GL_BLEND);
-        // Blend based on the fragment's alpha value.
-        GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-
-
-        BasicAlignedRect.prepareToDraw();
-        BrickBreakerState.drawBricks();
-//        BrickBreakerState.drawPaddle();
-        BasicAlignedRect.finishedDrawing();
-        
-              
-
         // Enable alpha blending.
         GLES20.glEnable(GLES20.GL_BLEND);
         // Blend based on the fragment's alpha value.
@@ -263,11 +229,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         // GLSurfaceView.
         if (!BrickBreakerState.isAnimating()) {
             Log.d(TAG, "Game over, stopping animation");
-            // While not explicitly documented as such, it appears that setRenderMode() may be
-            // called from any thread.  The getRenderMode() function is documented as being
-            // available from any thread, and looking at the sources reveals setRenderMode()
-            // uses the same synchronization.  If it weren't allowed, we'd need to post an
-            // event to the UI thread to do this.
             mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         }
     }
@@ -293,20 +254,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Updates state after the player touches the screen.  Call through queueEvent().
      */
-    public void touchEvent(float x, float y) {
-        /*
-         * We chiefly care about the 'x' value, which is used to set the paddle position.  We
-         * might want to limit based on the 'y' value because it's a little weird to be
-         * controlling the paddle from the top half of the screen, but there's no need to
-         * do so.
-         *
-         * We need to re-scale x,y from window coordinates to arena coordinates.  The viewport
-         * may not fill the entire device window, so it's possible to get values that are
-         * outside the arena range.
-         *
-         * If we were directly implementing other on-screen controls, we'd need to check for
-         * touches here.
-         */
+    public void touchEvent(float x, float y) {        
 
         float arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
         float arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
