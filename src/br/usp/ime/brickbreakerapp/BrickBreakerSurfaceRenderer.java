@@ -1,7 +1,5 @@
 package br.usp.ime.brickbreakerapp;
 
-//import java.nio.ByteBuffer;
-
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -95,9 +93,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         // Disable depth testing -- we're 2D only.
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-
-        // Don't need backface culling.  (If you're feeling pedantic, you can turn it on to
-        // make sure we're defining our shapes correctly.)
+        
         if (EXTRA_CHECK) {
             GLES20.glEnable(GLES20.GL_CULL_FACE);
         } else {
@@ -110,9 +106,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Updates the configuration when the underlying surface changes.  Happens at least once
      * after every onSurfaceCreated().
-     * <p>
-     * If we visit the home screen and immediately return, onSurfaceCreated() may not be
-     * called, but this method will.
      */
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {      
@@ -144,12 +137,8 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         mViewportXoff = x;
         mViewportYoff = y;
 
-        // Create an orthographic projection that maps the desired arena size to the viewport
-        // dimensions.
-        //
-        // If we reversed {0, ARENA_HEIGHT} to {ARENA_HEIGHT, 0}, we'd have (0,0) in the
-        // upper-left corner instead of the bottom left, which is more familiar for 2D
-        // graphics work.  It might cause brain ache if we want to mix in 3D elements though.
+        // Create an orthographic projection that maps the desired arena  size
+        // to the viewport dimensions.
         Matrix.orthoM(mProjectionMatrix, 0,  0, BrickBreakerState.ARENA_WIDTH,
                 0, BrickBreakerState.ARENA_HEIGHT,  -1, 1);
 
@@ -221,23 +210,8 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         if (EXTRA_CHECK) Library.checkGlError("onDrawFrame end");
 
-        // Stop animating at 60fps (or whatever the refresh rate is) if the game is over.  Once
-        // we do this, we won't get here again unless something explicitly asks the system to
-        // render a new frame.  (As a handy side-effect, this prevents the paddle from actively
-        // moving after the game is over.)
-        //
-        // It's a bit clunky to be polling for this, but it needs to be controlled by BrickBreakerState,
-        // and that class doesn't otherwise need to call back into us or have access to the
-        // GLSurfaceView.
+        // Stop animating if the game is over  or if there is a ball lost.  
         if (!BrickBreakerState.isAnimating()) {
-        	/*if (BrickBreakerState.getGamePlayState() == 1) {
-        		 Log.d(TAG, "Game over, stopping animation");
-                 mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-			}
-        	else{
-                Log.d(TAG, "Game over, stopping animation");
-                mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        	}*/
         	 Log.d(TAG, "Game over, stopping animation");
              mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         }
@@ -251,19 +225,14 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
      * @param syncObj Object to notify when we have finished saving state.
      */
     public void onViewPause(ConditionVariable syncObj) {
-        /*
-         * We don't explicitly pause the game action, because the main game loop is being driven
-         * by the framework's calls to our onDrawFrame() callback.  If we were driving the updates
-         * ourselves we'd need to do something more.
-         */
-
+    	// Saves game state into static storage
         mBrickBreakerState.save();
 
         syncObj.open();
     }
 
     /**
-     * Updates state after the player touches the screen.  Call through queueEvent().
+     * Updates state after the player moves touch the screen.  Call through queueEvent().
      */
     public void actionMoveTouchEvent(float x, float y) {        
 
@@ -274,8 +243,11 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         mBrickBreakerState.movePaddle(arenaX);
     }
     
+    /**
+     * Restart game after the player touches the screen
+     */
     public void actionDownTouchEvent(){
-    	Log.v(TAG, "reanudando o jogodd"+ String.valueOf(mBrickBreakerState.getGamePlayState()));
+    	//Log.v(TAG, "reanudando o jogodd"+ String.valueOf(mBrickBreakerState.getGamePlayState()));
         
         if (mBrickBreakerState.isGamePaused()) {
         	Log.v(TAG, "reanudando o jogo");

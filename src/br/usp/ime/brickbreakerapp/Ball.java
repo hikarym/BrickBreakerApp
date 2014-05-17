@@ -31,9 +31,6 @@ public class Ball extends TexturedAlignedRect {
             setTextureCoords(new Rect(0, 0, TEX_SIZE-1, TEX_SIZE-1));
         } else {
             setTexture(generateTestTexture(), TEX_SIZE, TEX_SIZE, DATA_FORMAT);
-            // Test texture is 64x64.  For best results, crank up the size of the "ball"
-            // over in GameState, and experiment with different arena background colors
-            // to see how things blend.
             setTextureCoords(new Rect(0, 0, TEX_SIZE, TEX_SIZE));
         }
     }
@@ -93,42 +90,8 @@ public class Ball extends TexturedAlignedRect {
      * @return A direct ByteBuffer with pre-multiplied RGBA data.
      */
     private ByteBuffer generateBallTexture() {
-        /*
-         * Most images used in games are generated with external tools and then loaded from
-         * image files.  This is an example of generating texture data directly.
-         *
-         * We "render" it into a byte[], then copy that into a direct byte buffer.  This
-         * requires one extra copy than we would need if we rendered directly into the ByteBuffer,
-         * but we can't assume that ByteBuffer.array() will work with direct byte buffers, and
-         * writing data with ByteBuffer.put(int, byte) is slow and annoying.
-         *
-         * We use GL_RGBA, which has four 8-bit normalized unsigned integer components (which
-         * is a fancy way to say, "the usual format for 32-bit color pixels").  We could
-         * get away with creating this as an alpha map and then use a shader to apply color,
-         * but that's not necessary and requires the shader work.
-         */
         byte[] buf = new byte[TEX_SIZE * TEX_SIZE * BYTES_PER_PIXEL];
-
-        /*
-         * We're drawing a filled circle with a radius of 31, which gives us a circle
-         * that fills a 63x63 area.  We're using a 64x64 texture, so have a choice to make:
-         *  (1) Assume the hardware can handle non-power-of-2 texture sizes.  This doesn't
-         *      always hold, so we don't want to do this.
-         *  (2) Leave the 64th row and column set to transparent black, and hope nobody notices
-         *      when things don't quite collide.  This is reasonably safe, given the size of
-         *      the ball and the speed of motion.
-         *  (3) "Stretch" the circle slightly when generating the data, doubling-up the center
-         *      row and column, to fill the circle to 64x64.  Should look fine.
-         *  (4) Adjust the texture coordinates so that the edges are at 0.984375 (63/64) instead
-         *      of 1.0.  This is generally the correct approach, but requires that we manually
-         *      specify the texture dimensions instead of just saying, "use this whole image".
-         *
-         * Going with #4.  Note the radius of 31 is arbitrary and has no bearing on how large
-         * the ball is on screen (this is a texture applied to a pair of triangles, not a bitmap
-         * of screen-sized pixels).  We want it to be small enough that it doesn't use up a
-         * ton of memory, but bug enough that, if the ball is drawn very large, the circle
-         * edges don't look chunky when we scale it up.
-         */
+        
         int left[] = new int[TEX_SIZE-1];
         int right[] = new int[TEX_SIZE-1];
         computeCircleEdges(TEX_SIZE/2 - 1, left, right);

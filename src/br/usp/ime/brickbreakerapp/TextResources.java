@@ -82,7 +82,7 @@ public class TextResources {
             for (int i = 0; i < 10; i++) {
                 // Just using Arabic numerals here.  No need to pull the string out of the resource.
                 mTextStrings[DIGIT_START + i] = String.valueOf((char)('0' + i));
-                mTextColors[DIGIT_START + i] = 0xe0e020;
+                mTextColors[DIGIT_START + i] = 0xe0e020;//e0e020 , d9db13
                 mTextShadows[DIGIT_START + i] = false;
             }
         }

@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="br.usp.ime.breakoutapp.MainActivity" >
+    tools:context="br.usp.ime.breakoutapp.MainActivity" 
+    android:background="@drawable/background_2">
 
     <!-- Start the game -->
     <Button

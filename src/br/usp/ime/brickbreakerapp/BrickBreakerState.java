@@ -59,8 +59,8 @@ public class BrickBreakerState {
     private static final float PADDLE_VERTICAL_PERC = 12 / 100.0f;
     private static final float PADDLE_HEIGHT_PERC = 3 / 100.0f; //1/100.0f
     private static final float PADDLE_WIDTH_PERC = 2 / 100.0f;
-    private static final int PADDLE_DEFAULT_WIDTH = 6;
-    private static final float BALL_WIDTH_PERC = 2.5f / 100.0f;
+    private static final int PADDLE_DEFAULT_WIDTH = 8; //6
+    private static final float BALL_WIDTH_PERC = 5.5f / 100.0f; //2.5f / 100.0f;
 
     private static final int NUM_BORDERS = 4;
     private static final int BOTTOM_BORDER = 0;
@@ -70,6 +70,12 @@ public class BrickBreakerState {
     private TexturedBasicAlignedRect mButtonRestart;
     private TexturedBasicAlignedRect mButtonMenu;
     private TexturedBasicAlignedRect mButtonQuit;
+    /*Images for textures*/
+    private String mBrickTextureImg = "drawable/brick_rock_b";
+    private String mBackgroundTextureImg = "drawable/background_6";
+    private String mPaddleTextureImg = "drawable/paddle";
+    private String mBallTextureImg = "drawable/ball_angry_red";
+    
 
     private Brick mBricks[] = new Brick[BRICK_COLUMNS * BRICK_ROWS];
     private int mLiveBrickCount;
@@ -219,19 +225,6 @@ public class BrickBreakerState {
      * Saves game state into static storage.
      */
     public void save() {
-        /*
-         * Our game state is distributed across many objects, e.g. each brick object knows
-         * whether or not it is alive.  We want to copy the interesting bits into an easily
-         * serializable object, so that we can preserve game state across app restarts.
-         *
-         * This is overkill for a silly breakout game -- we could just declare everything in
-         * BrickBreakerState "static" and it would work just as well (unless we wanted to preserve
-         * state when the app process is killed by the system).  It's a useful exercise though,
-         * and by avoiding statics we allow the GC to discard all the game state when the
-         * GameActivity goes away.
-         *
-         * We synchronize on the object because multiple threads can access it.
-         */
 
         synchronized (sSavedGame) {
             SavedGame save = sSavedGame;
@@ -398,7 +391,7 @@ public class BrickBreakerState {
          */
 
         mBackgroundImg = new TexturedBasicAlignedRect();
-        int id = context.getResources().getIdentifier("drawable/background", null, context.getPackageName());		
+        int id = context.getResources().getIdentifier(mBackgroundTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);        
         
@@ -426,7 +419,7 @@ public class BrickBreakerState {
      */
     void allocBricks(Context context) {
     	    	
-        int id = context.getResources().getIdentifier("drawable/brick_rock_b", null, context.getPackageName());		
+        int id = context.getResources().getIdentifier(mBrickTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
     	//------------------------
@@ -564,7 +557,7 @@ public class BrickBreakerState {
      */
     void allocPaddle(Context context) {
         TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
-        int id = context.getResources().getIdentifier("drawable/paddle", null, context.getPackageName());		
+        int id = context.getResources().getIdentifier(mPaddleTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
 		
@@ -613,7 +606,7 @@ public class BrickBreakerState {
      */
     void allocBall(Context context) {
         Ball ball = new Ball();
-        int id = context.getResources().getIdentifier("drawable/ball", null, context.getPackageName());		
+        int id = context.getResources().getIdentifier(mBallTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
 		
@@ -757,7 +750,7 @@ public class BrickBreakerState {
      * If appropriate, draw a message in the middle of the screen.
      */
     void drawMessages() {
-    	Log.v(TAG,"MESSAGE NUM "+ String.valueOf(mGameStatusMessageNum) + "state: "+String.valueOf(mGamePlayState));
+    	//Log.v(TAG,"MESSAGE NUM "+ String.valueOf(mGameStatusMessageNum) + "state: "+String.valueOf(mGamePlayState));
         if ((mGameStatusMessageNum != TextResources.NO_MESSAGE)) {
         	//mGameStatusMessageNum = 
             TexturedAlignedRect msgBox = mGameStatusMessages;
@@ -768,40 +761,8 @@ public class BrickBreakerState {
 
             float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
             msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
-
-            //Log.d(TAG, "drawing " + mGameStatusMessageNum);
             msgBox.draw();
-        }   	
-        
-    	/*if (mGameStatusMessageNum != TextResources.NO_MESSAGE) {
-        	if(mGameStatusMessageNum != TextResources.READY){
-	            TexturedAlignedRect msgBox = mGameStatusMessages;
-	
-	            Rect boundsRect = mTextRes.getTextureRect(mGameStatusMessageNum);
-	            msgBox.setTextureCoords(boundsRect);
-	
-	            float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
-	            msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
-	
-	            //Log.d(TAG, "drawing " + mGameStatusMessageNum);
-	            msgBox.draw();
-        	}
-        }        
-        else {    
-        	if (mGamePlayState == GAME_INITIALIZING) {
-        	TexturedAlignedRect msgBox = mGameStatusMessages;
-        	
-
-            Rect boundsRect = mTextRes.getTextureRect(TextResources.READY);
-            msgBox.setTextureCoords(boundsRect);
-            
-            float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
-            msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
-
-            //Log.d(TAG, "drawing " + mGameStatusMessageNum);
-            msgBox.draw();
-        	}
-        }*/
+        } 
     }
 
     /**
