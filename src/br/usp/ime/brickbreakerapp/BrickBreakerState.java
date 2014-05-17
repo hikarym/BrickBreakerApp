@@ -72,7 +72,7 @@ public class BrickBreakerState {
     private TexturedBasicAlignedRect mButtonQuit;
     /*Images for textures*/
     private String mBrickTextureImg = "drawable/brick_rock_b";
-    private String mBackgroundTextureImg = "drawable/background_6";
+    private String mBackgroundTextureImg = "drawable/background_3";
     private String mPaddleTextureImg = "drawable/paddle";
     private String mBallTextureImg = "drawable/ball_angry_red";
     
