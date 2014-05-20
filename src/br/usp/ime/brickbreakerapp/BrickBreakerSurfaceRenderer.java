@@ -83,6 +83,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocBall(mContext);
         BrickBreakerState.allocScore();
         BrickBreakerState.allocMessages();
+        //BrickBreakerState.allocButtons(mContext);
         BrickBreakerState.allocDebugStuff();
 
         // Restore game state from static storage.
@@ -160,7 +161,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
 
         //if (started){     		
-        	Log.v(TAG, "CREIANDO NUEVO FRAME");
+        	Log.v(TAG, "CRIANDO NoVO FRAME");
         	BrickBreakerState.calculateNextFrame();
         //}
 
@@ -196,12 +197,20 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         TexturedAlignedRect.prepareToDraw();
         BrickBreakerState.drawScore();
         BrickBreakerState.drawBall();
-        BrickBreakerState.drawMessages();
-        
+        BrickBreakerState.drawMessages();        
         TexturedAlignedRect.finishedDrawing();
+        
+        // Enable alpha blending.
+        GLES20.glEnable(GLES20.GL_BLEND);
+        // Blend based on the fragment's alpha value.
+        GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        
+        /*TexturedBasicAlignedRect.prepareToDraw();
+        BrickBreakerState.drawButtons();
+        TexturedBasicAlignedRect.finishedDrawing();*/
 
-        if (!started) 
-    		return;
+        //if (!started) 
+    	//	return;
         
         BrickBreakerState.drawDebugStuff();
 
@@ -212,7 +221,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         // Stop animating if the game is over  or if there is a ball lost.  
         if (!BrickBreakerState.isAnimating()) {
-        	 Log.d(TAG, "Game over, stopping animation");
+        	 Log.d(TAG, "Game over or before start game, stopping animation");
              mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         }
         

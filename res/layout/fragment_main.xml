@@ -1,69 +1,122 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="br.usp.ime.breakoutapp.MainActivity" 
-    android:background="@drawable/background_2">
+    android:background="@drawable/bkg_space_squares"
+    android:orientation="vertical"
+    tools:context="br.usp.ime.breakoutapp.MainActivity" >
+    
+    <!-- android:background="@drawable/background_2" -->
 
-    <!-- Start the game -->
-    <Button
-        android:id="@+id/btPlay"
-        android:layout_width="100dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp"
-        android:text="@string/button_play" 
-        android:onClick="onClickPlay"/>
-    
-    <!-- Show the levels of game -->
-    <Button
-        android:id="@+id/btLevels"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btPlay"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="27dp"
-        android:text="@string/button_levels" 
-        android:onClick="onClickLevels"/>
-    
-    <!-- Show a screen with settings(sound, vibration, reset score) -->
-     <Button
-        android:id="@+id/btOption"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"        
-        android:layout_below="@+id/btLevels"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:text="@string/button_option" 
-        android:onClick="onClickOption"/>
-    
-    <!-- Show a ranking -->
-    <Button
-        android:id="@+id/btRanking"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"        
-        android:layout_below="@+id/btOption"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="29dp"
-        android:text="@string/button_ranking" 
-        android:onClick="onClickRanking"/>
+        android:layout_weight="1"
+    	android:layout_gravity="center"
+    	android:gravity="center"
+        android:orientation="vertical" >
+	    
+		<TextView
+			android:id="@+id/textViewTitleOption"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+    		android:paddingTop="@dimen/activity_vertical_margin"
+			android:text="@string/app_name"
+    		android:gravity="center"
+			android:textSize="50sp"
+	        android:textStyle="bold|italic"
+			android:textColor="@color/white" />
+    	
+	</LinearLayout>
 	
-    <!-- Exit of game -->
-    <Button
-        android:id="@+id/btExit"
-        android:layout_width="100dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btRanking"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/button_exit" 
-        android:onClick="onClickExit"/>
-    
-
-</RelativeLayout>
+        android:layout_weight="2"
+    	android:layout_gravity="center"
+    	android:gravity="center"
+        android:orientation="vertical" >
+	    
+	    <!-- Start the game -->
+	    <TextView
+	        android:id="@+id/btPlay"
+	        android:layout_width="150dp"
+	        android:layout_height="60dp"
+	        android:gravity="center"
+	        android:text="@string/button_play"
+	     	android:textColor="@color/white"
+	        android:textSize="32sp"
+	        android:textStyle="bold"
+	        android:typeface="monospace"
+	        android:textScaleX="1.2"
+	        android:clickable="true"
+	        android:onClick="onClickPlay" />
+	    
+	    <!-- Show the levels of game -->
+	    <TextView
+	        android:id="@+id/btLevels"
+	        android:layout_width="130dp"
+	        android:layout_height="50dp"
+	        android:gravity="center"
+	        android:text="@string/button_levels"
+	     	android:textColor="@color/white"
+	        android:textSize="22sp"
+	        android:textStyle="bold"
+	        android:typeface="monospace"
+	        android:textScaleX="1.2"
+	        android:clickable="true"
+	        android:onClick="onClickLevels" />
+	    
+	    <!-- Show a screen with settings(sound, vibration, reset score) -->
+	     <TextView
+	        android:id="@+id/btOption"
+	        android:layout_width="130dp"
+	        android:layout_height="50dp"
+	        android:gravity="center"
+	        android:text="@string/button_option"
+	     	android:textColor="@color/white"
+	        android:textSize="22sp"
+	        android:textStyle="bold"
+	        android:typeface="monospace"
+	        android:textScaleX="1.2"
+	        android:clickable="true"
+	        android:onClick="onClickOption" />
+	    
+	    <!-- Show a ranking -->
+	    <TextView
+	        android:id="@+id/btRanking"
+	        android:layout_width="150dp"
+	        android:layout_height="50dp"
+	        android:gravity="center"
+	        android:text="@string/button_ranking"
+	     	android:textColor="@color/white"
+	        android:textSize="22sp"
+	        android:textStyle="bold"
+	        android:typeface="monospace"
+	        android:textScaleX="1.2"
+	        android:clickable="true"
+	        android:onClick="onClickRanking" />
+		
+	    <!-- Exit of game -->
+	    <TextView
+	        android:id="@+id/btExit"
+	        android:layout_width="90dp"
+	        android:layout_height="50dp"
+	        android:gravity="center"
+	        android:text="@string/button_exit"
+	     	android:textColor="@color/white"
+	        android:textSize="22sp"
+	        android:textStyle="bold"
+	        android:typeface="monospace"
+	        android:textScaleX="1.2"
+	        android:clickable="true"
+	        android:onClick="onClickExit" />
+	    
+	</LinearLayout>
+</LinearLayout>

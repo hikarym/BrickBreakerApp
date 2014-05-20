@@ -15,7 +15,6 @@
     <string name="msg_game_over">Game Over</string>
     <string name="msg_winner">Winner!</string>
     <string name="difficulty">Difficulty: </string>
-    <string name="ok">OK</string>
 
     <string-array name="difficulty_level_names">
         <item>Easy</item>
@@ -24,16 +23,31 @@
         <item>Absurd</item>
     </string-array>
 
+    <string name="title_activity_breakout">BreakoutActivity</string>
     <string name="button_play">Start</string>
     <string name="button_levels">Levels</string>
     <string name="button_option">Option</string>
     <string name="button_ranking">Ranking</string>
     <string name="button_exit">Exit</string>
-    <string name="title_activity_breakout">BreakoutActivity</string>
-    <string name="button_reset_score">Reset Score</string>
+    
+    <string name="button_reset_score">Reset Scores</string>
     <string name="button_change_user">User: Master</string>
     <string name="check_sound">Sound Effects</string>
     <string name="check_vibration">Vibration</string>
     <string name="button_back">Back</string>
-
+    
+    <string name="title_option">Options</string>
+    
+    <string name="title_ranking">Top Rankings</string>
+    <string name="title_no_ranking">No Rankings Found!</string>
+    <string name="msg_no_scores">There are no recorded scores!</string>
+    
+    <string name="title_warning">WARNING!</string>
+    <string name="msg_reset_scores">This will delete all scores and users!</string>
+	
+    <string name="ok">OK</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_cancel">Cancel</string>
+    
+    <string name="default_user">Master</string>
 </resources>

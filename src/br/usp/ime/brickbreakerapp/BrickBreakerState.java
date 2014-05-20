@@ -8,16 +8,6 @@ import android.util.Log;
 
 /**
  * This is the primary class for the game itself.
- * <p>
- * This class is intended to be isolated from the Android app UI.  It does not hold references
- * to framework objects like the Activity or View.  This is a useful property architecturally,
- * but more importantly it removes the possibility of calling non-thread-safe Activity or
- * View methods from the wrong thread.
- * <p>
- * The class is closely associated with BrickBreakerSurfaceRenderer, and code here generally runs on the
- * Renderer thread.  The only exceptions to the rule are the methods used to configure the game,
- * which may only be used before the Renderer thread starts, and the saved game manipulation,
- * which is synchronized.
  */
 public class BrickBreakerState {
     private static final String TAG = MainActivity.TAG;
@@ -75,14 +65,28 @@ public class BrickBreakerState {
     private String mBackgroundTextureImg = "drawable/background_3";
     private String mPaddleTextureImg = "drawable/paddle";
     private String mBallTextureImg = "drawable/ball_angry_red";
+    private String mButtonQuitTextureImg = "drawable/exit";
+    private String mButtonNextTextureImg = "drawable/next";
+    private String mButtonBackTextureImg = "drawable/back";
+    private String mButtonSettingsTextureImg = "drawable/settings";
+    private String mButtonReloadLevelTextureImg = "drawable/reload";
     
-
+    // Button size
+    private static final int BUTTON_DEFAULT_WIDTH = 8;
+    private static final int BUTTON_DEFAULT_HEIGHT = 8;
+    
     private Brick mBricks[] = new Brick[BRICK_COLUMNS * BRICK_ROWS];
     private int mLiveBrickCount;
     
     private static final int DEFAULT_PADDLE_WIDTH =
             (int) (ARENA_WIDTH * PADDLE_WIDTH_PERC * PADDLE_DEFAULT_WIDTH);
     private TexturedBasicAlignedRect mPaddle;
+    //Buttons 
+    private TexturedBasicAlignedRect mQuit;
+    private TexturedBasicAlignedRect mNext;
+    private TexturedBasicAlignedRect mBack;
+    private TexturedBasicAlignedRect mSettings;
+    private TexturedBasicAlignedRect mReload;
     
     private static final int DEFAULT_BALL_DIAMETER = (int) (ARENA_WIDTH * BALL_WIDTH_PERC);
     private Ball mBall;
@@ -350,12 +354,6 @@ public class BrickBreakerState {
 
     /**
      * Gets the score from a completed game.
-     * <p>
-     * If we returned the score of a game in progress, we could get excessively high results for
-     * games where points may be deducted (e.g. never-lose-ball mode).
-     * <p>
-     * May be called from a non-Renderer thread.
-     *
      * @return The score, or -1 if the current save state doesn't hold a completed game.
      */
     public static int getFinalScore() {
@@ -752,18 +750,65 @@ public class BrickBreakerState {
     void drawMessages() {
     	//Log.v(TAG,"MESSAGE NUM "+ String.valueOf(mGameStatusMessageNum) + "state: "+String.valueOf(mGamePlayState));
         if ((mGameStatusMessageNum != TextResources.NO_MESSAGE)) {
-        	//mGameStatusMessageNum = 
+        	//Show messages before start the game, after losing, after winning.  
             TexturedAlignedRect msgBox = mGameStatusMessages;
 
             Rect boundsRect = mTextRes.getTextureRect(mGameStatusMessageNum);
             msgBox.setTextureCoords(boundsRect);
-            
 
             float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / boundsRect.width();
             msgBox.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
-            msgBox.draw();
+            msgBox.draw();            
+
         } 
     }
+    
+    /**
+     * Allocates Buttons 
+     */
+    /**
+     * Creates the buttons.
+     */
+    void allocButtons(Context context) {
+        
+        // Show buttons exit, next level, restart level
+        switch (mGameStatusMessageNum) {
+		case TextResources.GAME_OVER:
+			TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
+			int id = context.getResources().getIdentifier(mButtonQuitTextureImg, null, context.getPackageName());		
+			// Temporary create a bitmap
+			Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+			
+			float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / BUTTON_DEFAULT_WIDTH;
+	        rect.setScale(BUTTON_DEFAULT_WIDTH * scale,  BUTTON_DEFAULT_HEIGHT * scale);
+	        
+	        rect.setColor(1.0f, 1.0f, 1.0f);        // note color is cycled during pauses
+	        
+	        float pos_x = ARENA_WIDTH / 2  + mTextRes.getTextureHeight();
+	        float pos_y = ARENA_HEIGHT / 2  + mTextRes.getTextureHeight();
+	        
+	        rect.setPosition(pos_x, pos_y);
+	        //Log.d(TAG, "button x=" + String.valueof(pos_x));
+	        rect.setTexture(bmp);
+
+	        mQuit = rect;
+			break;
+		case TextResources.WINNER:
+			
+			break;
+		default:
+			break;
+		}
+        
+    }
+    
+    /**
+     * Draw the buttons
+     */
+    void drawButtons(){
+    	mQuit.draw();
+    }
+    
 
     /**
      * Allocates shapes that we use for "visual debugging".
