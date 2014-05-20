@@ -206,7 +206,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_BLEND);
         // Blend based on the fragment's alpha value.
         GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        
+
         TexturedBasicAlignedRect.prepareToDraw();
         BrickBreakerState.drawButtons();
         TexturedBasicAlignedRect.finishedDrawing();

@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +30,7 @@ public class LevelsFragment extends Fragment {
 	private GridView mGridView;
 	
 	public LevelsFragment() {
-		nLevels = 10;
+		nLevels = 20;
 		
 		levelList = new ArrayList<String>();
 		
@@ -56,7 +59,8 @@ public class LevelsFragment extends Fragment {
 		mLevelsView = inflater.inflate(
 				R.layout.fragment_levels, container, false);
 		
-		mGridView = (GridView) mLevelsView.findViewById(R.id.gridview);
+		mGridView = (GridView) mLevelsView.findViewById(R.id.gridviewLevels);
+		mGridView.setGravity(Gravity.CENTER);
 		
 		return mLevelsView;
 	}
@@ -100,8 +104,36 @@ public class LevelsFragment extends Fragment {
 							break;
 						case 9:
 							break;
+						case 10:
+							break;
+						case 11:
+							break;
+						case 12:
+							break;
+						case 13:
+							break;
+						case 14:
+							break;
+						case 15:
+							break;
+						case 16:
+							break;
+						case 17:
+							break;
+						case 18:
+							break;
+						case 19:
+							break;
 						default:
-							Toast.makeText(getActivity(), "Level not found!", Toast.LENGTH_SHORT).show();
+							AlertDialog.Builder builder = new AlertDialog.Builder(
+									new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
+							
+							builder.setTitle("Error on load!");
+							builder.setIcon(android.R.drawable.ic_dialog_alert);
+							
+							builder.setMessage("Level " + (position + 1) + " not found!");
+							builder.setPositiveButton(R.string.ok, null);
+							builder.show();
 							
 							break;
 					}

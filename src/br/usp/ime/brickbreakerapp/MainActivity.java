@@ -1,17 +1,26 @@
 package br.usp.ime.brickbreakerapp;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
+import br.usp.ime.brickbreakerapp.sqlite.BbSQliteHelper;
+import br.usp.ime.brickbreakerapp.sqlite.BbScore;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +29,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public static final String TAG = "breakout";
+	
+	// SQLiteHelper to handle the app BD
+	public static BbSQliteHelper mAppDB;
 	
 	private Fragment mFragment = null;
 	private FragmentManager mFragmentManager;
@@ -35,7 +48,9 @@ public class MainActivity extends Activity {
     private static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
     public static final String HIGH_SCORE_KEY = "high-score";
     // Highest score seen so far.
-    private int mHighScore;
+    private int mHighScore = 0;
+    // Highest score seen so far.
+    private String mUser = null;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -44,31 +59,42 @@ public class MainActivity extends Activity {
         //Show the menu
         setContentView(R.layout.activity_main);
         
+        mAppDB = new BbSQliteHelper(this);
+        
         //Show frament_main layout
         mFragment = (MainFragment) new MainFragment();
     	mFragmentManager = getFragmentManager();
     	
         mFragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
-                .addToBackStack(null)
                 .commit();
     }
-
 
     @Override
     protected void onResume() {
     	Log.d(TAG, "MainActivity.onResume");
         super.onResume();
+        
         restorePreferences();
         updateControls();
     }
-
 
     @Override
     protected void onPause() {
     	Log.d(TAG, "MainActivity.onPause");
         super.onPause();
+        
         savePreferences();
+        //mAppDB.close();
+    }
+
+    @Override
+    protected void onDestroy() {
+    	Log.d(TAG, "MainActivity.onDestroy");
+        super.onDestroy();
+
+        savePreferences();
+        mAppDB.close();
     }
     
 /***********************************Fragment Main's Buttons***************************************************/
@@ -81,36 +107,71 @@ public class MainActivity extends Activity {
 	
 	//----Show the levels of game
 	public void onClickLevels(View control){
+		Log.d(TAG, "MainActivity.onClickLevels");
+		
     	mFragment = (LevelsFragment) new LevelsFragment();
 		
         mFragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
                 .addToBackStack(null)
                 .commit();
-        
-		Log.i(TAG, "onClickLevels");
 	}
 	
 	//----Show a screen with settings(sound, vibration, reset score) 
 	public void onClickOption(View control){
+		Log.d(TAG, "MainActivity.onClickOption");
+		
     	mFragment = (OptionFragment) new OptionFragment();
 		
         mFragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
                 .addToBackStack(null)
                 .commit();
-
-		Log.i(TAG, "onClickOption");
 	}
 	
 	//---Show a ranking
 	public void onClickRanking(View control){
+		Log.d(TAG, "MainActivity.onClickRanking");
 		
+		mHighScore = mAppDB.getHighScore();
+		
+		// If there are no recorded scores, show alert dialog
+		if (mHighScore == -1) {
+			mHighScore = 0;
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					new ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog));
+			
+			builder.setTitle(R.string.title_no_ranking);
+			builder.setIcon(android.R.drawable.ic_dialog_alert);
+			
+			//builder.setIcon(R.drawable.ic_dark_action_warning);
+			builder.setMessage(R.string.msg_no_scores);
+			builder.setCancelable(true);					// implies setCanceledOnTouchOutside
+			builder.setPositiveButton(R.string.ok, null);
+			builder.show();
+			
+			return;
+		}
+		
+		// Otherwise, show ranking table
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		Fragment prev = mFragmentManager.findFragmentByTag("dialog");
+		
+		if (prev != null)
+			ft.remove(prev);
+	    
+		ft.addToBackStack(null);
+		
+		// Create and show the dialog
+		DialogFragment newFragment = new RankingFragment();
+		newFragment.show(ft, "dialog");
 	}
 	
 	//---Exit the game
 	public void onClickExit(View control){
 		updateControls();
+		finish();
 	}
 	
 	/**
@@ -148,8 +209,42 @@ public class MainActivity extends Activity {
     }
 
 	//---Reset Score
-	public void onClickResetScore(View control) {
+	public void onClickResetScore(View control) {/*
+    	final BbSQliteHelper mAppDB;
+        mAppDB = new BbSQliteHelper(this);
+        
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				new ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog));
 		
+		builder.setTitle(R.string.title_warning);
+		builder.setIcon(android.R.drawable.ic_dialog_alert);
+		
+		builder.setMessage(R.string.msg_reset_scores);
+		builder.setCancelable(true);					// implies setCanceledOnTouchOutside
+		builder.setNegativeButton(R.string.action_cancel, null);
+		
+		builder.setPositiveButton(R.string.action_continue, new DialogInterface.OnClickListener() {
+			@Override
+            public void onClick(DialogInterface dialog, int id) {
+                // Reset scores
+        		mAppDB.dropDBTable();
+        		mAppDB.createDBTable();
+            }
+        });
+		
+		mAppDB.close();
+		*/
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		Fragment prev = mFragmentManager.findFragmentByTag("dialog");
+		
+		if (prev != null)
+			ft.remove(prev);
+	    
+		ft.addToBackStack(null);
+		
+		// Create and show the dialog
+		DialogFragment newFragment = OptionFragment.resetScoresFragment.newInstance(R.string.title_warning);
+		newFragment.show(ft, "resetScoresDialog");
 	}
 
 	//---Change Username
@@ -168,15 +263,16 @@ public class MainActivity extends Activity {
 
         Button resume = (Button) findViewById(R.id.button_resumeGame);
         resume.setEnabled(BrickBreakerActivity.canResumeFromSave());
-
+        
         CheckBox neverLoseBall = (CheckBox) findViewById(R.id.checkbox_neverLoseBall);
         neverLoseBall.setChecked(BrickBreakerActivity.getNeverLoseBall());
-
-        CheckBox soundEffectsEnabled = (CheckBox) findViewById(R.id.checkbox_soundEffectsEnabled);
+        
+        CheckBox soundEffectsEnabled = (CheckBox) OptionFragment.mOptionView.findViewById(R.id.checkSound);
         soundEffectsEnabled.setChecked(BrickBreakerActivity.getSoundEffectsEnabled());
-
+        
         TextView highScore = (TextView) findViewById(R.id.text_highScore);
-        highScore.setText(String.valueOf(mHighScore));*/
+        highScore.setText(String.valueOf(mHighScore));
+        */
     }
     
 
