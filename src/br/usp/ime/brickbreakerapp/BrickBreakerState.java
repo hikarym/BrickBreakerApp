@@ -1,6 +1,9 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -129,12 +132,12 @@ public class BrickBreakerState {
 	/*
 	 * Game play state.
 	 */
-	private static final int GAME_INITIALIZING = 0;
-	private static final int GAME_READY = 1;
-	private static final int GAME_PLAYING = 2;
-	private static final int GAME_WON = 3;
-	private static final int GAME_LOST = 4;
-	private static final int GAME_PAUSE = 5;
+	public static final int GAME_INITIALIZING = 0;
+	public static final int GAME_READY = 1;
+	public static final int GAME_PLAYING = 2;
+	public static final int GAME_WON = 3;
+	public static final int GAME_LOST = 4;
+	public static final int GAME_PAUSE = 5;
 	private int mGamePlayState;
 
 	private boolean mIsAnimating;
@@ -1715,5 +1718,61 @@ public class BrickBreakerState {
 
 	public boolean isGamePaused(){
 		return (mGamePlayState == GAME_PAUSE) ? true : false;
+	}	
+	
+	public void gameOptions(Context context, float arenaX, float arenaY){
+		float posXTouch = arenaX;
+		float posYTouch = ARENA_HEIGHT - arenaY;
+		
+		Log.v(TAG, "arenaX=" + (int) arenaX + " --> arenaY=" + (int) posYTouch);
+		
+		//
+		float minXQuitBu = mQuit.getXPosition() - mQuit.getXScale()/2;
+		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;
+		
+		float minYQuitBu = mQuit.getYPosition() - mQuit.getYScale()/2;
+		float maxYQuitBu = mQuit.getYPosition() + mQuit.getYScale()/2;
+		
+		float minXReloadBu = mReload.getXPosition() - mQuit.getXScale()/2;
+		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;
+		
+		float minYReloadBu = mReload.getYPosition() - mReload.getYScale()/2;
+		float maxYReloadBu = mReload.getYPosition() + mReload.getYScale()/2;
+		
+		float minXNextBu = mNextLevel.getXPosition() - mNextLevel.getXScale()/2;
+		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;
+		
+		float minYNextBu = mNextLevel.getYPosition() - mNextLevel.getYScale()/2;
+		float maxYNextBu = mNextLevel.getYPosition() + mNextLevel.getYScale()/2;
+		
+		if ((minXQuitBu <= posXTouch && posXTouch<= maxXQuitBu) && 
+				(minYQuitBu <= posYTouch && posYTouch<= maxYQuitBu)){
+			// Touch on quit button
+			Log.v(TAG, "Show the menu game");
+			 //Show frament_main layout
+			Intent myIntent = new Intent(context,MainActivity.class);			
+			context.startActivity(myIntent);			
+			
+		}	
+		else if ((minXReloadBu <= posXTouch && posXTouch<= maxXReloadBu) && 
+				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu)){
+			// Touch on Restart button
+			Log.v(TAG, "Restart the game");
+			 //Show frament_main layout
+			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
+			//configurating the parameters to start the same  level
+			context.startActivity(myIntent);
+			
+		}		
+		else if ((minXNextBu <= posXTouch && posXTouch<= maxXNextBu) && 
+				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu)) {
+			// Touch  on Next Button
+			Log.v(TAG, "Next level");
+			 //Show frament_main layout
+			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
+			//configurating the parameters for next level
+			context.startActivity(myIntent);
+			
+		}
 	}
 }
