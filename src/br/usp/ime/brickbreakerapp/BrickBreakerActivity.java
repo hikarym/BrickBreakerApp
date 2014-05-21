@@ -297,4 +297,8 @@ public class BrickBreakerActivity extends Activity {
             editor.commit();
         }
     }
+    
+    public void finishActivity(){
+    	finish();
+    }
 }

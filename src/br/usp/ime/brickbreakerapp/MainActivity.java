@@ -180,6 +180,7 @@ public class MainActivity extends Activity {
     private void startGame() {
     	Intent intent = new Intent(this, BrickBreakerActivity.class);
         startActivity(intent);
+        finish();
     }
     
 

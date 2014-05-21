@@ -270,11 +270,11 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         	mBrickBreakerState.RestartGame();
 			break;
 		case BrickBreakerState.GAME_LOST:			
-			mBrickBreakerState.gameOptions(mContext, arenaX, arenaY);
+			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
 			
 			break;
 		case BrickBreakerState.GAME_WON:
-			mBrickBreakerState.gameOptions(mContext, arenaX, arenaY);
+			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
 			break;		
 		default:
 			break;

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 /**
@@ -220,6 +221,7 @@ public class BrickBreakerState {
 		mScore = 0;
 		resetBall();
 		//mLiveBrickCount = 0;      // initialized by allocBricks
+		resetPaddle();
 	}
 
 	/**
@@ -230,6 +232,29 @@ public class BrickBreakerState {
 		mBall.setSpeed(mBallInitialSpeed);
 
 		mBall.setPosition(ARENA_WIDTH / 2.0f + 45, ARENA_HEIGHT * BRICK_BOTTOM_PERC - 100);
+	}
+	
+	/**
+	 * Moves the paddle to its start position.
+	 */
+	private void resetPaddle(){
+		mPaddle.setPosition(ARENA_WIDTH / 2.0f, ARENA_HEIGHT * PADDLE_VERTICAL_PERC);
+		//rect.setPosition();
+	}
+	
+	/**
+	 * Reset score
+	 */
+	private void resetScore(){
+		//mScore
+		//mScoreDigits.
+	}
+	
+	/**
+	 * Reset the bricks distribution
+	 */
+	private void resetBricks(){
+		
 	}
 
 	/**
@@ -1720,7 +1745,7 @@ public class BrickBreakerState {
 		return (mGamePlayState == GAME_PAUSE) ? true : false;
 	}	
 	
-	public void gameOptions(Context context, float arenaX, float arenaY){
+	public void gameOptions(BrickBreakerSurfaceView surfaceView, Context context, float arenaX, float arenaY){
 		float posXTouch = arenaX;
 		float posYTouch = ARENA_HEIGHT - arenaY;
 		
@@ -1751,27 +1776,48 @@ public class BrickBreakerState {
 			Log.v(TAG, "Show the menu game");
 			 //Show frament_main layout
 			Intent myIntent = new Intent(context,MainActivity.class);			
-			context.startActivity(myIntent);			
+			context.startActivity(myIntent);	
+			return;
 			
 		}	
 		else if ((minXReloadBu <= posXTouch && posXTouch<= maxXReloadBu) && 
 				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu)){
 			// Touch on Restart button
 			Log.v(TAG, "Restart the game");
-			 //Show frament_main layout
+			//BrickBreakerActivity.invalidateSavedGame();
+			reset();
+			TexturedBasicAlignedRect.prepareToDraw();
+			allocBricks(context);
+	        //drawBricks();
+	        TexturedBasicAlignedRect.finishedDrawing();
+	        TexturedAlignedRect.prepareToDraw();
+	        allocScore();
+	        //drawScore();      
+	        TexturedAlignedRect.finishedDrawing();
+        	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        	
+			//Show frament_main layout
 			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
-			//configurating the parameters to start the same  level
+			//configuring the parameters to start the same  level
 			context.startActivity(myIntent);
+			
 			
 		}		
 		else if ((minXNextBu <= posXTouch && posXTouch<= maxXNextBu) && 
 				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu)) {
 			// Touch  on Next Button
 			Log.v(TAG, "Next level");
+			//restore 
+			BrickBreakerActivity.invalidateSavedGame();
+			reset();
+        	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        	RestartGame();
 			 //Show frament_main layout
-			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
+			Intent myIntent = new Intent(context, BrickBreakerActivity.class);
 			//configurating the parameters for next level
 			context.startActivity(myIntent);
+			
+	        
 			
 		}
 	}
