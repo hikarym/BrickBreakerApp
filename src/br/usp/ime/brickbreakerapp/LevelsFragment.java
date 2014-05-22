@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -29,13 +30,23 @@ public class LevelsFragment extends Fragment {
 	private View mLevelsView;
 	private GridView mGridView;
 	
+	Integer[] imageIDs = {
+            R.drawable.background_3,
+            R.drawable.background_4,
+            R.drawable.background_5,
+            R.drawable.background_6,
+            R.drawable.background_7,
+            R.drawable.background_8
+    };
+	
 	public LevelsFragment() {
-		nLevels = 20;
+		nLevels = 6;
 		
 		levelList = new ArrayList<String>();
 		
 		for(int i = 1; i <= nLevels; i++)
 			levelList.add("Level " + i);
+		
 	}
 	
 	@Override
@@ -70,10 +81,12 @@ public class LevelsFragment extends Fragment {
 		Log.d(TAG, "onStart");
 		super.onStart();
 		
-		ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
-				getActivity(), android.R.layout.simple_list_item_1, levelList);
+		//ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
+			//	getActivity(), android.R.layout.simple_list_item_1, levelList);
 		
-		mGridView.setAdapter(levelAdapter);
+		
+		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
+				imageIDs));
 		
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -98,32 +111,7 @@ public class LevelsFragment extends Fragment {
 							break;
 						case 6:
 							break;
-						case 7:
-							break;
-						case 8:
-							break;
-						case 9:
-							break;
-						case 10:
-							break;
-						case 11:
-							break;
-						case 12:
-							break;
-						case 13:
-							break;
-						case 14:
-							break;
-						case 15:
-							break;
-						case 16:
-							break;
-						case 17:
-							break;
-						case 18:
-							break;
-						case 19:
-							break;
+						
 						default:
 							AlertDialog.Builder builder = new AlertDialog.Builder(
 									new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
@@ -146,4 +134,11 @@ public class LevelsFragment extends Fragment {
 		Log.d(TAG, "onDestroyView");
 		super.onDestroyView();
 	}
+	
+	private static class Level {
+		public String mLiveBricks;
+		public float background;
+
+	}
+	
 }
