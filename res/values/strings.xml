@@ -23,7 +23,9 @@
         <item>Absurd</item>
     </string-array>
 
+    
     <string name="title_activity_breakout">BreakoutActivity</string>
+    
     <string name="button_play">Start</string>
     <string name="button_levels">Levels</string>
     <string name="button_option">Option</string>
@@ -38,16 +40,17 @@
     
     <string name="title_option">Options</string>
     
-    <string name="title_ranking">Top Rankings</string>
+    <string name="title_ranking">Rankings</string>
     <string name="title_no_ranking">No Rankings Found!</string>
     <string name="msg_no_scores">There are no recorded scores!</string>
     
-    <string name="title_warning">WARNING!</string>
-    <string name="msg_reset_scores">This will delete all scores and users!</string>
+    <string name="msg_reset_scores">Do you want to reset all scores?</string>
+    <string name="msg_exit">Do you want to exit?</string>
 	
-    <string name="ok">OK</string>
-    <string name="action_continue">Continue</string>
-    <string name="action_cancel">Cancel</string>
+    <string name="title_change_username">Enter User Name:</string>
     
-    <string name="default_user">Master</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    
 </resources>

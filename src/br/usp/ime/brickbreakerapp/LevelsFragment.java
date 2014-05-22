@@ -17,20 +17,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LevelsFragment extends Fragment {
-	public static final String TAG = "LevelsFragment";
+	public static final String TAG = MainActivity.TAG;
 
-	private int nLevels;
+	private static int nLevels = 5;
 	private List<String> levelList;
 	
 	private View mLevelsView;
 	private GridView mGridView;
 	
-	public LevelsFragment() {
-		nLevels = 20;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "LevelsFragment.onCreate");
+		
+		super.onCreate(savedInstanceState);
 		
 		levelList = new ArrayList<String>();
 		
@@ -39,22 +45,10 @@ public class LevelsFragment extends Fragment {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
-		super.onCreate(savedInstanceState);
-	}
-	
-	@Override
-	public void onAttach(Activity activity) {
-		Log.d(TAG, "onAttach");
-		super.onAttach(activity);
-	}
-	
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "onCreateView");
+		Log.d(TAG, "LevelsFragment.onCreateView");
 		
 		mLevelsView = inflater.inflate(
 				R.layout.fragment_levels, container, false);
@@ -62,13 +56,22 @@ public class LevelsFragment extends Fragment {
 		mGridView = (GridView) mLevelsView.findViewById(R.id.gridviewLevels);
 		mGridView.setGravity(Gravity.CENTER);
 		
+		setUpGridView();
+		
 		return mLevelsView;
 	}
 	
 	@Override
-	public void onStart() {
-		Log.d(TAG, "onStart");
-		super.onStart();
+	public void onResume() {
+		Log.d(TAG, "OptionFragment.onResume");
+		
+		super.onResume();
+		
+		updateControls();
+	}
+	
+	private void setUpGridView() {
+		Log.d(TAG, "LevelsFragment.setUpGridView");
 		
 		ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
 				getActivity(), android.R.layout.simple_list_item_1, levelList);
@@ -141,9 +144,16 @@ public class LevelsFragment extends Fragment {
 		});
 	}
 	
-	@Override
-	public void onDestroyView() {
-		Log.d(TAG, "onDestroyView");
-		super.onDestroyView();
+	//---Sets the state of the UI controls to match our internal state
+	private void updateControls() {
+		Log.d(TAG, "LevelsFragment.updateControls");
+		
+		boolean isSoundEnabled = MainActivity.getBooPref(
+				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+		
+		Button btBackLevels = (Button) mLevelsView.findViewById(R.id.btBackLevels);
+		btBackLevels.setSoundEffectsEnabled(isSoundEnabled);
+		
+		mGridView.setSoundEffectsEnabled(isSoundEnabled);
 	}
 }
