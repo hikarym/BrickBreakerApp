@@ -138,14 +138,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void reloadFragment(Fragment fragment, int fragID) {
-		FragmentTransaction ft = mFragmentManager.beginTransaction();
-		Fragment prev = mFragmentManager.findFragmentById(fragID);
+		mFragmentManager.popBackStack();
 		
-		if (prev != null)
-			ft.remove(prev);
-		
-		ft.replace(R.id.container, fragment)
-			.commit();
+		displayAndAddBackStackFragment(fragment);
 	}
 	
 	private void displayDialogFragment(DialogFragment newFragment) {
@@ -165,6 +160,8 @@ public class MainActivity extends Activity {
 		return mBbScoreDB;
 	}
 	
+	
+	
 /************************************* Handling saved preferences *********************************************/
 	
 	public static void putBoolPref(String key, boolean value) {
@@ -174,7 +171,7 @@ public class MainActivity extends Activity {
 		
 		editor.commit();
 	}
-
+	
 	public static boolean getBooPref(String key, boolean defaultValue) {
 		return mPrefs.getBoolean(key, defaultValue);
 	}
@@ -295,6 +292,7 @@ public class MainActivity extends Activity {
 		
 		Intent intent = new Intent(this, BrickBreakerActivity.class);
 		startActivity(intent);
+        //finish();---------------------------------------------------------------------------------------------
 	}
 	
 	
@@ -392,6 +390,7 @@ public class MainActivity extends Activity {
 						}
 				}).show();
 	}
+	
 	
 	public class RemoteControlReceiver extends BroadcastReceiver {
 		@Override

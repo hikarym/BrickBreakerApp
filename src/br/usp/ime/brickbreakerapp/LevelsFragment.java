@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -26,8 +27,16 @@ import android.widget.Toast;
 public class LevelsFragment extends Fragment {
 	public static final String TAG = MainActivity.TAG;
 
-	private static int nLevels = 5;
-	private List<String> levelList;
+	private static int MAX_LEVELS = 6;
+	private static List<String> mLevelList;
+	private static Integer[] mImageIDs = {
+			            R.drawable.background_3,
+			            R.drawable.background_4,
+			            R.drawable.background_5,
+			            R.drawable.background_6,
+			            R.drawable.background_7,
+			            R.drawable.background_8
+					};
 	
 	private View mLevelsView;
 	private GridView mGridView;
@@ -38,10 +47,11 @@ public class LevelsFragment extends Fragment {
 		
 		super.onCreate(savedInstanceState);
 		
-		levelList = new ArrayList<String>();
+		mLevelList = new ArrayList<String>();
 		
-		for(int i = 1; i <= nLevels; i++)
-			levelList.add("Level " + i);
+		for(int i = 1; i <= MAX_LEVELS; i++)
+			mLevelList.add("Level " + i);
+		
 	}
 	
 	@Override
@@ -73,10 +83,12 @@ public class LevelsFragment extends Fragment {
 	private void setUpGridView() {
 		Log.d(TAG, "LevelsFragment.setUpGridView");
 		
-		ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
-				getActivity(), android.R.layout.simple_list_item_1, levelList);
+		//ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
+			//	getActivity(), android.R.layout.simple_list_item_1, mLevelList);
 		
-		mGridView.setAdapter(levelAdapter);
+		
+		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
+				mImageIDs));
 		
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -101,32 +113,7 @@ public class LevelsFragment extends Fragment {
 							break;
 						case 6:
 							break;
-						case 7:
-							break;
-						case 8:
-							break;
-						case 9:
-							break;
-						case 10:
-							break;
-						case 11:
-							break;
-						case 12:
-							break;
-						case 13:
-							break;
-						case 14:
-							break;
-						case 15:
-							break;
-						case 16:
-							break;
-						case 17:
-							break;
-						case 18:
-							break;
-						case 19:
-							break;
+						
 						default:
 							AlertDialog.Builder builder = new AlertDialog.Builder(
 									new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
@@ -156,4 +143,11 @@ public class LevelsFragment extends Fragment {
 		
 		mGridView.setSoundEffectsEnabled(isSoundEnabled);
 	}
+	
+	private static class Level {
+		public String mLiveBricks;
+		public float background;
+
+	}
+	
 }

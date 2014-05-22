@@ -1,6 +1,7 @@
 package br.usp.ime.brickbreakerapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -83,7 +84,9 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocBall(mContext);
         BrickBreakerState.allocScore();
         BrickBreakerState.allocMessages();
-        //BrickBreakerState.allocButtons(mContext);
+        BrickBreakerState.allocButtonQuit(mContext);
+        BrickBreakerState.allocButtonReloadLevel(mContext);
+        BrickBreakerState.allocButtonNextLevel(mContext);
         BrickBreakerState.allocDebugStuff();
 
         // Restore game state from static storage.
@@ -204,10 +207,10 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_BLEND);
         // Blend based on the fragment's alpha value.
         GLES20.glBlendFunc(GLES20.GL_ONE /*GL_SRC_ALPHA*/, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        
-        /*TexturedBasicAlignedRect.prepareToDraw();
+
+        TexturedBasicAlignedRect.prepareToDraw();
         BrickBreakerState.drawButtons();
-        TexturedBasicAlignedRect.finishedDrawing();*/
+        TexturedBasicAlignedRect.finishedDrawing();
 
         //if (!started) 
     	//	return;
@@ -241,7 +244,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Updates state after the player moves touch the screen.  Call through queueEvent().
+     * Updates state after the player moves touch the screen. Call through queueEvent().
      */
     public void actionMoveTouchEvent(float x, float y) {        
 
@@ -255,15 +258,26 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Restart game after the player touches the screen
      */
-    public void actionDownTouchEvent(){
-    	//Log.v(TAG, "reanudando o jogodd"+ String.valueOf(mBrickBreakerState.getGamePlayState()));
-        
-        if (mBrickBreakerState.isGamePaused()) {
-        	Log.v(TAG, "reanudando o jogo");
+    public void actionDownTouchEvent(float x, float y){
+    	Log.v(TAG, "reanudando o jogo..."+ String.valueOf(mBrickBreakerState.getGamePlayState()));
+    	float arenaX, arenaY;
+    	arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
+		arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
+		
+        switch (mBrickBreakerState.getGamePlayState()) {
+		case BrickBreakerState.GAME_PAUSE:
         	mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         	mBrickBreakerState.RestartGame();
-        	
-        	
-		}
+			break;
+		case BrickBreakerState.GAME_LOST:			
+			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+			
+			break;
+		case BrickBreakerState.GAME_WON:
+			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+			break;		
+		default:
+			break;
+		}    	
     }
 }

@@ -399,5 +399,7 @@ public class BrickBreakerActivity extends Activity {
         }
     }
     
-
+    public void finishActivity(){
+    	finish();
+    }
 }

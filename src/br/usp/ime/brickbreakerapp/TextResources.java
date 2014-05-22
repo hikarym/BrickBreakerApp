@@ -187,29 +187,6 @@ public class TextResources {
             } else {
                 textPaint.setShadowLayer(0, 0, 0, 0);
             }
-
-            // Figure out how big the rendered text is.
-            //
-            // The actual text may not reach the full ascent/descent of the font, depending
-            // on which characters we draw.  The bounds rect indicates the tight bounds for
-            // the actual rendered text.
-            //
-            // It does not, however, account for the shadow layer, so we have to guess at what
-            // that should be.  If we adjust by too much we waste pixels (and possibly render
-            // a bit off-center), if we adjust by too little we'll have shadows from nearby
-            // text bleeding in.  We do what android.widget.TextView does and just sum up
-            // the parameters.
-            //
-            // What we do here is generally the wrong way to go about working with the single
-            // digits (0-9), because we're planning to string them together but aren't attempting
-            // to maintain a common baselines.  For example, we might be using a font with
-            // "quirky" numbers, where the 6 appeared lower on each line than the 7.  If we
-            // rendered the string "5678", it would look different than it would rendering each
-            // number separately and aligning them vertically based on the bounding box (which
-            // doesn't preserve blank space above and below the digit).  We could handle that
-            // (by adjusting the bounding to cover the full ascent/descent of the font, or
-            // saving off the offset of the bottom of the bounding box from the font's baseline),
-            // but that's not necessary with the relatively mundane font we're using.
             Rect boundsRect = new Rect();
             textPaint.getTextBounds(str, 0, str.length(), boundsRect);
             if (config.getTextShadow(i)) {
@@ -217,14 +194,6 @@ public class TextResources {
                 boundsRect.bottom += SHADOW_RADIUS + SHADOW_OFFSET;
             }
 
-            // Warn if this can't possibly fit in the texture.  We include what we can.  A
-            // more sophisticated system would reduce the font size (or increase the bitmap
-            // size) until all strings fit, but we're keeping it simple.
-            //
-            // Bear in mind that the size of text here has no bearing on the size it will be
-            // when displayed.  The rendered text is scaled up or down to fill the textured
-            // rect.  A font that is scaled up dramatically may look pixelated, so we don't
-            // want to be *too* far off.
             if (boundsRect.width() > TEXTURE_SIZE || boundsRect.height() > TEXTURE_SIZE) {
                 Log.w(TAG, "HEY: text string '" + str + "' is too big: " + boundsRect);
             }
@@ -245,19 +214,6 @@ public class TextResources {
             canvas.drawText(str, startX - boundsRect.left, startY - boundsRect.top, textPaint);
             boundsRect.offsetTo(startX, startY);
             mTextPositions[i] = boundsRect;
-
-            // This replaces the text with colored rectangles.  Helps see edges when debugging.
-            //canvas.drawRect(boundsRect, textPaint);
-
-            // With GL_LINEAR filtering, the texture rendering code will sample pixels outside
-            // the specified texture coordinates.  To avoid picking up fringes from neighboring
-            // elements, we leave a one-pixel transparent black "neutral zone".  We don't actually
-            // want to be blending transparent black in -- it would be better to clone the
-            // last row and column -- but it's not noticeable for this application.
-            //
-            // (Switching to GL_NEAREST also prevents the issue, but that makes the text ugly.
-            // We could also modify TexturedAlignedRect to shift the rect coordinates by +/- 0.5
-            // when converting to texture coordinates so we never sample beyond the edge.)
             lineHeight = Math.max(lineHeight, boundsRect.height() + 1);
             startX += boundsRect.width() + 1;
         }

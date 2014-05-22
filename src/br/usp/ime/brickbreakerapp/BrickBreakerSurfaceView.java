@@ -68,10 +68,10 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
          */
     	if (!mRenderer.getStarted())
     		mRenderer.setStarted(true);
-
-        switch (e.getAction()) {
+    	
+    	final float x, y;
+        switch (e.getAction()) {        
             case MotionEvent.ACTION_MOVE:
-                final float x, y;
                 x = e.getX();
                 y = e.getY();
                 //Log.d(TAG, "BrickBreakerSurfaceView onTouchEvent x=" + x + " y=" + y);
@@ -86,7 +86,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
     			Log.d(TAG, "BrickBreakerSurfaceView TOUCH DOWN");
     			queueEvent(new Runnable() {
     				@Override public void run() {
-    					mRenderer.actionDownTouchEvent();
+    					mRenderer.actionDownTouchEvent(x, y);
     				}});
     			break;
     		default:
