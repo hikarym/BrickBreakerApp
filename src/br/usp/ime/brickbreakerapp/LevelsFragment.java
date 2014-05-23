@@ -83,10 +83,6 @@ public class LevelsFragment extends Fragment {
 	private void setUpGridView() {
 		Log.d(MainActivity.TAG, TAG + ".setUpGridView");
 		
-		//ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
-			//	getActivity(), android.R.layout.simple_list_item_1, mLevelList);
-		
-		
 		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
 				mImageIDs));
 		
@@ -94,39 +90,23 @@ public class LevelsFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View v,
 				int position, long id) {
 					Intent intent = null;
-					
-					switch (position) {
-						case 0:
-							intent = new Intent(getActivity(), BrickBreakerActivity.class);
-					        startActivity(intent);
-					        
-							break;
-						case 1:
-							break;
-						case 2:
-							break;
-						case 3:
-							break;
-						case 4:
-							break;
-						case 5:
-							break;
-						case 6:
-							break;
-						
-						default:
-							AlertDialog.Builder builder = new AlertDialog.Builder(
-									new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
-							
-							builder.setTitle("Error on load!");
-							builder.setIcon(android.R.drawable.ic_dialog_alert);
-							
-							builder.setMessage("Level " + (position + 1) + " not found!");
-							builder.setPositiveButton(R.string.ok, null);
-							builder.show();
-							
-							break;
+					if(position>-1 && position < 7){
+						BrickBreakerActivity.setLevelIndex(position + 1);
+						intent = new Intent(getActivity(), BrickBreakerActivity.class);
+				        startActivity(intent);
 					}
+					else{
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
+						
+						builder.setTitle("Error on load!");
+						builder.setIcon(android.R.drawable.ic_dialog_alert);
+						
+						builder.setMessage("Level " + (position + 1) + " not found!");
+						builder.setPositiveButton(R.string.ok, null);
+						builder.show();
+					}
+					
 				}
 		});
 	}

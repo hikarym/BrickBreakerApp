@@ -54,13 +54,13 @@ public class MainActivity extends Activity {
 	/** Preference keys **/
 
 	// Shared preferences file.
-	public static final String PREFS_NAME = "Prefs";
-	
-	// Keys for values saved in our preferences file.
-	//public static final String DIFFICULTY_KEY = "difficulty";
-	//public static final String NEVER_LOSE_BALL_KEY = "never-lose-ball";
-	//public static final String LEVEL_KEY = "level";
-	public static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
+
+    public static final String PREFS_NAME = "PrefsAndScores";
+    // Keys for values saved in our preferences file.
+    //private static final String DIFFICULTY_KEY = "difficulty";
+    private static final String GAME_LEVEL_KEY = "game-level";
+    public static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
+    public static final String HIGH_SCORE_KEY = "high-score";
 	public static final String USERNAME_KEY = "username";
 	
 	public static final String DEFAULT_USERNAME = "Master";
@@ -237,7 +237,7 @@ public class MainActivity extends Activity {
 		//editor.putBoolean(NEVER_LOSE_BALL_KEY, BrickBreakerActivity.getNeverLoseBall());
 		editor.putBoolean(SOUND_EFFECTS_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
 		editor.putString(USERNAME_KEY, OptionFragment.getCurrentUsername());
-		//editor.putInt(LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
+		editor.putInt(GAME_LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
 		editor.commit();
 	}
 	
@@ -316,8 +316,7 @@ public class MainActivity extends Activity {
 	
 	//---Exit the game
 	public void onClickExit(View view) {
-		Log.d(TAG, "MainActivity.onClickExit");
-		
+		Log.d(TAG, "MainActivity.onClickExit");		
 		// This method calls onDestroy
 		finish();
 	}
@@ -342,6 +341,9 @@ public class MainActivity extends Activity {
 		mFragmentManager.popBackStackImmediate();
 	}
 	
+	/**
+	 * onClick handler for "sound effects enabled".
+	 */
 	//---onClick handler for "sound effects enabled"
 	public void onClickSoundEffectsEnabled(View view) {
 		Log.d(TAG, "MainActivity.onClickSoundEffectsEnabled");
@@ -395,6 +397,7 @@ public class MainActivity extends Activity {
 				return false;
 			}
 		});
+
 
         InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.showSoftInput(usernameField, InputMethodManager.SHOW_FORCED);
