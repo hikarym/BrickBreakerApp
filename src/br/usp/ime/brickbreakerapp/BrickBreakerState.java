@@ -217,41 +217,6 @@ public class BrickBreakerState {
 	}
 	
 	public BrickBreakerState() {
-		//Values default for brick States		
-		// NIVEL I: NORMAL BRICKS
-		//String[] configStr = new String[]{"111111111","111111111", "111111111", "111111111", "111111111", "111111111"};
-		// NIVEL II: Letter I
-		//String[] configStr = new String[]{"001111100","001111100", "000232000", "000232000", "001111100", "001111100"};
-		// NIVEL III: FACE
-		//String[] configStr = new String[]{"000111000", "111000111", "011111110", "111414111", "101111101", "000101000"};		
-		// NIVEL IV: CASTLE
-		//String[] configStr = new String[]{"021222120", "021222120", "021222120", "021111120", "222222222", "220222522"};
-		// NIVEL V : (SNAKE)
-		//String[] configStr = new String[]{"333033303", "202020202", "202020202", "202020202", "202020202", "303330333"};
-		// NIVEL VI : USP
-		//String[] configStr = new String[]{"222222222", "111333100", "101003100", "101333111", "101300101", "101333111"};
-		//buildBrickStatesConfig(configStr);
-	}
-	
-	
-	
-	/**
-	 * Build a brick configuration of the game
-	 * (Each brick must be a value between 0 e 4) 
-	 * @param configStr: array[001111100, 001111100, 000232000, 000232000, 001111100, 001111100])
-	 * (The array must be BRICK_ROWS elements and 
-	 * each string must be have BRICK_COLUMNS characters)
-	 * 
-	 */
-	private void buildBrickStatesConfig(String[] configStr){
-		
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			
-			for (int j = 0; j < BRICK_COLUMNS; j++) {				
-				mBrickStatesConfig[i][j] = Integer.parseInt(
-						String.valueOf(configStr[i].charAt(j)));
-			}
-		}
 		
 	}
 	
@@ -289,8 +254,6 @@ public class BrickBreakerState {
 	}
 	
 	private int genRandomNumber(int min, int max){
-		//int minR = 1;
-		//int maxR = BMPs.length;
 		return min + (int)(Math.random() * ((max - min) + 1));
 	}
 
@@ -516,17 +479,11 @@ public class BrickBreakerState {
 	 * Allocates the background texture to game
 	 */
 	void allocBackground(Context context) {
-		/*
-		 * The messages (e.g. "won" and "lost") are stored in the same texture, so the choice
-		 * of which text to show is determined by the texture coordinates stored in the
-		 * TexturedAlignedRect.  We can update those without causing an allocation, so there's
-		 * no need to allocate a separate drawable rect for every possible message.
-		 */
-
-		mBackgroundImg = new TexturedBasicAlignedRect();
-		int id = context.getResources().getIdentifier(mBackgroundTextureImg, null, context.getPackageName());		
+		
+		mBackgroundImg = new TexturedBasicAlignedRect();			
+		
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);        
+		Bitmap bmp = getBitmapTexture(context, mBackgroundTextureImg);        
 
 		TexturedBasicAlignedRect rectBack = new TexturedBasicAlignedRect();
 		//Log.d(TAG, "paddle y=" + rect.getYPosition());
@@ -554,9 +511,10 @@ public class BrickBreakerState {
 		return bmp;
 	}
 	/**
-	 * Allocates the bricks, setting their sizes and positions.  Sets mLiveBrickCount.
+	 * Allocates the bricks, setting their sizes and positions and textures.  Sets mLiveBrickCount.
 	 */
 	void allocBricks(Context context) {		
+		// Textures for different types of bricks
 		// 1. texture for normal brick
 		mBMPBrickTexture[0] = getBitmapTexture(context, mBrickNormalTextureImg);
 		
@@ -717,9 +675,8 @@ public class BrickBreakerState {
 	 */
 	void allocPaddle(Context context) {
 		TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
-		int id = context.getResources().getIdentifier(mPaddleTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		Bitmap bmp = getBitmapTexture(context, mPaddleTextureImg);      
 
 		rect.setScale(DEFAULT_PADDLE_WIDTH * mPaddleSizeMultiplier,
 				ARENA_HEIGHT * PADDLE_HEIGHT_PERC);
@@ -765,11 +722,9 @@ public class BrickBreakerState {
 	 * Creates the ball.
 	 */
 	void allocBall(Context context) {
-		Ball ball = new Ball();
-		int id = context.getResources().getIdentifier(mBallTextureImg, null, context.getPackageName());		
+		Ball ball = new Ball();				
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
-
+		Bitmap bmp = getBitmapTexture(context, mBallTextureImg);
 		int diameter = (int) (DEFAULT_BALL_DIAMETER * mBallSizeMultiplier);
 		// ovals don't work right -- collision detection requires a circle
 		ball.setScale(diameter, diameter);
