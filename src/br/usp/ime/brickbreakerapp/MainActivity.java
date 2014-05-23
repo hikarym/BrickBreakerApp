@@ -2,6 +2,7 @@ package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.sqlite.BbSQliteHelper;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -40,10 +41,14 @@ public class MainActivity extends Activity {
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
 
 	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
-
-	//private static OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
+	
+	// This is done so we won't have to create new fragments all the time
+	//private OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
+	//private LevelsFragment mLevelsFragment = null; // Level fragment to help handle the preferences
 	
 	private FragmentManager mFragmentManager = null;
+	private Fragment mFragment = null; // Helper to handle current fragment
+	
 	private AudioManager mAudioManager = null;
 	
 	/** Preference keys **/
@@ -80,15 +85,23 @@ public class MainActivity extends Activity {
 		// Start listening for button presses
 		//mAudioManager.registerMediaButtonEventReceiver(RemoteControlReceiver);---------------------------------
 		
-		// Initialize the Option Fragment
+		
+		/*
+		// Retrieve and cache the system's default "short" animation time.
+		mShortAnimationDuration = getResources().getInteger(
+				android.R.integer.config_shortAnimTime);
+		*/
+		// Initialize the fragments
 		//mOptionFragment = new OptionFragment();
+		//mLevelsFragment = new LevelsFragment();
 		
 		//mPrefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		mBbScoreDB = new BbSQliteHelper(this);
 		
 		// Show main menu
-		displayFragment(new MainFragment());
+		mFragment = new MainFragment();
+		displayFragment(mFragment);
 	}
 	
 	@Override
@@ -123,27 +136,41 @@ public class MainActivity extends Activity {
 		// Closes the BbSQLiteHelper
 		mBbScoreDB.close();
 	}
-
-	private void displayFragment(Fragment newFragment) {
+	
+	//---Show the view of the fragment without adding it to the back stack of mFragmentManager
+	//---This way, the transition can't be undone
+	private void displayFragment(Fragment fragment) {
 		mFragmentManager.beginTransaction()
-				.replace(R.id.container, newFragment)
+				.replace(R.id.container, fragment)
 				.commit();
 	}
 	
-	private void displayAndAddBackStackFragment(Fragment newFragment) {
+	//---Show the view of the fragment and add it to the back stack of mFragmentManager
+	private void displayAndAddFragment(Fragment fragment) {
 		mFragmentManager.beginTransaction()
-				.replace(R.id.container, newFragment)
+				.setCustomAnimations(R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+						R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+				.replace(R.id.container, fragment)
 				.addToBackStack(null)
 				.commit();
 	}
-
-	private void reloadFragment(Fragment fragment, int fragID) {
+	
+	//---Reload the view of the fragment
+	private void reloadFragment(Fragment fragment) {
+		/*
 		mFragmentManager.popBackStack();
 		
-		displayAndAddBackStackFragment(fragment);
+		mFragmentManager.beginTransaction()
+				.replace(R.id.container, fragment)
+				.addToBackStack(null)
+				.commit();
+		*/
+		
+		// There's no need to create
+		fragment.onResume();
 	}
 	
-	private void displayDialogFragment(DialogFragment newFragment) {
+	private void displayDialogFragment(DialogFragment fragment) {
 		FragmentTransaction ft = mFragmentManager.beginTransaction();
 		Fragment prev = mFragmentManager.findFragmentByTag("dialog");
 		
@@ -153,7 +180,7 @@ public class MainActivity extends Activity {
 		ft.addToBackStack(null);
 		
 		// Show the dialog
-		newFragment.show(ft, "dialog");
+		fragment.show(ft, "dialog");
 	}
 	
 	public static BbSQliteHelper getBbSQliteHelper() {
@@ -240,15 +267,23 @@ public class MainActivity extends Activity {
 	public void onClickLevels(View view) {
 		Log.d(TAG, "MainActivity.onClickLevels");
 		
-		displayAndAddBackStackFragment(new LevelsFragment());
+		mFragment = new LevelsFragment();
+		//displayAndAddFragment(mLevelsFragment);
+		displayAndAddFragment(mFragment);
 	}
 	
 	//----Show a screen with settings(sound, vibration, reset score)
 	public void onClickOption(View view) {
 		Log.d(TAG, "MainActivity.onClickOption");
+		/*
+		if (mOptionFragment == null)
+			mOptionFragment = new OptionFragment();
 		
-		//displayAndAddBackStackFragment(mOptionFragment);
-		displayAndAddBackStackFragment(new OptionFragment());
+		displayAndAddFragment(mOptionFragment);
+		*/
+		
+		mFragment = new OptionFragment();
+		displayAndAddFragment(mFragment);
 	}
 	
 	//---Show the rankings
@@ -256,7 +291,8 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "MainActivity.onClickRanking");
 
 		// Create and show the dialog
-		displayAndAddBackStackFragment(new RankingFragment());
+		mFragment = new RankingFragment();
+		displayAndAddFragment(mFragment);
 		
 		// If there are no recorded scores, show alert dialog
 		if (mBbScoreDB.getHighScore() == -1) {
@@ -289,9 +325,10 @@ public class MainActivity extends Activity {
 	//---Starts the BrickBreakerActivity
 	private void startGame() {
 		Log.d(TAG, "MainActivity.startGame");
-		
 		Intent intent = new Intent(this, BrickBreakerActivity.class);
 		startActivity(intent);
+		
+		overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_left);
         //finish();---------------------------------------------------------------------------------------------
 	}
 	
@@ -313,7 +350,8 @@ public class MainActivity extends Activity {
 		
 		savePreferences();
 		
-		reloadFragment(new OptionFragment(), R.id.fragment_option);
+		// There's no need to create a new fragment because we know it's running when this method is executed.
+		reloadFragment(mFragment);
 	}
 	
 	//---Reset scores
@@ -321,8 +359,8 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "MainActivity.onClickResetScore");
 		
 		// Create and show the dialog
-		DialogFragment newFragment = new OptionFragment.resetScoresFragment(); 
-		displayDialogFragment(newFragment);
+		DialogFragment dialogFragment = new OptionFragment.resetScoresFragment(); 
+		displayDialogFragment(dialogFragment);
 	}
 	
 	//---Change Username
@@ -381,12 +419,9 @@ public class MainActivity extends Activity {
 							
 							savePreferences();
 							
-							mFragmentManager.popBackStack();
-							
-							mFragmentManager.beginTransaction()
-								.replace(R.id.container, new OptionFragment())
-								.addToBackStack(null)
-								.commit();
+							// There's no need to create a new fragment because we know it's running when this
+							// method is executed.
+							reloadFragment(mFragment);
 						}
 				}).show();
 	}

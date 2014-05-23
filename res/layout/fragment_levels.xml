@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 	android:background="@drawable/background_levels"
-   	android:orientation="vertical" >
+   	android:orientation="vertical"
+   	android:animateLayoutChanges="true" >
     
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -22,7 +23,7 @@
     		android:paddingTop="@dimen/icon_vertical_margin"
 			android:gravity="center"
 			android:text="@string/button_levels"
-			android:textColor="@color/white"
+			android:textColor="@android:color/white"
 			android:textSize="32sp"
 			android:textStyle="bold" />
 		

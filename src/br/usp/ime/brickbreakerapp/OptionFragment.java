@@ -30,10 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class OptionFragment extends Fragment {
-	public static final String TAG = MainActivity.TAG;
+	public static final String TAG = "OptionFragment";
 	
 	// Fragment View
-	private View mOptionView;
+	private static View mOptionView;
 
 	// Current user name
 	private static String mCurrentUsername;
@@ -46,7 +46,7 @@ public class OptionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "OptionFragment.onCreateView");
+		Log.d(MainActivity.TAG, TAG + ".onCreateView");
 		
 		mOptionView = inflater.inflate(
 				R.layout.fragment_option, container, false);
@@ -58,7 +58,7 @@ public class OptionFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		Log.d(TAG, "OptionFragment.onResume");
+		Log.d(MainActivity.TAG, TAG + ".onResume");
 		
 		super.onResume();
 		
@@ -77,6 +77,7 @@ public class OptionFragment extends Fragment {
     
     private void setUpButtons() {
     	CheckBox soundEffectsEnabled = (CheckBox) mOptionView.findViewById(R.id.checkSound);
+    	soundEffectsEnabled.setTextColor(Color.GREEN);
 		soundEffectsEnabled.setOnTouchListener(new TextView.OnTouchListener() {
 			
     		@Override
@@ -120,8 +121,8 @@ public class OptionFragment extends Fragment {
 /************************************* Handling saved preferences *********************************************/
     
 	//---Sets the state of the UI controls to match our internal state
-	private void updateControls() {
-		Log.d(TAG, "OptionFragment.updateControls");
+	protected void updateControls() {
+		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		/*Spinner difficulty = (Spinner) findViewById(R.id.spinner_difficultyLevel);
 		difficulty.setSelection(BrickBreakerActivity.getDifficultyIndex());

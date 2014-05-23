@@ -221,6 +221,16 @@ public class BrickBreakerActivity extends Activity {
 	}
 	
     */
+
+	@Override
+	public void onBackPressed() {
+		Log.d(TAG, "BrickBreakerActivity.onBackPressed");
+		
+		super.onBackPressed();
+		
+		overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+	}
+	
     /**
      * Configures the BrickBreakerState object with the configuration options set by MainActivity.
      */

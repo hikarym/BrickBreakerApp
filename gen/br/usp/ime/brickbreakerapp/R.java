@@ -8,26 +8,26 @@
 package br.usp.ime.brickbreakerapp;
 
 public final class R {
+    public static final class animator {
+        public static final int card_flip_left_in=0x7f040000;
+        public static final int card_flip_left_out=0x7f040001;
+        public static final int card_flip_right_in=0x7f040002;
+        public static final int card_flip_right_out=0x7f040003;
+        public static final int fade_in=0x7f040004;
+        public static final int fade_out=0x7f040005;
+        public static final int pop_enter=0x7f040006;
+        public static final int pop_exit=0x7f040007;
+        public static final int slide_down=0x7f040008;
+        public static final int slide_in_left=0x7f040009;
+        public static final int slide_in_right=0x7f04000a;
+        public static final int slide_out_left=0x7f04000b;
+        public static final int slide_out_right=0x7f04000c;
+        public static final int slide_up=0x7f04000d;
+    }
     public static final class array {
-        public static final int difficulty_level_names=0x7f070000;
+        public static final int difficulty_level_names=0x7f080000;
     }
     public static final class attr {
-    }
-    public static final class color {
-        public static final int black=0x7f040000;
-        public static final int dark_blue=0x7f040009;
-        public static final int dark_green=0x7f04000b;
-        public static final int dark_orange=0x7f04000c;
-        public static final int dark_purple=0x7f04000a;
-        public static final int dark_red=0x7f04000d;
-        public static final int green=0x7f040001;
-        public static final int light_blue=0x7f040004;
-        public static final int light_green=0x7f040006;
-        public static final int light_orange=0x7f040007;
-        public static final int light_purple=0x7f040005;
-        public static final int light_red=0x7f040008;
-        public static final int red=0x7f040002;
-        public static final int white=0x7f040003;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -95,30 +95,35 @@ public final class R {
         public static final int settings=0x7f020031;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0017;
-        public static final int btBackLevels=0x7f0a0003;
-        public static final int btBackOption=0x7f0a000d;
-        public static final int btBackRanking=0x7f0a0013;
-        public static final int btChangeUsername=0x7f0a0010;
-        public static final int btExit=0x7f0a000b;
-        public static final int btLevels=0x7f0a0008;
-        public static final int btOption=0x7f0a0009;
-        public static final int btPlay=0x7f0a0007;
-        public static final int btRanking=0x7f0a000a;
-        public static final int btResetScore=0x7f0a000f;
-        public static final int checkSound=0x7f0a000e;
-        public static final int container=0x7f0a0000;
-        public static final int fragment_levels=0x7f0a0001;
-        public static final int fragment_main=0x7f0a0005;
-        public static final int fragment_option=0x7f0a000c;
-        public static final int fragment_ranking=0x7f0a0011;
-        public static final int gridviewLevels=0x7f0a0004;
-        public static final int rankingTable=0x7f0a0016;
-        public static final int scrollViewRanking=0x7f0a0015;
-        public static final int textViewTitleDialog=0x7f0a0012;
-        public static final int textViewTitleLevels=0x7f0a0002;
-        public static final int textViewTitleOption=0x7f0a0006;
-        public static final int titleDialogDivider=0x7f0a0014;
+        public static final int action_settings=0x7f0b0018;
+        public static final int btBackLevels=0x7f0b0003;
+        public static final int btBackOption=0x7f0b000e;
+        public static final int btBackRanking=0x7f0b0014;
+        public static final int btChangeUsername=0x7f0b0011;
+        public static final int btExit=0x7f0b000b;
+        public static final int btLevels=0x7f0b0008;
+        public static final int btOption=0x7f0b0009;
+        public static final int btPlay=0x7f0b0007;
+        public static final int btRanking=0x7f0b000a;
+        public static final int btResetScore=0x7f0b0010;
+        public static final int checkSound=0x7f0b000f;
+        public static final int container=0x7f0b0000;
+        public static final int fragment_levels=0x7f0b0001;
+        public static final int fragment_main=0x7f0b0005;
+        public static final int fragment_option=0x7f0b000c;
+        public static final int fragment_ranking=0x7f0b0012;
+        public static final int gridviewLevels=0x7f0b0004;
+        public static final int rankingTable=0x7f0b0017;
+        public static final int scrollViewRanking=0x7f0b0016;
+        public static final int textViewTitleDialog=0x7f0b0013;
+        public static final int textViewTitleLevels=0x7f0b0002;
+        public static final int textViewTitleMain=0x7f0b0006;
+        public static final int textViewTitleOption=0x7f0b000d;
+        public static final int titleDialogDivider=0x7f0b0015;
+    }
+    public static final class integer {
+        public static final int card_flip_time_full=0x7f060000;
+        public static final int card_flip_time_half=0x7f060001;
     }
     public static final class layout {
         public static final int activity_breakout=0x7f030000;
@@ -129,44 +134,44 @@ public final class R {
         public static final int fragment_ranking=0x7f030005;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
+        public static final int main=0x7f0a0000;
     }
     public static final class string {
-        public static final int about_text=0x7f060009;
-        public static final int action_settings=0x7f060002;
-        public static final int app_name=0x7f060000;
-        public static final int button_about=0x7f060005;
-        public static final int button_back=0x7f060018;
-        public static final int button_change_user=0x7f060015;
-        public static final int button_exit=0x7f060013;
-        public static final int button_levels=0x7f060010;
-        public static final int button_newGame=0x7f060003;
-        public static final int button_option=0x7f060011;
-        public static final int button_play=0x7f06000f;
-        public static final int button_ranking=0x7f060012;
-        public static final int button_reset_score=0x7f060014;
-        public static final int button_resumeGame=0x7f060004;
-        public static final int cancel=0x7f060021;
-        public static final int check_sound=0x7f060016;
-        public static final int check_vibration=0x7f060017;
-        public static final int checkbox_neverLoseBall=0x7f060006;
-        public static final int checkbox_soundEffectsEnabled=0x7f060007;
-        public static final int difficulty=0x7f06000d;
-        public static final int hello_world=0x7f060001;
-        public static final int msg_exit=0x7f06001e;
-        public static final int msg_game_over=0x7f06000b;
-        public static final int msg_no_scores=0x7f06001c;
-        public static final int msg_ready=0x7f06000a;
-        public static final int msg_reset_scores=0x7f06001d;
-        public static final int msg_winner=0x7f06000c;
-        public static final int ok=0x7f060020;
-        public static final int save=0x7f060022;
-        public static final int text_highScoreLabel=0x7f060008;
-        public static final int title_activity_breakout=0x7f06000e;
-        public static final int title_change_username=0x7f06001f;
-        public static final int title_no_ranking=0x7f06001b;
-        public static final int title_option=0x7f060019;
-        public static final int title_ranking=0x7f06001a;
+        public static final int about_text=0x7f070009;
+        public static final int action_settings=0x7f070002;
+        public static final int app_name=0x7f070000;
+        public static final int button_about=0x7f070005;
+        public static final int button_back=0x7f070018;
+        public static final int button_change_user=0x7f070015;
+        public static final int button_exit=0x7f070013;
+        public static final int button_levels=0x7f070010;
+        public static final int button_newGame=0x7f070003;
+        public static final int button_option=0x7f070011;
+        public static final int button_play=0x7f07000f;
+        public static final int button_ranking=0x7f070012;
+        public static final int button_reset_score=0x7f070014;
+        public static final int button_resumeGame=0x7f070004;
+        public static final int cancel=0x7f070021;
+        public static final int check_sound=0x7f070016;
+        public static final int check_vibration=0x7f070017;
+        public static final int checkbox_neverLoseBall=0x7f070006;
+        public static final int checkbox_soundEffectsEnabled=0x7f070007;
+        public static final int difficulty=0x7f07000d;
+        public static final int hello_world=0x7f070001;
+        public static final int msg_exit=0x7f07001e;
+        public static final int msg_game_over=0x7f07000b;
+        public static final int msg_no_scores=0x7f07001c;
+        public static final int msg_ready=0x7f07000a;
+        public static final int msg_reset_scores=0x7f07001d;
+        public static final int msg_winner=0x7f07000c;
+        public static final int ok=0x7f070020;
+        public static final int save=0x7f070022;
+        public static final int text_highScoreLabel=0x7f070008;
+        public static final int title_activity_breakout=0x7f07000e;
+        public static final int title_change_username=0x7f07001f;
+        public static final int title_no_ranking=0x7f07001b;
+        public static final int title_option=0x7f070019;
+        public static final int title_ranking=0x7f07001a;
     }
     public static final class style {
         /** 
@@ -190,10 +195,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
+        public static final int AppTheme=0x7f090001;
     }
 }

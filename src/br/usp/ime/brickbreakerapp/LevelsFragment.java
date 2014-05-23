@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class LevelsFragment extends Fragment {
-	public static final String TAG = MainActivity.TAG;
+	public static final String TAG = "LevelsFragment";
 
 	private static int MAX_LEVELS = 6;
 	private static List<String> mLevelList;
@@ -43,7 +43,7 @@ public class LevelsFragment extends Fragment {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "LevelsFragment.onCreate");
+		Log.d(MainActivity.TAG, TAG + ".onCreate");
 		
 		super.onCreate(savedInstanceState);
 		
@@ -58,7 +58,7 @@ public class LevelsFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "LevelsFragment.onCreateView");
+		Log.d(MainActivity.TAG, TAG + ".onCreateView");
 		
 		mLevelsView = inflater.inflate(
 				R.layout.fragment_levels, container, false);
@@ -73,7 +73,7 @@ public class LevelsFragment extends Fragment {
 	
 	@Override
 	public void onResume() {
-		Log.d(TAG, "OptionFragment.onResume");
+		Log.d(MainActivity.TAG, TAG + ".onResume");
 		
 		super.onResume();
 		
@@ -81,7 +81,7 @@ public class LevelsFragment extends Fragment {
 	}
 	
 	private void setUpGridView() {
-		Log.d(TAG, "LevelsFragment.setUpGridView");
+		Log.d(MainActivity.TAG, TAG + ".setUpGridView");
 		
 		//ArrayAdapter<String> levelAdapter = new ArrayAdapter<String>(
 			//	getActivity(), android.R.layout.simple_list_item_1, mLevelList);
@@ -133,7 +133,7 @@ public class LevelsFragment extends Fragment {
 	
 	//---Sets the state of the UI controls to match our internal state
 	private void updateControls() {
-		Log.d(TAG, "LevelsFragment.updateControls");
+		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
 				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);

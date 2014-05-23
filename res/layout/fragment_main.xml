@@ -10,6 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_main"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     tools:context="br.usp.ime.breakoutapp.MainActivity" >
     
     <LinearLayout
@@ -21,15 +22,14 @@
         android:orientation="vertical" >
 	    
 		<TextView
-			android:id="@+id/textViewTitleOption"
+			android:id="@+id/textViewTitleMain"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
     		android:paddingTop="@dimen/activity_vertical_margin"
 			android:text="@string/app_name"
     		android:gravity="center"
 			android:textSize="50sp"
-	        android:textStyle="bold|italic"
-			android:textColor="@color/red" />
+	        android:textStyle="bold|italic" />
     	
 	</LinearLayout>
 	
@@ -48,7 +48,7 @@
 	        android:layout_height="60dp"
 	        android:gravity="center"
 	        android:text="@string/button_play"
-	     	android:textColor="@color/black"
+	     	android:textColor="@android:color/black"
 	        android:textSize="32sp"
 	        android:textStyle="bold"
 	        android:typeface="monospace"
@@ -63,7 +63,7 @@
 	        android:layout_height="50dp"
 	        android:gravity="center"
 	        android:text="@string/button_levels"
-	     	android:textColor="@color/black"
+	     	android:textColor="@android:color/black"
 	        android:textSize="22sp"
 	        android:textStyle="bold"
 	        android:typeface="monospace"
@@ -78,7 +78,7 @@
 	        android:layout_height="50dp"
 	        android:gravity="center"
 	        android:text="@string/button_option"
-	     	android:textColor="@color/black"
+	     	android:textColor="@android:color/black"
 	        android:textSize="22sp"
 	        android:textStyle="bold"
 	        android:typeface="monospace"
@@ -93,7 +93,7 @@
 	        android:layout_height="50dp"
 	        android:gravity="center"
 	        android:text="@string/button_ranking"
-	     	android:textColor="@color/black"
+	     	android:textColor="@android:color/black"
 	        android:textSize="22sp"
 	        android:textStyle="bold"
 	        android:typeface="monospace"
@@ -108,7 +108,7 @@
 	        android:layout_height="50dp"
 	        android:gravity="center"
 	        android:text="@string/button_exit"
-	     	android:textColor="@color/black"
+	     	android:textColor="@android:color/black"
 	        android:textSize="22sp"
 	        android:textStyle="bold"
 	        android:typeface="monospace"
