@@ -1,12 +1,17 @@
 package br.usp.ime.brickbreakerapp;
 
+import br.usp.ime.brickbreakerapp.OptionFragment.resetScoresFragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.widget.Toast;
 
 /**
  * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
@@ -14,17 +19,19 @@ import android.util.Log;
 public class BrickBreakerActivity extends Activity {
     private static final String TAG = MainActivity.TAG;
 
+
     private static final int LEVEL_MIN = 1;
     private static final int LEVEL_MAX = 6;        // inclusive
     private static final int LEVEL_DEFAULT = 1;
     //private static int sDifficultyIndex = 1;
     private static int sLevelGame = 1;
         
+
     //private static boolean sNeverLoseBall;
-    // Enabled Sounds effects of game 
-    private static boolean sSoundEffectsEnabled;
-
-
+    
+	// Flag to indicate if sounds effects of game are enabled or not
+	private static boolean statusSoundEffectsEnabled;
+	
     // The Activity has one View, a GL surface.
     private BrickBreakerSurfaceView mGLView;
 
@@ -76,9 +83,10 @@ public class BrickBreakerActivity extends Activity {
         mGLView = new BrickBreakerSurfaceView(this, mBrickBreakerState, textConfig);
         setContentView(mGLView);
     }
+    
+    protected void exitGame() {
+    	Log.d(TAG, "BrickBreakerActivity pausing");
 
-    @Override
-    protected void onPause() {
         /*
          * We must call the GLView's onPause() function when the framework tells us to pause.
          * We're also expected to deallocate any large OpenGL resources, though presumably
@@ -89,11 +97,9 @@ public class BrickBreakerActivity extends Activity {
          * function on the Renderer thread.  This will record the saved game into the storage
          * we provided when the object was constructed.
          */
-
-        Log.d(TAG, "BrickBreakerActivity pausing");
-        super.onPause();
+    	super.onPause();
         mGLView.onPause();
-
+        //------------------------------------------------------------------------------------------------------
         /*
          * If the game is over, record the new high score.
          *
@@ -121,6 +127,27 @@ public class BrickBreakerActivity extends Activity {
          */
         updateHighScore(BrickBreakerState.getFinalScore());
     }
+    
+    @Override
+    protected void onPause() {/*
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				new ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog));
+		
+		builder.setTitle(R.string.app_name);
+		builder.setIcon(android.R.drawable.ic_dialog_alert);
+		builder.setMessage(R.string.msg_exit);
+		builder.setNegativeButton(R.string.cancel, null);
+		builder.setPositiveButton(R.string.ok, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+		        BrickBreakerActivity.exitGame();
+			}
+        });
+		
+		builder.show();
+		*/
+		exitGame();
+    }
 
     @Override
     protected void onResume() {
@@ -137,7 +164,59 @@ public class BrickBreakerActivity extends Activity {
         super.onResume();
         mGLView.onResume();
     }
-
+    /*
+	@Override
+	protected void onResume() {
+		Log.d(TAG, "MainActivity.onResume");
+		
+		super.onResume();
+		
+		restorePreferences();
+	}
+	
+	@Override
+	protected void onPause() {
+		Log.d(TAG, "MainActivity.onPause");
+		
+		super.onPause();
+		
+		savePreferences();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		Log.d(TAG, "MainActivity.onDestroy");
+		
+		super.onDestroy();
+		
+		savePreferences();
+	}
+	
+	
+	//---Copies settings to the saved preferences' file
+	private void savePreferences() {
+		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		//editor.putInt(OptionFragment.DIFFICULTY_KEY, getDifficultyIndex());
+		//editor.putBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, getNeverLoseBall());
+		editor.putBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, isSoundEffectsEnabled());
+		editor.putString(OptionFragment.USERNAME_KEY, OptionFragment.getCurrentUsername());
+		//editor.putInt(OptionFragment.LEVEL_KEY, getLevelIndex());
+		editor.commit();
+	}
+	
+	//---Retrieves settings from the saved preferences' file
+	private void restorePreferences() {
+		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
+		//setDifficultyIndex(prefs.getInt(OptionFragment.DIFFICULTY_KEY, DIFFICULTY_DEFAULT));
+		//setNeverLoseBall(prefs.getBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, false));
+		//setLevel(prefs.getInt(OptionFragment.LEVEL_KEY, 1));
+		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
+		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.USERNAMainActivity.DEFAULT_SOUND_EFFECTS_STATUSEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
+	}
+	
+    */
     /**
      * Configures the BrickBreakerState object with the configuration options set by MainActivity.
      */
@@ -262,7 +341,7 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setBackgroundLevel(mBackgroundTextureImg);
         
 
-        SoundResources.setSoundEffectsEnabled(sSoundEffectsEnabled);
+        SoundResources.setSoundEffectsEnabled(statusSoundEffectsEnabled);
     }
     
     /**
@@ -285,7 +364,7 @@ public class BrickBreakerActivity extends Activity {
 		return mBrickStatesConfig;
 		
 	}
-
+    
     /**
      * Gets the difficulty index, used to configure the game parameters.
      */
@@ -318,21 +397,16 @@ public class BrickBreakerActivity extends Activity {
             invalidateSavedGame();
         }
     }
+    
+    //---Returns true if sound effects are enabled, and false otherwise
+    public static boolean isSoundEffectsEnabled() {
+        return statusSoundEffectsEnabled;
 
-    /**
-     * Gets sound effect status.
-     */
-    public static boolean getSoundEffectsEnabled() {
-        return sSoundEffectsEnabled;
     }
 
-    /**
-     * Enables or disables sound effects.
-     * <p>
-     * Changing the value does not affect a game in progress.
-     */
+    //---Enables or disables sound effects
     public static void setSoundEffectsEnabled(boolean soundEffectsEnabled) {
-        sSoundEffectsEnabled = soundEffectsEnabled;
+    	statusSoundEffectsEnabled = soundEffectsEnabled;
     }
 
     /**
@@ -356,16 +430,18 @@ public class BrickBreakerActivity extends Activity {
      * @param lastScore Score from the last completed game.
      */
     private void updateHighScore(int lastScore) {
-        SharedPreferences prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-        int highScore = prefs.getInt(MainActivity.HIGH_SCORE_KEY, 0);
+    	String username = MainActivity.getStrPref(MainActivity.USERNAME_KEY, MainActivity.DEFAULT_USERNAME);
+        int highScore = MainActivity.getBbSQliteHelper().getHighScore();
 
         Log.d(TAG, "final score was " + lastScore);
+        
+        MainActivity.getBbSQliteHelper().addScore(username, lastScore);
+        
         if (lastScore > highScore) {
             Log.d(TAG, "new high score!  (" + highScore + " vs. " + lastScore + ")");
-
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(MainActivity.HIGH_SCORE_KEY, lastScore);
-            editor.commit();
+            
+            /**************************************************************************************************************************************/
+            // put fragment here!!!!!! CONGRATS!!! and the like
         }
     }
     

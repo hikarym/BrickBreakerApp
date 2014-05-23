@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -34,7 +35,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 	
 	private static final String[] BBSCORES_COLUMNS = {KEY_ID, KEY_USERNAME, KEY_SCORE};
 
-	private static int TOP_ID = 1; // id of the next score to be added
+	private static final int MAX_ID = 2147483647; // Maximum id allowed on the tables
 	
 	private static final String TAG = "BbSQliteHelper";
 	
@@ -45,9 +46,9 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 
 		//mContext.deleteDatabase(DB_NAME);//--------------------------------------------------------------------
 		
-		if (!checkDBExists()) {
+		if (!checkDatabaseExists()) {
 			try {
-				createDB();
+				createDatabase();
 	    	} catch (IOException ioe) {
 	    		Log.e(TAG, "Unable to create database");
 	    		Log.e(TAG, "IOException: Error code = " + ioe.getMessage());
@@ -58,7 +59,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 			DB_PATH = mContext.getDatabasePath(DB_NAME).getPath();
 			
 			try {
-				openDB();
+				openDatabase();
 	    	}catch(SQLException sqle){
 	    		Log.e(TAG, "Unable to open database");
 	    		Log.e(TAG, "SQLException: Error code = " + sqle.getErrorCode());
@@ -68,63 +69,91 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 	
 	//---Open a new private SQLiteDatabase associated with this Context's application package.
 	//---Create the database file if it doesn't exist.
-	public void createDB() throws IOException {
+	public void createDatabase() throws IOException {
 		mBbSqliteDB = mContext.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
 		DB_PATH = mContext.getDatabasePath(DB_NAME).getPath();
 		
-		this.createDBTable();
+		this.createDatabaseTables();
 	}
 	
 	//---Check if the database already exist to avoid re-copying the file each time the app is opened
-	private boolean checkDBExists() {
+	private boolean checkDatabaseExists() {
 		return mContext.getDatabasePath(DB_NAME).exists();
 	}
 	
-	//---createDB() must be called before executing this method
-	public void openDB() throws SQLException {
+	//---createDatabase() must be called before executing this method
+	public void openDatabase() throws SQLException {
 		//Open the database
 		mBbSqliteDB = SQLiteDatabase.openDatabase(DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
 	}
 	
-	public void createDBTable() {
+	public void createDatabaseTables() {
 		// SQL statement to create bbscores table
 		String CREATE_BBSCORES_TABLE = "CREATE TABLE " + TABLE_BBSCORES + " ("
-				+ KEY_ID + " INTEGER PRIMARY KEY, "
+				+ KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				+ KEY_USERNAME + " TEXT, "
 				+ KEY_SCORE + " INTEGER)";// CHECK score >= 0)";
 		
 		// Create bbscores table
 		mBbSqliteDB.execSQL(CREATE_BBSCORES_TABLE);
 		
-		addScore("MASTER", -1);
+		addUser("Master");
 		/*
-		addScore("MASTER", 0);//--------------------------------------------------------------------------------
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 2);
-		addScore("MASTER", 20);*/
+		addScore("Master", 0);//--------------------------------------------------------------------------------
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 2);
+		addScore("Master", 20);*/
 	}
 	
-	public boolean checkDBTableFull() {
-		return TOP_ID == 2147483647 ? true : false;
+	//---Return the BbScore table biggest id, and if it doesn't exist return -1;
+	public int getDatabaseTableTopId() {
+		int topID = -1;
+		
+		String query = "SELECT MAX(" + KEY_ID + ") FROM " + TABLE_BBSCORES;
+		
+		Cursor cursor = mBbSqliteDB.rawQuery(query, null);
+		 
+		// If no result is found, the table is empty
+		if (cursor.moveToFirst() == false || cursor.getString(0) == null)
+			return topID;
+		
+		topID = Integer.parseInt(cursor.getString(0));
+
+		cursor.close();
+		
+		Log.d(TAG + ".getDatabaseTableTopId()", "topID = " + Integer.toString(topID));
+		
+		return topID;
 	}
 	
-	public void dropDBTable() {
-		Log.w(TAG + ".dropDBTable()", "Will destroy all old data!");
+	public boolean checkDatabaseTableFull() {
+		if (getDatabaseTableTopId() == MAX_ID) {
+			Log.d(TAG + ".checkDatabaseTableFull()", "true");
+			return true;
+		}
+		
+		Log.d(TAG + ".checkDatabaseTableFull()", "false");
+		
+		return false;
+	}
+	
+	public void dropDatabaseTables() {
+		Log.w(TAG + ".dropDatabaseTables()", "Will destroy all old data!");
 		
 		mBbSqliteDB.beginTransaction();
 		
@@ -136,9 +165,6 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 		} finally {
 			mBbSqliteDB.endTransaction();
 		}
-		
-		// TOP_ID back to 1
-		TOP_ID = 1;
 	}
 
 	@Override
@@ -151,7 +177,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		//createDBTable();
+		//createDBTables();
 	}
 	
 	@Override
@@ -183,9 +209,10 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 	//---Add single score to the table.
 	public void addScore(String username, int score) {
 		ContentValues values = new ContentValues();
-		values.put(KEY_ID, TOP_ID);
 		values.put(KEY_USERNAME, username);
 		values.put(KEY_SCORE, score);
+		
+		String methodTAG = ".addScore (" + username + ", score: " + Integer.toString(score) + ")";
 		
 		mBbSqliteDB.beginTransaction();
 		
@@ -197,10 +224,38 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 			mBbSqliteDB.setTransactionSuccessful();
 		} finally {
 			mBbSqliteDB.endTransaction();
-			TOP_ID++;
 		}
 		
-		Log.d(TAG + ".addScore (" + username + ", score: " + score + ")", "Done");
+		Log.d(TAG + methodTAG, "Done");
+	}
+
+	//---Add single score to the table.
+	public void addUser(String username) {
+		String methodTAG = ".addUser (" + username + ")";
+		
+		// See if user is in the table
+		if (userExits(username)) {
+			Log.d(TAG + methodTAG, "The user is already in the table.");
+			return;
+		}
+		
+		ContentValues values = new ContentValues();
+		values.put(KEY_USERNAME, username);
+		values.put(KEY_SCORE, -1);
+		
+		mBbSqliteDB.beginTransaction();
+		
+		try {
+			mBbSqliteDB.insert(TABLE_BBSCORES,
+					null,
+					values);
+			
+			mBbSqliteDB.setTransactionSuccessful();
+		} finally {
+			mBbSqliteDB.endTransaction();
+		}
+		
+		Log.d(TAG + methodTAG, "Done");
 	}
 	
 	//---Return the cursor of the information of a single score with KEY_ID = id.
@@ -222,7 +277,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 
 	//---Returns the highest score on the table. Returns -1 if table is empty.
 	public int getHighScore() {
-		int highscore;
+		int highScore;
 		
 		String query = "SELECT MAX(" + KEY_SCORE + ") FROM " + TABLE_BBSCORES
 				+ " WHERE " + KEY_SCORE + " > 0";
@@ -233,13 +288,39 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 		if (cursor.moveToFirst() == false || cursor.getString(0) == null)
 			return -1;
 		
-		highscore = Integer.parseInt(cursor.getString(0));
+		highScore = Integer.parseInt(cursor.getString(0));
 
 		cursor.close();
 		
-		Log.d(TAG + ".getHighScore()", "High score = " + highscore);
+		Log.d(TAG + ".getHighScore()", "High score = " + highScore);
 		
-		return highscore;
+		return highScore;
+	}
+
+	//---Return the cursor of the information of all scores for username == name ordered by scores
+	public boolean userExits(String name) {
+		Cursor cursor =
+				mBbSqliteDB.query(TABLE_BBSCORES, // a. table
+						BBSCORES_COLUMNS, // b. column names
+						KEY_USERNAME + " = ?", // c. selections
+						new String[] { name }, // d. selections args
+						null, // e. group by
+						null, // f. having
+						KEY_SCORE + " DESC, " + KEY_USERNAME  + " ASC", // g. order by
+						null); // h. limit
+		
+		Log.d(TAG + ".getAllUserScoresInfo(" + name + ")", "Done");
+		
+		if (cursor.moveToNext()) {
+
+			cursor.close();
+			
+			return true;			
+		}
+		
+		cursor.close();
+		
+		return false;
 	}
 	
 	//---Return the cursor of the information of all scores for username == name ordered by scores
@@ -254,7 +335,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 						KEY_SCORE + " DESC, " + KEY_USERNAME  + " ASC", // g. order by
 						null); // h. limit
 		
-		Log.d(TAG + ".getAllUserBbScores(" + name + ")", "Done");
+		Log.d(TAG + ".getAllUserScoresInfo(" + name + ")", "Done");
 		
 		return cursor;
 	}
@@ -271,7 +352,7 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 						KEY_SCORE + " DESC, " + KEY_USERNAME  + " ASC", // g. order by
 						null); // h. limit
 		
-		Log.d(TAG + ".getAllScores()", "Done");
+		Log.d(TAG + ".getAllScoresInfo()", "Done");
 		
 		return cursor;
 	}
@@ -400,7 +481,6 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 		Log.d(TAG + ".addBbScore", bbscore.toString());
 		
 		ContentValues values = new ContentValues();
-		values.put(KEY_ID, TOP_ID);
 		values.put(KEY_USERNAME, bbscore.getUsername());
 		values.put(KEY_SCORE, bbscore.getScore());
 		
@@ -414,13 +494,12 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 			mBbSqliteDB.setTransactionSuccessful();
 		} finally {
 			mBbSqliteDB.endTransaction();
-			TOP_ID++;
 		}
 	}
 	
 	//---Get single BbScore
 	public BbScore getBbScore(int id) {
-		BbScore bbscore = new BbScore();
+		BbScore bbscore = null;
 		
 		Cursor cursor =
 				mBbSqliteDB.query(TABLE_BBSCORES, // a. table
@@ -432,27 +511,28 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 						KEY_SCORE + " DESC", // g. order by
 						null); // h. limit
 		
-		// If no result is found
-		if (cursor.moveToFirst() == false)
-			return null;
+		// If a result is found
+		if (cursor.moveToFirst()) {
+			bbscore = new BbScore();
+			
+			bbscore.setId(Integer.parseInt(cursor.getString(0)));
+			bbscore.setUsername(cursor.getString(1));
+			bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+			
+			Log.d(TAG + ".getBbScore(" + id + ")", bbscore.toString());
+		}
 		
-		// Get first result
-		cursor.moveToFirst();
+		else
+			Log.d(TAG + ".getBbScore(" + id + ")", "BbScore not found!");
 		
-		bbscore.setId(Integer.parseInt(cursor.getString(0)));
-		bbscore.setUsername(cursor.getString(1));
-		bbscore.setScore(Integer.parseInt(cursor.getString(2)));
-
 		cursor.close();
-		
-		Log.d(TAG + ".getBbScore(" + id + ")", bbscore.toString());
 		
 		return bbscore;
 	}
 
 	//---Get Highest BbScore
 	public BbScore getHighBbScore() {
-		BbScore bbscore = new BbScore();
+		BbScore bbscore = null;
 		
 		String query = "SELECT * FROM " + TABLE_BBSCORES + " WHERE " + KEY_SCORE + " = ("
 							+ "SELECT MAX(" + KEY_SCORE + ") FROM " + TABLE_BBSCORES
@@ -460,24 +540,28 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 		
 		Cursor cursor = mBbSqliteDB.rawQuery(query, null);
 		
-		// If no result is found
-		if (cursor.moveToFirst() == false)
-			return bbscore;
+		// If a result is found
+		if (cursor.moveToFirst()) {
+			bbscore = new BbScore();
+			
+			bbscore.setId(Integer.parseInt(cursor.getString(0)));
+			bbscore.setUsername(cursor.getString(1));
+			bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+	
+			cursor.close();
+			
+			Log.d(TAG + ".getHighBbScore()", bbscore.toString());
+		}
 
-		bbscore.setId(Integer.parseInt(cursor.getString(0)));
-		bbscore.setUsername(cursor.getString(1));
-		bbscore.setScore(Integer.parseInt(cursor.getString(2)));
-
-		cursor.close();
-		
-		Log.d(TAG + ".getHighBbScore()", bbscore.toString());
+		else
+			Log.d(TAG + ".getHighBbScore()", "BbHighScore not found!");
 		
 		return bbscore;
 	}
 	
 	//---Get all BbScores for username == name
 	public List<BbScore> getAllUserBbScores(String name) {
-		List<BbScore> bbscores = new LinkedList<BbScore>();
+		List<BbScore> bbscores = null;
 		
 		Cursor cursor =
 				mBbSqliteDB.query(TABLE_BBSCORES, // a. table
@@ -489,33 +573,36 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 						KEY_SCORE + " DESC, " + KEY_USERNAME  + " ASC", // g. order by
 						null); // h. limit
 		
-		// If no result is found
-		if (cursor.moveToFirst() == false)
-			return null;
-		
-		BbScore bbscore = null;
-		
-		// Add all to the list bbscores
-		do {
-			bbscore = new BbScore();
-			bbscore.setId(Integer.parseInt(cursor.getString(0)));
-			bbscore.setUsername(cursor.getString(1));
-			bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+		// If a result is found
+		if (cursor.moveToFirst()) {
+			bbscores = new LinkedList<BbScore>();
+			BbScore bbscore = null;
 			
-			// Add bbscore to bbscores
-			bbscores.add(bbscore);
-		} while (cursor.moveToNext());
+			// Add all to the list bbscores
+			do {
+				bbscore = new BbScore();
+				bbscore.setId(Integer.parseInt(cursor.getString(0)));
+				bbscore.setUsername(cursor.getString(1));
+				bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+				
+				// Add bbscore to bbscores
+				bbscores.add(bbscore);
+			} while (cursor.moveToNext());
+			
+			cursor.close();
+			
+			Log.d(TAG + ".getAllUserBbScores(" + name + ")", bbscores.toString());
+		}
 		
-		cursor.close();
-		
-		Log.d(TAG + ".getAllUserBbScores(" + name + ")", bbscores.toString());
+		else
+			Log.d(TAG + ".getAllUserBbScores(" + name + ")", "User not found!");
 		
 		return bbscores;
 	}
 	
 	//---Get all BbScores
 	public List<BbScore> getAllBbScores() {
-		List<BbScore> bbscores = new LinkedList<BbScore>();
+		List<BbScore> bbscores = null;
 		
 		Cursor cursor =
 				mBbSqliteDB.query(TABLE_BBSCORES, // a. table
@@ -527,26 +614,29 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 						KEY_SCORE + " DESC, " + KEY_USERNAME  + " ASC", // g. order by
 						null); // h. limit
 		
-		// If no result is found
-		if (cursor.moveToFirst() == false)
-			return null;
-		
-		BbScore bbscore = null;
-		
-		// Add all to the list bbscores
-		do {
-			bbscore = new BbScore();
-			bbscore.setId(Integer.parseInt(cursor.getString(0)));
-			bbscore.setUsername(cursor.getString(1));
-			bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+		// If a result is found
+		if (cursor.moveToFirst()) {
+			bbscores = new LinkedList<BbScore>();
+			BbScore bbscore = null;
 			
-			// Add bbscore to bbscores
-			bbscores.add(bbscore);
-		} while (cursor.moveToNext());
+			// Add all to the list bbscores
+			do {
+				bbscore = new BbScore();
+				bbscore.setId(Integer.parseInt(cursor.getString(0)));
+				bbscore.setUsername(cursor.getString(1));
+				bbscore.setScore(Integer.parseInt(cursor.getString(2)));
+				
+				// Add bbscore to bbscores
+				bbscores.add(bbscore);
+			} while (cursor.moveToNext());
+			
+			cursor.close();
+			
+			Log.d(TAG + ".getAllBbScores()", bbscores.toString());
+		}
 		
-		cursor.close();
-		
-		Log.d(TAG + ".getAllBbScores()", bbscores.toString());
+		else
+			Log.d(TAG + ".getAllBbScores()", "There are no scores!");
 		
 		return bbscores;
 	}
@@ -560,20 +650,24 @@ public class BbSQliteHelper extends SQLiteOpenHelper  {
 				+ " ORDER BY " + KEY_USERNAME;
 		
 		Cursor cursor = mBbSqliteDB.rawQuery(query, null);
-
-		// If no result is found
-		if (cursor.moveToFirst() == false)
-			return null;
 		
-		// Add all to the list users
-		do {
-			// Add bbscore to users
-			users.add(cursor.getString(1));
-		} while (cursor.moveToNext());
+		// If a result is found
+		if (cursor.moveToFirst()) {
+			users = new LinkedList<String>();
+			
+			// Add all to the list users
+			do {
+				// Add bbscore to users
+				users.add(cursor.getString(1));
+			} while (cursor.moveToNext());
+			
+			Log.d(TAG + ".getAllBbScoresUsers()", users.toString());
+	
+			cursor.close();
+		}
 		
-		Log.d(TAG + ".getAllBbScoresUsers()", users.toString());
-
-		cursor.close();
+		else
+			Log.d(TAG + ".getAllBbScoresUsers()", "There are no users!");
 		
 		return users;
 	}

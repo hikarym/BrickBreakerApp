@@ -18,54 +18,47 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LevelsFragment extends Fragment {
-	public static final String TAG = "LevelsFragment";
+	public static final String TAG = MainActivity.TAG;
 
-	private int nLevels;
-	private List<String> levelList;
+	private static int MAX_LEVELS = 6;
+	private static List<String> mLevelList;
+	private static Integer[] mImageIDs = {
+			            R.drawable.background_3,
+			            R.drawable.background_4,
+			            R.drawable.background_5,
+			            R.drawable.background_6,
+			            R.drawable.background_7,
+			            R.drawable.background_8
+					};
 	
 	private View mLevelsView;
 	private GridView mGridView;
 	
-	Integer[] imageIDs = {
-            R.drawable.background_3,
-            R.drawable.background_4,
-            R.drawable.background_5,
-            R.drawable.background_6,
-            R.drawable.background_7,
-            R.drawable.background_8
-    };
-	
-	public LevelsFragment() {
-		nLevels = 6;
-		
-		levelList = new ArrayList<String>();
-		
-		for(int i = 1; i <= nLevels; i++)
-			levelList.add("Level " + i);
-		
-	}
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
+		Log.d(TAG, "LevelsFragment.onCreate");
+		
 		super.onCreate(savedInstanceState);
-	}
-	
-	@Override
-	public void onAttach(Activity activity) {
-		Log.d(TAG, "onAttach");
-		super.onAttach(activity);
+		
+		mLevelList = new ArrayList<String>();
+		
+		for(int i = 1; i <= MAX_LEVELS; i++)
+			mLevelList.add("Level " + i);
+		
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "onCreateView");
+		Log.d(TAG, "LevelsFragment.onCreateView");
 		
 		mLevelsView = inflater.inflate(
 				R.layout.fragment_levels, container, false);
@@ -73,16 +66,25 @@ public class LevelsFragment extends Fragment {
 		mGridView = (GridView) mLevelsView.findViewById(R.id.gridviewLevels);
 		mGridView.setGravity(Gravity.CENTER);
 		
+		setUpGridView();
+		
 		return mLevelsView;
 	}
 	
 	@Override
-	public void onStart() {
-		Log.d(TAG, "onStart");
-		super.onStart();		
+	public void onResume() {
+		Log.d(TAG, "OptionFragment.onResume");
+		
+		super.onResume();
+		
+		updateControls();
+	}
+	
+	private void setUpGridView() {
+		Log.d(TAG, "LevelsFragment.setUpGridView");
 		
 		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
-				imageIDs));
+				mImageIDs));
 		
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -109,10 +111,17 @@ public class LevelsFragment extends Fragment {
 		});
 	}
 	
-	@Override
-	public void onDestroyView() {
-		Log.d(TAG, "onDestroyView");
-		super.onDestroyView();
+	//---Sets the state of the UI controls to match our internal state
+	private void updateControls() {
+		Log.d(TAG, "LevelsFragment.updateControls");
+		
+		boolean isSoundEnabled = MainActivity.getBooPref(
+				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+		
+		Button btBackLevels = (Button) mLevelsView.findViewById(R.id.btBackLevels);
+		btBackLevels.setSoundEffectsEnabled(isSoundEnabled);
+		
+		mGridView.setSoundEffectsEnabled(isSoundEnabled);
 	}
 	
 	private static class Level {

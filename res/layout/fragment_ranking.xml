@@ -1,41 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_ranking"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@drawable/bkg_wood_floor" >
+    android:background="@drawable/background_ranking"
+    tools:context="br.usp.ime.breakoutapp.MainActivity" >
     
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	    android:paddingBottom="@dimen/icon_vertical_margin"
+   		android:paddingLeft="@dimen/icon_horizontal_margin"
+   		android:paddingRight="@dimen/icon_horizontal_margin"
+   		android:paddingTop="@dimen/icon_vertical_margin" >
         
         <TextView
-        android:id="@+id/textViewTitleDialog"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/title_ranking"
-        android:textSize="22sp"
-     	android:textColor="@color/white" />
-
+	        android:id="@+id/textViewTitleDialog"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	   		android:paddingTop="@dimen/icon_vertical_margin"
+	        android:gravity="center"
+	        android:text="@string/title_ranking"
+	     	android:textColor="@color/white"
+			android:textSize="32sp"
+			android:textStyle="bold" />
+		
         <Button
-	        android:id="@+id/btRankingClose"
+            android:id="@+id/btBackRanking"
 	        android:layout_width="40dp"
 	        android:layout_height="40dp"
-	        android:gravity="top" />
+    		android:layout_alignParentRight="true"
+	        android:background="@drawable/back"
+            android:onClick="onClickBack" />
         
-    </LinearLayout>
+    </RelativeLayout>
     
 	<View android:id="@+id/titleDialogDivider"
-	        android:layout_width="match_parent"
-	        android:layout_height="2dip"
-	        android:background="#FF33B5E5" />
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#FF33B5E5" />
 	
 	<ScrollView
-	    android:id="@+id/scrollView1"
+	    android:id="@+id/scrollViewRanking"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content" >
 	
@@ -46,7 +54,7 @@
 		    android:paddingBottom="@dimen/activity_vertical_margin"
 		    android:paddingLeft="@dimen/activity_horizontal_margin"
 		    android:paddingRight="@dimen/activity_horizontal_margin"
-		    android:paddingTop="@dimen/activity_vertical_margin"
+		    android:paddingTop="@dimen/icon_vertical_margin"
 			android:gravity="center"
 			android:layout_gravity="center_horizontal"
 			android:shrinkColumns="*"
