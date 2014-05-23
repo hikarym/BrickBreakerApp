@@ -43,11 +43,11 @@ public class MainActivity extends Activity {
 	// Shared preferences file.
     public static final String PREFS_NAME = "PrefsAndScores";
     // Keys for values saved in our preferences file.
-    private static final String DIFFICULTY_KEY = "difficulty";
-    //private static final String NEVER_LOSE_BALL_KEY = "never-lose-ball";
+    //private static final String DIFFICULTY_KEY = "difficulty";
+    private static final String GAME_LEVEL = "game-level";
     private static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
     public static final String HIGH_SCORE_KEY = "high-score";
-    // Highest score seen so far.
+    // Highest score seen so far
     private int mHighScore = 0;
     // Highest score seen so far.
     private String mUser = null;
@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         super.onResume();
         
         restorePreferences();
-        updateControls();
+        //updateControls();
     }
 
     @Override
@@ -170,7 +170,7 @@ public class MainActivity extends Activity {
 	
 	//---Exit the game
 	public void onClickExit(View control){
-		updateControls();
+		//updateControls();
 		finish();
 	}
 	
@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
          */
 
         BrickBreakerActivity.setSoundEffectsEnabled(((CheckBox) view).isChecked());
-        updateControls();
+        //updateControls();
       
         
     }
@@ -253,50 +253,17 @@ public class MainActivity extends Activity {
 	}
 	
 /*************************************************************************************************************/
-	
-    /**
-     * Sets the state of the UI controls to match our internal state.
-     */
-    private static void updateControls() {
-        /*Spinner difficulty = (Spinner) findViewById(R.id.spinner_difficultyLevel);
-        difficulty.setSelection(BrickBreakerActivity.getDifficultyIndex());
-
-        Button resume = (Button) findViewById(R.id.button_resumeGame);
-        resume.setEnabled(BrickBreakerActivity.canResumeFromSave());
-        
-        CheckBox neverLoseBall = (CheckBox) findViewById(R.id.checkbox_neverLoseBall);
-        neverLoseBall.setChecked(BrickBreakerActivity.getNeverLoseBall());
-        
-        CheckBox soundEffectsEnabled = (CheckBox) OptionFragment.mOptionView.findViewById(R.id.checkSound);
-        soundEffectsEnabled.setChecked(BrickBreakerActivity.getSoundEffectsEnabled());
-        
-        TextView highScore = (TextView) findViewById(R.id.text_highScore);
-        highScore.setText(String.valueOf(mHighScore));
-        */
-    }
-    
-
-    
+	   
     
     /**
      * Copies settings to the saved preferences.
      */
     private void savePreferences() {
-        /*
-         * We could put a version number in the preferences so that, if a future version of the
-         * app substantially changes the meaning of the preferences, we have a way to figure
-         * out what they mean (or figure out that we can't understand them).  We only have a
-         * handful of preferences, and the only interesting one -- the difficulty index -- is
-         * trivial to range-check.  We don't need it, so we're not going to build it.  (And
-         * if we need it later, the absence of a version number in the prefs is telling, so
-         * we're not going to end up in a situation where we can't decipher the prefs file.)
-         */
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putInt(DIFFICULTY_KEY, BrickBreakerActivity.getDifficultyIndex());
-        //editor.putBoolean(NEVER_LOSE_BALL_KEY, BrickBreakerActivity.getNeverLoseBall());
+        editor.putInt(GAME_LEVEL, BrickBreakerActivity.getLevelIndex());
         editor.putBoolean(SOUND_EFFECTS_ENABLED_KEY, BrickBreakerActivity.getSoundEffectsEnabled());
         editor.commit();
     }
@@ -309,9 +276,7 @@ public class MainActivity extends Activity {
 
         // If the saved prefs come from a different version of the game, the difficulty level
         // might be out of range.  The code in BrickBreakerActivity will reset it to default.
-        BrickBreakerActivity.setDifficultyIndex(prefs.getInt(DIFFICULTY_KEY,
-                BrickBreakerActivity.getDefaultDifficultyIndex()));
-        //BrickBreakerActivit/y.setNeverLoseBall(prefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
+        BrickBreakerActivity.setLevelIndex(prefs.getInt(GAME_LEVEL, BrickBreakerActivity.getDefaultLevelIndex()));
         BrickBreakerActivity.setSoundEffectsEnabled(prefs.getBoolean(SOUND_EFFECTS_ENABLED_KEY, true));
 
         mHighScore = prefs.getInt(HIGH_SCORE_KEY, 0);

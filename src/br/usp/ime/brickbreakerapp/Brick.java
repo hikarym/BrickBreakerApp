@@ -15,21 +15,27 @@ public class Brick extends TexturedBasicAlignedRect {
      * for a demo app.
      */
 
-    private boolean mAlive = false;
+    //private boolean mAlive = false;
     private int mPoints = 0;
-
-    /**
-     * Returns whether or not the brick is "alive".
+    /*
+     * Type of brick
+     * 0:dead, 1:normal, 2: especial brick 'rock'(destroyed with 2 hits )
+     * 3:especial brick(steel)(destroyed with 3 hits)
      */
-    public boolean isAlive() {
-        return mAlive;
+    private int mBrickState = 0; 
+    
+    /**
+     * Returns the state of brick
+     */
+    public int getBrickState() {
+        return mBrickState;
     }
 
     /**
      * Sets the brick liveness.
      */
-    public void setAlive(boolean alive) {
-        mAlive = alive;
+    public void setBrickState(int state) {
+        mBrickState = state;
     }
 
     /**
@@ -45,4 +51,12 @@ public class Brick extends TexturedBasicAlignedRect {
     public void setScoreValue(int points) {
         mPoints = points;
     }
+    
+    /**
+     * Verify whether a brick is alive
+     */
+    public boolean isAlive(){
+    	return (mBrickState!=0? true:false);
+    }
+    
 }
