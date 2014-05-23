@@ -38,10 +38,10 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     
     private boolean started=false;
 
-    public void setStarted(boolean value){
+    public void setStarted(boolean value) {
     	started=value;
     }
-    public boolean getStarted(){
+    public boolean getStarted() {
     	return started;
     }
 
@@ -163,7 +163,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     	
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
 
-        //if (started){     		
+        //if (started) {     		
         	Log.v(TAG, "CRIANDO NoVO FRAME");
         	BrickBreakerState.calculateNextFrame();
         //}
@@ -258,26 +258,26 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Restart game after the player touches the screen
      */
-    public void actionDownTouchEvent(float x, float y){
+    public void actionDownTouchEvent(float x, float y) {
     	Log.v(TAG, "reanudando o jogo..."+ String.valueOf(mBrickBreakerState.getGamePlayState()));
+    	
     	float arenaX, arenaY;
     	arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
 		arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
 		
         switch (mBrickBreakerState.getGamePlayState()) {
-		case BrickBreakerState.GAME_PAUSE:
-        	mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        	mBrickBreakerState.RestartGame();
-			break;
-		case BrickBreakerState.GAME_LOST:			
-			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
-			
-			break;
-		case BrickBreakerState.GAME_WON:
-			mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
-			break;		
-		default:
-			break;
-		}    	
+			case BrickBreakerState.GAME_PAUSE:
+				mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+				mBrickBreakerState.RestartGame();
+				break;
+			case BrickBreakerState.GAME_LOST:
+				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+				break;
+			case BrickBreakerState.GAME_WON:
+				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+				break;
+			default:
+				break;
+		}
     }
 }

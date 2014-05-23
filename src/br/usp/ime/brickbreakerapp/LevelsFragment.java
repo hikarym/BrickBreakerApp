@@ -27,7 +27,9 @@ import android.widget.Toast;
 public class LevelsFragment extends Fragment {
 	public static final String TAG = "LevelsFragment";
 
-	private static int MAX_LEVELS = 6;
+    public static final int MIN_LEVEL = 1;
+	public static final int MAX_LEVEL = 6;
+	
 	private static List<String> mLevelList;
 	private static Integer[] mImageIDs = {
 			            R.drawable.background_3,
@@ -49,7 +51,7 @@ public class LevelsFragment extends Fragment {
 		
 		mLevelList = new ArrayList<String>();
 		
-		for(int i = 1; i <= MAX_LEVELS; i++)
+		for(int i = 1; i <= MAX_LEVEL; i++)
 			mLevelList.add("Level " + i);
 		
 	}
@@ -116,7 +118,7 @@ public class LevelsFragment extends Fragment {
 		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		Button btBackLevels = (Button) mLevelsView.findViewById(R.id.btBackLevels);
 		btBackLevels.setSoundEffectsEnabled(isSoundEnabled);

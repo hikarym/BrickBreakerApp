@@ -5,59 +5,48 @@ import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
 
-/**
- * Ball object.
+/*
+ * Ball object
  */
 public class Ball extends TexturedAlignedRect {
-    private static final String TAG = MainActivity.TAG;
-
-    private static final int TEX_SIZE = 64;        // dimension for square texture (power of 2)
-    private static final int DATA_FORMAT = GLES20.GL_RGBA;  // 8bpp RGBA
-    private static final int BYTES_PER_PIXEL = 4;
-
-    // Normalized motion vector.
-    private float mMotionX;
-    private float mMotionY;
-
-    // Speed, expressed in terms of steps per second.  A speed of 60 will move the ball
-    // 60 arena-units per second, or 1 unit per frame on a 60Hz device.  This is not the same
-    // as 1 *pixel* per frame unless the arena units happen to match up.
-    private int mSpeed;
-
-    public Ball() {
-        if (true) {
-            setTexture(generateBallTexture(), TEX_SIZE, TEX_SIZE, DATA_FORMAT);
-            // Ball diameter is an odd number of pixels.
-            setTextureCoords(new Rect(0, 0, TEX_SIZE-1, TEX_SIZE-1));
-        } else {
-            setTexture(generateTestTexture(), TEX_SIZE, TEX_SIZE, DATA_FORMAT);
-            setTextureCoords(new Rect(0, 0, TEX_SIZE, TEX_SIZE));
-        }
-    }
-
-    /**
-     * Gets the motion vector X component.
-     */
-    public float getXDirection() {
-        return mMotionX;
-    }
-
-    /**
-     * Gets the motion vector Y component.
-     */
-    public float getYDirection() {
-        return mMotionY;
-    }
-
-    /**
-     * Sets the motion vector.  Input values will be normalized.
-     */
-    public void setDirection(float deltaX, float deltaY) {
-        float mag = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        mMotionX = deltaX / mag;
-        mMotionY = deltaY / mag;
-    }
-
+	private static final String TAG = MainActivity.TAG;
+	
+	private static final int TEX_SIZE = 64;        // dimension for square texture (power of 2)
+	private static final int DATA_FORMAT = GLES20.GL_RGBA;  // 8bpp RGBA
+	private static final int BYTES_PER_PIXEL = 4;
+	
+	// Normalized motion vector.
+	private float mMotionX;
+	private float mMotionY;
+	
+	// Speed, expressed in terms of steps per second.  A speed of 60 will move the ball
+	// 60 arena-units per second, or 1 unit per frame on a 60Hz device.  This is not the same
+	// as 1 *pixel* per frame unless the arena units happen to match up.
+	private int mSpeed;
+	
+	public Ball() {
+		setTexture(generateBallTexture(), TEX_SIZE, TEX_SIZE, DATA_FORMAT);
+		// Ball diameter is an odd number of pixels.
+		setTextureCoords(new Rect(0, 0, TEX_SIZE-1, TEX_SIZE-1));
+	}
+	
+	//---Gets the motion vector X component.
+	public float getXDirection() {
+		return mMotionX;
+	}
+	
+	//---Gets the motion vector Y component.
+	public float getYDirection() {
+		return mMotionY;
+	}
+	
+	//---Sets the motion vector.  Input values will be normalized.
+	public void setDirection(float deltaX, float deltaY) {
+		float mag = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		mMotionX = deltaX / mag;
+		mMotionY = deltaY / mag;
+	}
+	
     /**
      * Gets the speed, in arena-units per second.
      */

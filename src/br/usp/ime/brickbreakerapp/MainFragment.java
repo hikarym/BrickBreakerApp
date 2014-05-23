@@ -167,7 +167,7 @@ public class MainFragment extends Fragment {
 		Log.d(TAG, "MainFragment.updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		TextView btPlay = (TextView) mMainView.findViewById(R.id.btPlay);
 		btPlay.setSoundEffectsEnabled(isSoundEnabled);

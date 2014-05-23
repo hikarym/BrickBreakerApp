@@ -145,7 +145,7 @@ public class RankingFragment extends Fragment {
 		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		Button btBackRanking = (Button) mRankingView.findViewById(R.id.btBackRanking);
 		btBackRanking.setSoundEffectsEnabled(isSoundEnabled);

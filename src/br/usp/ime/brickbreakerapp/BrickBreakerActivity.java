@@ -16,21 +16,19 @@ import android.widget.Toast;
 /**
  * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
  */
+//---Activity for the game
 public class BrickBreakerActivity extends Activity {
     private static final String TAG = MainActivity.TAG;
-
-
-    private static final int LEVEL_MIN = 1;
-    private static final int LEVEL_MAX = 6;        // inclusive
-    private static final int LEVEL_DEFAULT = 1;
-    //private static int sDifficultyIndex = 1;
-    private static int sLevelGame = 1;
-        
-
-    //private static boolean sNeverLoseBall;
+    
+	public static final int DEFAULT_LEVEL = MainActivity.DEFAULT_LEVEL;
+	public static final int MIN_LEVEL = LevelsFragment.MIN_LEVEL;
+    public static final int MAX_LEVEL = LevelsFragment.MAX_LEVEL;
     
 	// Flag to indicate if sounds effects of game are enabled or not
-	private static boolean statusSoundEffectsEnabled;
+    private static int sLevelGame = 1;
+    
+	// Flag to indicate if sounds effects of game are enabled or not
+	private static boolean sSfxEnabled;
 	
     // The Activity has one View, a GL surface.
     private BrickBreakerSurfaceView mGLView;
@@ -225,6 +223,8 @@ public class BrickBreakerActivity extends Activity {
 		super.onBackPressed();
 		
 		overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+		
+		// finish();
 	}
 	
     /**
@@ -351,7 +351,7 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setBackgroundLevel(mBackgroundTextureImg);
         
 
-        SoundResources.setSoundEffectsEnabled(statusSoundEffectsEnabled);
+        SoundResources.setSoundEffectsEnabled(sSfxEnabled);
     }
     
     /**
@@ -374,21 +374,12 @@ public class BrickBreakerActivity extends Activity {
 		return mBrickStatesConfig;
 		
 	}
-    
-    /**
-     * Gets the difficulty index, used to configure the game parameters.
-     */
+	
+    //---Returns the default level index
     public static int getLevelIndex() {
         return sLevelGame;
     }
-
-    /**
-     * Gets the default difficulty index.  This should be used if no preference has been saved.
-     */
-    public static int getDefaultLevelIndex() {
-        return LEVEL_DEFAULT;
-    }
-
+    
     /**
      * Configures various tunable parameters based on the difficulty index.
      * <p>
@@ -397,9 +388,9 @@ public class BrickBreakerActivity extends Activity {
     public static void setLevelIndex(int levelIndex) {
         // This could be coming from preferences set by a different version of the game.  We
         // want to be tolerant of values we don't recognize.
-        if (levelIndex < LEVEL_MIN || levelIndex > LEVEL_MAX) {
+        if (levelIndex < MIN_LEVEL || levelIndex > MAX_LEVEL) {
             Log.w(TAG, "Invalid difficulty index " + levelIndex + ", using default");
-            levelIndex = LEVEL_DEFAULT;
+            levelIndex = DEFAULT_LEVEL;
         }
 
         if (sLevelGame != levelIndex) {
@@ -410,13 +401,13 @@ public class BrickBreakerActivity extends Activity {
     
     //---Returns true if sound effects are enabled, and false otherwise
     public static boolean isSoundEffectsEnabled() {
-        return statusSoundEffectsEnabled;
+        return sSfxEnabled;
 
     }
 
     //---Enables or disables sound effects
     public static void setSoundEffectsEnabled(boolean soundEffectsEnabled) {
-    	statusSoundEffectsEnabled = soundEffectsEnabled;
+    	sSfxEnabled = soundEffectsEnabled;
     }
 
     /**

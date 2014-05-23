@@ -32,6 +32,9 @@ import android.widget.Toast;
 public class OptionFragment extends Fragment {
 	public static final String TAG = "OptionFragment";
 	
+	public static final String DEFAULT_USERNAME = "Master";
+	public static final Boolean DEFAULT_SFX_STATUS = true; // Sound effects enabled status
+	
 	// Fragment View
 	private static View mOptionView;
 
@@ -39,7 +42,7 @@ public class OptionFragment extends Fragment {
 	private static String mCurrentUsername;
 	
 	public OptionFragment() {
-		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, MainActivity.DEFAULT_USERNAME);
+		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, DEFAULT_USERNAME);
 	}
 	
 	@Override
@@ -133,15 +136,14 @@ public class OptionFragment extends Fragment {
 		
 		//int box_id = getResources().getIdentifier("btn_check", "drawable", "android");
 		int box_id = getResources().getIdentifier("btn_check_holo_dark", "drawable", "android");
-		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+		boolean isSoundEnabled = MainActivity.getBooPref(MainActivity.SFX_ENABLED_KEY, DEFAULT_SFX_STATUS);
 		
 		CheckBox soundEffectsEnabled = (CheckBox) mOptionView.findViewById(R.id.checkSound);
 		soundEffectsEnabled.setChecked(isSoundEnabled);
 		soundEffectsEnabled.setButtonDrawable(box_id);
 		soundEffectsEnabled.setSoundEffectsEnabled(isSoundEnabled);
 		
-		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, MainActivity.DEFAULT_USERNAME);
+		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, DEFAULT_USERNAME);
 		
 		Button btChangeUsername = (Button) mOptionView.findViewById(R.id.btChangeUsername);
 		btChangeUsername.setText("User: " + mCurrentUsername);

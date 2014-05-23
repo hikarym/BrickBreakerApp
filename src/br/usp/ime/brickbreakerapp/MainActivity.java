@@ -53,18 +53,19 @@ public class MainActivity extends Activity {
 	
 	/** Preference keys **/
 
-	// Shared preferences file.
-
-    public static final String PREFS_NAME = "PrefsAndScores";
-    // Keys for values saved in our preferences file.
-    //private static final String DIFFICULTY_KEY = "difficulty";
-    private static final String GAME_LEVEL_KEY = "game-level";
-    public static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
-    public static final String HIGH_SCORE_KEY = "high-score";
+	// Shared preferences file
+    public static final String PREFS_NAME = "Prefs";
+    
+    // Keys for the values to be saved in our preferences file
 	public static final String USERNAME_KEY = "username";
+    public static final String HIGH_SCORE_KEY = "high-score";
+    public static final String SFX_ENABLED_KEY = "sound-effects-enabled"; // Sound effects enabled key
+    public static final String GAME_LEVEL_KEY = "game-level";
 	
-	public static final String DEFAULT_USERNAME = "Master";
-	public static final Boolean DEFAULT_SOUND_EFFECTS_STATUS = true; // DEFAULT_SOUND_EFFECTS_STATUS
+	// Default values for the keys
+	public static final String DEFAULT_USERNAME = OptionFragment.DEFAULT_USERNAME;
+	public static final Boolean DEFAULT_SFX_STATUS = OptionFragment.DEFAULT_SFX_STATUS;
+	public static final int DEFAULT_LEVEL = LevelsFragment.MIN_LEVEL;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +236,7 @@ public class MainActivity extends Activity {
 		
 		//editor.putInt(DIFFICULTY_KEY, BrickBreakerActivity.getDifficultyIndex());
 		//editor.putBoolean(NEVER_LOSE_BALL_KEY, BrickBreakerActivity.getNeverLoseBall());
-		editor.putBoolean(SOUND_EFFECTS_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
+		editor.putBoolean(SFX_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
 		editor.putString(USERNAME_KEY, OptionFragment.getCurrentUsername());
 		editor.putInt(GAME_LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
 		editor.commit();
@@ -248,7 +249,7 @@ public class MainActivity extends Activity {
 		//BrickBreakerActivity.setNeverLoseBall(mPrefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
 		//BrickBreakerActivity.setLevel(mPrefs.getInt(LEVEL_KEY, 1));
 		BrickBreakerActivity.setSoundEffectsEnabled(
-				mPrefs.getBoolean(SOUND_EFFECTS_ENABLED_KEY, DEFAULT_SOUND_EFFECTS_STATUS));
+				mPrefs.getBoolean(SFX_ENABLED_KEY, DEFAULT_SFX_STATUS));
 		
 		OptionFragment.setCurrentUsername(mPrefs.getString(USERNAME_KEY, DEFAULT_USERNAME));
 	}
@@ -374,7 +375,7 @@ public class MainActivity extends Activity {
 		
 		usernameField.setHint(DEFAULT_USERNAME);
 		usernameField.setBackgroundColor(Color.WHITE);
-		usernameField.setSoundEffectsEnabled(getBooPref(SOUND_EFFECTS_ENABLED_KEY, DEFAULT_SOUND_EFFECTS_STATUS));
+		usernameField.setSoundEffectsEnabled(getBooPref(SFX_ENABLED_KEY, DEFAULT_SFX_STATUS));
 		usernameField.setInputType(InputType.TYPE_CLASS_TEXT);
 		usernameField.requestFocus();
 		usernameField.setOnKeyListener(new OnKeyListener() {
@@ -429,10 +430,35 @@ public class MainActivity extends Activity {
 				}).show();
 	}
 	
-	
+	/*
 	public class RemoteControlReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			
+			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+				
+				int volume = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
+				
+				if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(true);
+					savePreferences();
+				}
+
+				else if (KeyEvent.KEYCODE_VOLUME_UP == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(true);
+					// Handle key press.
+
+					savePreferences();
+				}
+				else if (KeyEvent.KEYCODE_VOLUME_MUTE == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(false);
+					// Handle key press.
+
+					savePreferences();
+				}
+			}
+			
 			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
 				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 				
@@ -450,4 +476,5 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
+	*/
 }

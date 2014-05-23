@@ -10,14 +10,14 @@ import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
-/**
- * This is the primary class for the game itself.
+/*
+ * Primary class for the game
  */
 public class BrickBreakerState {
 	private static final String TAG = MainActivity.TAG;
 	public static final boolean DEBUG_COLLISIONS = false;       // enable increased logging
 	public static final boolean SHOW_DEBUG_STUFF = false;       // enable on-screen debugging
-
+	
 	// Gameplay configurables.  These may not be changed while the game is in progress, and
 	// changing a value invalidates the saved game.	
 	private int mMaxLives = 3;
@@ -27,6 +27,7 @@ public class BrickBreakerState {
 	private float mPaddleSizeMultiplier = 1.0f;
 	private float mScoreMultiplier = 1.0f;
 	private float mButtonMultiplier = 1.0f;
+	
 	/*
 	 * State of each brick
 	 * 0: empty,
@@ -41,6 +42,7 @@ public class BrickBreakerState {
 	private static final int BRICK_3HITS = 3;
 	private static final int BRICK_ESPECIAL1 = 4;
 	private static final int BRICK_ESPECIAL2 = 5;
+	
 	// Number of brick states
 	private static final int BRICK_STATES = 6;
 	// Number of levels
