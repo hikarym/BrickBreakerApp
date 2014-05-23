@@ -23,26 +23,12 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
         super(context);
 
         setEGLContextClientVersion(2);      // Request OpenGL ES 2.0
-
-        // Create our Renderer object, and tell the GLSurfaceView code about it.  This also
-        // starts the renderer thread, which will be calling the various callback methods
-        // in the BrickBreakerSurfaceRenderer class.
         mRenderer = new BrickBreakerSurfaceRenderer(context, brickBreakerState, this, textConfig);
         setRenderer(mRenderer);
-        //onPause();
     }
 
     @Override
     public void onPause() {
-        /*
-         * We call a "pause" function in our Renderer class, which tells it to save state and
-         * go to sleep.  Because it's running in the Renderer thread, we call it through
-         * queueEvent(), which doesn't wait for the code to actually execute.  In theory the
-         * application could be killed shortly after we return from here, which would be bad if
-         * it happened while the Renderer thread was still saving off important state.  We need
-         * to wait for it to finish.
-         */
-
         super.onPause();
 
         //Log.d(TAG, "asking renderer to pause");
@@ -58,14 +44,6 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        /*
-         * Forward touch events to the game loop.  We don't want to call Renderer methods
-         * directly, because they manipulate state that is "owned" by a different thread.  We
-         * use the GLSurfaceView queueEvent() function to execute it there.
-         *
-         * This increases the latency of our touch response slightly, but it shouldn't be
-         * noticeable.
-         */
     	if (!mRenderer.getStarted())
     		mRenderer.setStarted(true);
     	

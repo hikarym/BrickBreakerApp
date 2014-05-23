@@ -15,23 +15,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
@@ -40,8 +32,6 @@ public class MainActivity extends Activity {
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
 
 	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
-
-	//private static OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
 	
 	private FragmentManager mFragmentManager = null;
 	private AudioManager mAudioManager = null;
@@ -49,17 +39,14 @@ public class MainActivity extends Activity {
 	/** Preference keys **/
 
 	// Shared preferences file.
-
     public static final String PREFS_NAME = "PrefsAndScores";
-    // Keys for values saved in our preferences file.
-    //private static final String DIFFICULTY_KEY = "difficulty";
     private static final String GAME_LEVEL = "game-level";
     public static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
     public static final String HIGH_SCORE_KEY = "high-score";
     // Highest score seen so far
-    private int mHighScore = 0;
+    //private int mHighScore = 0;
     // Highest score seen so far.
-    private String mUser = null;
+    //private String mUser = null;
 
 	public static final String USERNAME_KEY = "username";
 	
@@ -207,25 +194,16 @@ public class MainActivity extends Activity {
 	
 	//---Copies settings to the saved preferences' file
 	private void savePreferences() {
-		//SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor editor = mPrefs.edit();
 		
-		//editor.putInt(DIFFICULTY_KEY, BrickBreakerActivity.getDifficultyIndex());
-		//editor.putBoolean(NEVER_LOSE_BALL_KEY, BrickBreakerActivity.getNeverLoseBall());
 		editor.putBoolean(SOUND_EFFECTS_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
 		editor.putString(USERNAME_KEY, OptionFragment.getCurrentUsername());
 		editor.putInt(GAME_LEVEL, BrickBreakerActivity.getLevelIndex());
-		//editor.putInt(LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
 		editor.commit();
 	}
 	
 	//---Retrieves settings from the saved preferences' file
 	private void restorePreferences() {
-		//BrickBreakerActivity.setDifficultyIndex(mPrefs.getInt(DIFFICULTY_KEY,
-		//		BrickBreakerActivity.getDefaultDifficultyIndex()));
-		//BrickBreakerActivity.setNeverLoseBall(mPrefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
-		//BrickBreakerActivity.setLevel(mPrefs.getInt(LEVEL_KEY, 1));
 		BrickBreakerActivity.setSoundEffectsEnabled(
 				mPrefs.getBoolean(SOUND_EFFECTS_ENABLED_KEY, DEFAULT_SOUND_EFFECTS_STATUS));
 		

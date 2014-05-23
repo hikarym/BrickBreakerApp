@@ -259,7 +259,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
      * Restart game after the player touches the screen
      */
     public void actionDownTouchEvent(float x, float y){
-    	Log.v(TAG, "reanudando o jogo..."+ String.valueOf(mBrickBreakerState.getGamePlayState()));
+    	Log.v(TAG, "Restarting the game..."+ String.valueOf(mBrickBreakerState.getGamePlayState()));
     	float arenaX, arenaY;
     	arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
 		arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);

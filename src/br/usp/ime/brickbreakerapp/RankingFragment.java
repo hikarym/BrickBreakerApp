@@ -1,12 +1,10 @@
 package br.usp.ime.brickbreakerapp;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
