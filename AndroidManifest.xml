@@ -22,20 +22,37 @@
         android:theme="@style/AppTheme" >
         
         <!-- BroadcastReceiver for volume -->
-		<receiver android:name=".RemoteControlReceiver">
+        <!--
+		<receiver
+		    android:name=".RemoteControlReceiver">
+		    
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON" />
 			</intent-filter>
+			
+			
+			<intent-filter>
+				<action android:name="android.media.VOLUME_CHANGED_ACTION" />
+			</intent-filter>
 		</receiver>
+		-->
+		<!-- Service for music -->
+		<!--
+		<service
+		    android:name="MusicService"
+		    android:enabled="true" />
+		
+		-->
 		
         <!-- MainActivity -->
         <activity
             android:name="br.usp.ime.brickbreakerapp.MainActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+				
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -43,6 +60,7 @@
         <!-- BrickBreaker activity. -->
         <activity
             android:name="br.usp.ime.brickbreakerapp.BrickBreakerActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>

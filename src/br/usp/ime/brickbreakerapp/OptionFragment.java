@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -18,23 +19,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class OptionFragment extends Fragment {
-	public static final String TAG = MainActivity.TAG;
+	public static final String TAG = "OptionFragment";
+	
+	public static final String DEFAULT_USERNAME = "Master";
+	public static final Boolean DEFAULT_SFX_STATUS = true; // Sound effects enabled status
 	
 	// Fragment View
-	private View mOptionView;
+	private static View mOptionView;
 
 	// Current user name
 	private static String mCurrentUsername;
 	
 	public OptionFragment() {
-		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, MainActivity.DEFAULT_USERNAME);
+		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, DEFAULT_USERNAME);
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "OptionFragment.onCreateView");
+		Log.d(MainActivity.TAG, TAG + ".onCreateView");
 		
 		mOptionView = inflater.inflate(
 				R.layout.fragment_option, container, false);
@@ -46,7 +50,7 @@ public class OptionFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		Log.d(TAG, "OptionFragment.onResume");
+		Log.d(MainActivity.TAG, TAG + ".onResume");
 		
 		super.onResume();
 		
@@ -65,6 +69,7 @@ public class OptionFragment extends Fragment {
     
     private void setUpButtons() {
     	CheckBox soundEffectsEnabled = (CheckBox) mOptionView.findViewById(R.id.checkSound);
+    	soundEffectsEnabled.setTextColor(Color.GREEN);
 		soundEffectsEnabled.setOnTouchListener(new TextView.OnTouchListener() {
 			
     		@Override
@@ -108,8 +113,8 @@ public class OptionFragment extends Fragment {
 /************************************* Handling saved preferences *********************************************/
     
 	//---Sets the state of the UI controls to match our internal state
-	private void updateControls() {
-		Log.d(TAG, "OptionFragment.updateControls");
+	protected void updateControls() {
+		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		/*Spinner difficulty = (Spinner) findViewById(R.id.spinner_difficultyLevel);
 		difficulty.setSelection(BrickBreakerActivity.getDifficultyIndex());
@@ -120,15 +125,14 @@ public class OptionFragment extends Fragment {
 		
 		//int box_id = getResources().getIdentifier("btn_check", "drawable", "android");
 		int box_id = getResources().getIdentifier("btn_check_holo_dark", "drawable", "android");
-		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+		boolean isSoundEnabled = MainActivity.getBooPref(MainActivity.SFX_ENABLED_KEY, DEFAULT_SFX_STATUS);
 		
 		CheckBox soundEffectsEnabled = (CheckBox) mOptionView.findViewById(R.id.checkSound);
 		soundEffectsEnabled.setChecked(isSoundEnabled);
 		soundEffectsEnabled.setButtonDrawable(box_id);
 		soundEffectsEnabled.setSoundEffectsEnabled(isSoundEnabled);
 		
-		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, MainActivity.DEFAULT_USERNAME);
+		mCurrentUsername = MainActivity.getStrPref(MainActivity.USERNAME_KEY, DEFAULT_USERNAME);
 		
 		Button btChangeUsername = (Button) mOptionView.findViewById(R.id.btChangeUsername);
 		btChangeUsername.setText("User: " + mCurrentUsername);

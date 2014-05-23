@@ -23,7 +23,7 @@ public class MainFragment extends Fragment {
 		mMainView = inflater.inflate(R.layout.fragment_main,
 				container, false);
 		
-		setUpButtons();
+		setUp();
 		
 		return mMainView;
     }
@@ -37,8 +37,11 @@ public class MainFragment extends Fragment {
 		updateControls();
 	}
 	
-    private void setUpButtons() {
-		Log.d(TAG, "MainFragment.setUpButtons");
+    private void setUp() {
+		Log.d(TAG, "MainFragment.setUp");
+		
+		TextView textViewTitleOption = (TextView) mMainView.findViewById(R.id.textViewTitleMain);
+		textViewTitleOption.setTextColor(Color.RED);
 		
     	TextView btPlay = (TextView) mMainView.findViewById(R.id.btPlay);
     	btPlay.setOnTouchListener(new TextView.OnTouchListener() {
@@ -156,7 +159,7 @@ public class MainFragment extends Fragment {
 		Log.d(TAG, "MainFragment.updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		TextView btPlay = (TextView) mMainView.findViewById(R.id.btPlay);
 		btPlay.setSoundEffectsEnabled(isSoundEnabled);

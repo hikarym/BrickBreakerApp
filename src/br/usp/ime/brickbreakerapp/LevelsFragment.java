@@ -19,9 +19,11 @@ import android.widget.Button;
 import android.widget.GridView;
 
 public class LevelsFragment extends Fragment {
-	public static final String TAG = MainActivity.TAG;
+	public static final String TAG = "LevelsFragment";
 
-	private static int MAX_LEVELS = 6;
+    public static final int MIN_LEVEL = 1;
+	public static final int MAX_LEVEL = 6;
+	
 	private static List<String> mLevelList;
 	private static Integer[] mImageIDs = {
 			            R.drawable.background_3,
@@ -37,13 +39,13 @@ public class LevelsFragment extends Fragment {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "LevelsFragment.onCreate");
+		Log.d(MainActivity.TAG, TAG + ".onCreate");
 		
 		super.onCreate(savedInstanceState);
 		
 		mLevelList = new ArrayList<String>();
 		
-		for(int i = 1; i <= MAX_LEVELS; i++)
+		for(int i = 1; i <= MAX_LEVEL; i++)
 			mLevelList.add("Level " + i);
 		
 	}
@@ -52,7 +54,7 @@ public class LevelsFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "LevelsFragment.onCreateView");
+		Log.d(MainActivity.TAG, TAG + ".onCreateView");
 		
 		mLevelsView = inflater.inflate(
 				R.layout.fragment_levels, container, false);
@@ -67,7 +69,7 @@ public class LevelsFragment extends Fragment {
 	
 	@Override
 	public void onResume() {
-		Log.d(TAG, "OptionFragment.onResume");
+		Log.d(MainActivity.TAG, TAG + ".onResume");
 		
 		super.onResume();
 		
@@ -75,7 +77,7 @@ public class LevelsFragment extends Fragment {
 	}
 	
 	private void setUpGridView() {
-		Log.d(TAG, "LevelsFragment.setUpGridView");
+		Log.d(MainActivity.TAG, TAG + ".setUpGridView");
 		
 		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
 				mImageIDs));
@@ -107,10 +109,10 @@ public class LevelsFragment extends Fragment {
 	
 	//---Sets the state of the UI controls to match our internal state
 	private void updateControls() {
-		Log.d(TAG, "LevelsFragment.updateControls");
+		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		Button btBackLevels = (Button) mLevelsView.findViewById(R.id.btBackLevels);
 		btBackLevels.setSoundEffectsEnabled(isSoundEnabled);

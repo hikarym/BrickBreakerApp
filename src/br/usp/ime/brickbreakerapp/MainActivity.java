@@ -2,6 +2,7 @@ package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.sqlite.BbSQliteHelper;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -33,25 +34,29 @@ public class MainActivity extends Activity {
 
 	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
 	
+	// This is done so we won't have to create new fragments all the time
+	//private OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
+	//private LevelsFragment mLevelsFragment = null; // Level fragment to help handle the preferences
+	
 	private FragmentManager mFragmentManager = null;
+	private Fragment mFragment = null; // Helper to handle current fragment
+	
 	private AudioManager mAudioManager = null;
 	
 	/** Preference keys **/
-
-	// Shared preferences file.
-    public static final String PREFS_NAME = "PrefsAndScores";
-    private static final String GAME_LEVEL = "game-level";
-    public static final String SOUND_EFFECTS_ENABLED_KEY = "sound-effects-enabled";
-    public static final String HIGH_SCORE_KEY = "high-score";
-    // Highest score seen so far
-    //private int mHighScore = 0;
-    // Highest score seen so far.
-    //private String mUser = null;
-
+	// Shared preferences file
+    public static final String PREFS_NAME = "Prefs";    
+    // Keys for the values to be saved in our preferences file
 	public static final String USERNAME_KEY = "username";
+    public static final String HIGH_SCORE_KEY = "high-score";
+    // Sound effects enabled key
+    public static final String SFX_ENABLED_KEY = "sound-effects-enabled"; 
+    public static final String GAME_LEVEL_KEY = "game-level";
 	
-	public static final String DEFAULT_USERNAME = "Master";
-	public static final Boolean DEFAULT_SOUND_EFFECTS_STATUS = true; // DEFAULT_SOUND_EFFECTS_STATUS
+	// Default values for the keys
+	public static final String DEFAULT_USERNAME = OptionFragment.DEFAULT_USERNAME;
+	public static final Boolean DEFAULT_SFX_STATUS = OptionFragment.DEFAULT_SFX_STATUS;
+	public static final int DEFAULT_LEVEL = LevelsFragment.MIN_LEVEL;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +77,23 @@ public class MainActivity extends Activity {
 		// Start listening for button presses
 		//mAudioManager.registerMediaButtonEventReceiver(RemoteControlReceiver);---------------------------------
 		
-		// Initialize the Option Fragment
+		
+		/*
+		// Retrieve and cache the system's default "short" animation time.
+		mShortAnimationDuration = getResources().getInteger(
+				android.R.integer.config_shortAnimTime);
+		*/
+		// Initialize the fragments
 		//mOptionFragment = new OptionFragment();
+		//mLevelsFragment = new LevelsFragment();
 		
 		//mPrefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		mBbScoreDB = new BbSQliteHelper(this);
 		
 		// Show main menu
-		displayFragment(new MainFragment());
+		mFragment = new MainFragment();
+		displayFragment(mFragment);
 	}
 	
 	@Override
@@ -115,27 +128,41 @@ public class MainActivity extends Activity {
 		// Closes the BbSQLiteHelper
 		mBbScoreDB.close();
 	}
-
-	private void displayFragment(Fragment newFragment) {
+	
+	//---Show the view of the fragment without adding it to the back stack of mFragmentManager
+	//---This way, the transition can't be undone
+	private void displayFragment(Fragment fragment) {
 		mFragmentManager.beginTransaction()
-				.replace(R.id.container, newFragment)
+				.replace(R.id.container, fragment)
 				.commit();
 	}
 	
-	private void displayAndAddBackStackFragment(Fragment newFragment) {
+	//---Show the view of the fragment and add it to the back stack of mFragmentManager
+	private void displayAndAddFragment(Fragment fragment) {
 		mFragmentManager.beginTransaction()
-				.replace(R.id.container, newFragment)
+				.setCustomAnimations(R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+						R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+				.replace(R.id.container, fragment)
 				.addToBackStack(null)
 				.commit();
 	}
-
-	private void reloadFragment(Fragment fragment, int fragID) {
+	
+	//---Reload the view of the fragment
+	private void reloadFragment(Fragment fragment) {
+		/*
 		mFragmentManager.popBackStack();
 		
-		displayAndAddBackStackFragment(fragment);
+		mFragmentManager.beginTransaction()
+				.replace(R.id.container, fragment)
+				.addToBackStack(null)
+				.commit();
+		*/
+		
+		// There's no need to create
+		fragment.onResume();
 	}
 	
-	private void displayDialogFragment(DialogFragment newFragment) {
+	private void displayDialogFragment(DialogFragment fragment) {
 		FragmentTransaction ft = mFragmentManager.beginTransaction();
 		Fragment prev = mFragmentManager.findFragmentByTag("dialog");
 		
@@ -145,7 +172,7 @@ public class MainActivity extends Activity {
 		ft.addToBackStack(null);
 		
 		// Show the dialog
-		newFragment.show(ft, "dialog");
+		fragment.show(ft, "dialog");
 	}
 	
 	public static BbSQliteHelper getBbSQliteHelper() {
@@ -195,17 +222,17 @@ public class MainActivity extends Activity {
 	//---Copies settings to the saved preferences' file
 	private void savePreferences() {
 		SharedPreferences.Editor editor = mPrefs.edit();
-		
-		editor.putBoolean(SOUND_EFFECTS_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
+		editor.putBoolean(SFX_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
 		editor.putString(USERNAME_KEY, OptionFragment.getCurrentUsername());
-		editor.putInt(GAME_LEVEL, BrickBreakerActivity.getLevelIndex());
+		editor.putInt(GAME_LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
+
 		editor.commit();
 	}
 	
 	//---Retrieves settings from the saved preferences' file
 	private void restorePreferences() {
 		BrickBreakerActivity.setSoundEffectsEnabled(
-				mPrefs.getBoolean(SOUND_EFFECTS_ENABLED_KEY, DEFAULT_SOUND_EFFECTS_STATUS));
+				mPrefs.getBoolean(SFX_ENABLED_KEY, DEFAULT_SFX_STATUS));
 		
 		OptionFragment.setCurrentUsername(mPrefs.getString(USERNAME_KEY, DEFAULT_USERNAME));
 	}
@@ -224,15 +251,23 @@ public class MainActivity extends Activity {
 	public void onClickLevels(View view) {
 		Log.d(TAG, "MainActivity.onClickLevels");
 		
-		displayAndAddBackStackFragment(new LevelsFragment());
+		mFragment = new LevelsFragment();
+		//displayAndAddFragment(mLevelsFragment);
+		displayAndAddFragment(mFragment);
 	}
 	
 	//----Show a screen with settings(sound, vibration, reset score)
 	public void onClickOption(View view) {
 		Log.d(TAG, "MainActivity.onClickOption");
+		/*
+		if (mOptionFragment == null)
+			mOptionFragment = new OptionFragment();
 		
-		//displayAndAddBackStackFragment(mOptionFragment);
-		displayAndAddBackStackFragment(new OptionFragment());
+		displayAndAddFragment(mOptionFragment);
+		*/
+		
+		mFragment = new OptionFragment();
+		displayAndAddFragment(mFragment);
 	}
 	
 	//---Show the rankings
@@ -240,7 +275,8 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "MainActivity.onClickRanking");
 
 		// Create and show the dialog
-		displayAndAddBackStackFragment(new RankingFragment());
+		mFragment = new RankingFragment();
+		displayAndAddFragment(mFragment);
 		
 		// If there are no recorded scores, show alert dialog
 		if (mBbScoreDB.getHighScore() == -1) {
@@ -272,9 +308,10 @@ public class MainActivity extends Activity {
 	//---Starts the BrickBreakerActivity
 	private void startGame() {
 		Log.d(TAG, "MainActivity.startGame");
-		
 		Intent intent = new Intent(this, BrickBreakerActivity.class);
 		startActivity(intent);
+		
+		overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_left);
         //finish();---------------------------------------------------------------------------------------------
 	}
 	
@@ -299,16 +336,17 @@ public class MainActivity extends Activity {
 		
 		savePreferences();
 		
-		reloadFragment(new OptionFragment(), R.id.fragment_option);
-	}	
-
+		// There's no need to create a new fragment because we know it's running when this method is executed.
+		reloadFragment(mFragment);
+	}
+	
 	//---Reset scores
 	public void onClickResetScore(View view) {
 		Log.d(TAG, "MainActivity.onClickResetScore");
 		
 		// Create and show the dialog
-		DialogFragment newFragment = new OptionFragment.resetScoresFragment(); 
-		displayDialogFragment(newFragment);
+		DialogFragment dialogFragment = new OptionFragment.resetScoresFragment(); 
+		displayDialogFragment(dialogFragment);
 	}
 	
 	//---Change Username
@@ -320,7 +358,7 @@ public class MainActivity extends Activity {
 		
 		usernameField.setHint(DEFAULT_USERNAME);
 		usernameField.setBackgroundColor(Color.WHITE);
-		usernameField.setSoundEffectsEnabled(getBooPref(SOUND_EFFECTS_ENABLED_KEY, DEFAULT_SOUND_EFFECTS_STATUS));
+		usernameField.setSoundEffectsEnabled(getBooPref(SFX_ENABLED_KEY, DEFAULT_SFX_STATUS));
 		usernameField.setInputType(InputType.TYPE_CLASS_TEXT);
 		usernameField.requestFocus();
 		usernameField.setOnKeyListener(new OnKeyListener() {
@@ -368,20 +406,42 @@ public class MainActivity extends Activity {
 							
 							savePreferences();
 							
-							mFragmentManager.popBackStack();
-							
-							mFragmentManager.beginTransaction()
-								.replace(R.id.container, new OptionFragment())
-								.addToBackStack(null)
-								.commit();
+							// There's no need to create a new fragment because we know it's running when this
+							// method is executed.
+							reloadFragment(mFragment);
 						}
 				}).show();
 	}
 	
-	
+	/*
 	public class RemoteControlReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			
+			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+				
+				int volume = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
+				
+				if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(true);
+					savePreferences();
+				}
+
+				else if (KeyEvent.KEYCODE_VOLUME_UP == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(true);
+					// Handle key press.
+
+					savePreferences();
+				}
+				else if (KeyEvent.KEYCODE_VOLUME_MUTE == event.getKeyCode()) {
+					BrickBreakerActivity.setSoundEffectsEnabled(false);
+					// Handle key press.
+
+					savePreferences();
+				}
+			}
+			
 			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
 				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 				
@@ -399,4 +459,5 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
+	*/
 }

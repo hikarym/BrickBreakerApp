@@ -6,6 +6,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@drawable/background_ranking"
+    android:animateLayoutChanges="true"
     tools:context="br.usp.ime.breakoutapp.MainActivity" >
     
     <RelativeLayout
@@ -23,7 +24,7 @@
 	   		android:paddingTop="@dimen/icon_vertical_margin"
 	        android:gravity="center"
 	        android:text="@string/title_ranking"
-	     	android:textColor="@color/white"
+	     	android:textColor="@android:color/white"
 			android:textSize="32sp"
 			android:textStyle="bold" />
 		

@@ -15,7 +15,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class RankingFragment extends Fragment {
-	public static final String TAG = MainActivity.TAG;
+	public static final String TAG = "RankingFragment";
 	
 	private View mRankingView;
 	private TableLayout mRankingTable;
@@ -24,7 +24,7 @@ public class RankingFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.d(TAG, "RankingFragment.onCreateView");
+		Log.d(MainActivity.TAG, TAG + ".onCreateView");
 		
 		mRankingView = inflater.inflate(
 				R.layout.fragment_ranking, container, false);
@@ -40,7 +40,7 @@ public class RankingFragment extends Fragment {
 	
 	@Override
 	public void onResume() {
-		Log.d(TAG, "RankingFragment.onResume");
+		Log.d(MainActivity.TAG, TAG + ".onResume");
 		
 		super.onResume();
 		
@@ -48,7 +48,7 @@ public class RankingFragment extends Fragment {
 	}
 	
 	private void createTableTitle() {
-		Log.d(TAG, "RankingFragment.createTableTitle()");
+		Log.d(MainActivity.TAG, TAG + ".createTableTitle()");
 		
 		// create a new TableRow
 		TableRow row = new TableRow(getActivity());
@@ -84,7 +84,7 @@ public class RankingFragment extends Fragment {
 	}
 	
 	private void createTableRows() {
-		Log.d(TAG, "RankingFragment.createTableRows()");
+		Log.d(MainActivity.TAG, TAG + ".createTableRows()");
 		
 		Cursor cursor;
 		int rank = 0;
@@ -105,7 +105,7 @@ public class RankingFragment extends Fragment {
 	}
 	
 	private void createSingleTableRow(String rank, String username, String score) {
-		Log.d(TAG, "RankingFragment.createSingleTableRow()");
+		Log.d(MainActivity.TAG, TAG + ".createSingleTableRow()");
 		
 		// create a new TableRow
 		TableRow row = new TableRow(getActivity());
@@ -140,10 +140,10 @@ public class RankingFragment extends Fragment {
 	
 	//---Sets the state of the UI controls to match our internal state
 	private void updateControls() {
-		Log.d(TAG, "LevelsFragment.updateControls");
+		Log.d(MainActivity.TAG, TAG + ".updateControls");
 		
 		boolean isSoundEnabled = MainActivity.getBooPref(
-				MainActivity.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS);
+				MainActivity.SFX_ENABLED_KEY, MainActivity.DEFAULT_SFX_STATUS);
 		
 		Button btBackRanking = (Button) mRankingView.findViewById(R.id.btBackRanking);
 		btBackRanking.setSoundEffectsEnabled(isSoundEnabled);

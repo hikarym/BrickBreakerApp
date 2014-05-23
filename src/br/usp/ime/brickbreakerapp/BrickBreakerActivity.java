@@ -7,21 +7,19 @@ import android.util.Log;
 /**
  * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
  */
+//---Activity for the game
 public class BrickBreakerActivity extends Activity {
     private static final String TAG = MainActivity.TAG;
-
-
-    private static final int LEVEL_MIN = 1;
-    private static final int LEVEL_MAX = 6;        // inclusive
-    private static final int LEVEL_DEFAULT = 1;
-    //private static int sDifficultyIndex = 1;
-    private static int sLevelGame = 1;
-        
-
-    //private static boolean sNeverLoseBall;
+    
+	public static final int DEFAULT_LEVEL = MainActivity.DEFAULT_LEVEL;
+	public static final int MIN_LEVEL = LevelsFragment.MIN_LEVEL;
+    public static final int MAX_LEVEL = LevelsFragment.MAX_LEVEL;
     
 	// Flag to indicate if sounds effects of game are enabled or not
-	private static boolean statusSoundEffectsEnabled;
+    private static int sLevelGame = 1;
+    
+	// Flag to indicate if sounds effects of game are enabled or not
+	private static boolean sSfxEnabled;
 	
     // The Activity has one View, a GL surface.
     private BrickBreakerSurfaceView mGLView;
@@ -68,7 +66,72 @@ public class BrickBreakerActivity extends Activity {
         super.onResume();
         mGLView.onResume();
     }
-    
+
+    /*
+	@Override
+	protected void onResume() {
+		Log.d(TAG, "MainActivity.onResume");
+		
+		super.onResume();
+		
+		restorePreferences();
+	}
+	
+	@Override
+	protected void onPause() {
+		Log.d(TAG, "MainActivity.onPause");
+		
+		super.onPause();
+		
+		savePreferences();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		Log.d(TAG, "MainActivity.onDestroy");
+		
+		super.onDestroy();
+		
+		savePreferences();
+	}
+	
+	
+	//---Copies settings to the saved preferences' file
+	private void savePreferences() {
+		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		//editor.putInt(OptionFragment.DIFFICULTY_KEY, getDifficultyIndex());
+		//editor.putBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, getNeverLoseBall());
+		editor.putBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, isSoundEffectsEnabled());
+		editor.putString(OptionFragment.USERNAME_KEY, OptionFragment.getCurrentUsername());
+		//editor.putInt(OptionFragment.LEVEL_KEY, getLevelIndex());
+		editor.commit();
+	}
+	
+	//---Retrieves settings from the saved preferences' file
+	private void restorePreferences() {
+		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
+		//setDifficultyIndex(prefs.getInt(OptionFragment.DIFFICULTY_KEY, DIFFICULTY_DEFAULT));
+		//setNeverLoseBall(prefs.getBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, false));
+		//setLevel(prefs.getInt(OptionFragment.LEVEL_KEY, 1));
+		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
+		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.USERNAMainActivity.DEFAULT_SOUND_EFFECTS_STATUSEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
+	}
+	
+    */
+
+	@Override
+	public void onBackPressed() {
+		Log.d(TAG, "BrickBreakerActivity.onBackPressed");
+		
+		super.onBackPressed();
+		
+		overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+		
+		// finish();
+	}
+
     /**
      * Configures the BrickBreakerState object with the configuration options set by MainActivity.
      */
@@ -193,7 +256,7 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setBackgroundLevel(mBackgroundTextureImg);
         
 
-        SoundResources.setSoundEffectsEnabled(statusSoundEffectsEnabled);
+        SoundResources.setSoundEffectsEnabled(sSfxEnabled);
     }
     
     /**
@@ -216,21 +279,12 @@ public class BrickBreakerActivity extends Activity {
 		return mBrickStatesConfig;
 		
 	}
-    
-    /**
-     * Gets the difficulty index, used to configure the game parameters.
-     */
+	
+    //---Returns the default level index
     public static int getLevelIndex() {
         return sLevelGame;
     }
-
-    /**
-     * Gets the default difficulty index.  This should be used if no preference has been saved.
-     */
-    public static int getDefaultLevelIndex() {
-        return LEVEL_DEFAULT;
-    }
-
+    
     /**
      * Configures various tunable parameters based on the difficulty index.
      * <p>
@@ -239,9 +293,9 @@ public class BrickBreakerActivity extends Activity {
     public static void setLevelIndex(int levelIndex) {
         // This could be coming from preferences set by a different version of the game.  We
         // want to be tolerant of values we don't recognize.
-        if (levelIndex < LEVEL_MIN || levelIndex > LEVEL_MAX) {
+        if (levelIndex < MIN_LEVEL || levelIndex > MAX_LEVEL) {
             Log.w(TAG, "Invalid difficulty index " + levelIndex + ", using default");
-            levelIndex = LEVEL_DEFAULT;
+            levelIndex = DEFAULT_LEVEL;
         }
 
         if (sLevelGame != levelIndex) {
@@ -252,13 +306,13 @@ public class BrickBreakerActivity extends Activity {
     
     //---Returns true if sound effects are enabled, and false otherwise
     public static boolean isSoundEffectsEnabled() {
-        return statusSoundEffectsEnabled;
+        return sSfxEnabled;
 
     }
 
     //---Enables or disables sound effects
     public static void setSoundEffectsEnabled(boolean soundEffectsEnabled) {
-    	statusSoundEffectsEnabled = soundEffectsEnabled;
+    	sSfxEnabled = soundEffectsEnabled;
     }
 
     /**
