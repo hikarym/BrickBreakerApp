@@ -24,7 +24,6 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
 		setEGLContextClientVersion(2);
 		mRenderer = new BrickBreakerSurfaceRenderer(context, brickBreakerState, this, textConfig);
 		setRenderer(mRenderer);
-		//onPause();
 	}
 	
 	// It tells BrickBreakerState to save its state.
@@ -56,6 +55,7 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
 		
 		switch (e.getAction()) {
 			case MotionEvent.ACTION_MOVE:
+				//we  verify this action to move the paddle
 				x = e.getX();
 				y = e.getY();
 				
@@ -68,6 +68,8 @@ public class BrickBreakerSurfaceView extends GLSurfaceView {
 				break;
 			
 			case MotionEvent.ACTION_DOWN:
+				// we verify this action to start, continue, restart, 
+				// exit of the game or to go next level
 				x = e.getX();
 				y = e.getY();
 				

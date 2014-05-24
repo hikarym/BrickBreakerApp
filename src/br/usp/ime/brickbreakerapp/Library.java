@@ -163,4 +163,25 @@ public class Library {
             throw new RuntimeException(msg + ": glError " + lastError);
         }
     }
+    
+    /**
+	 * Build a brick configuration of the game
+	 * (Each brick must be a value between 0 e 4) 
+	 * @param configStr: array[001111100, 001111100, 000232000, 000232000, 001111100, 001111100])
+	 * (The array must be BRICK_ROWS elements and 
+	 * each string must be have BRICK_COLUMNS characters)
+	 * 
+	 */
+	public static int[][] buildBrickStatesConfig(int rows, int columns, String[] configStr){
+		int[][] mBrickStatesConfig = new int[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			
+			for (int j = 0; j < columns; j++) {				
+				mBrickStatesConfig[i][j] = Integer.parseInt(
+						String.valueOf(configStr[i].charAt(j)));
+			}
+		}
+		return mBrickStatesConfig;
+		
+	}
 }

@@ -144,7 +144,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         // Create an orthographic projection that maps the desired arena  size
         // to the viewport dimensions.
         Matrix.orthoM(mProjectionMatrix, 0,  0, BrickBreakerState.ARENA_WIDTH,
-                0, BrickBreakerState.ARENA_HEIGHT,  -1, 1);
+                	0, BrickBreakerState.ARENA_HEIGHT,  -1, 1);
 
         // Nudge game state after the surface change.
         mBrickBreakerState.surfaceChanged();
@@ -156,17 +156,15 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     
     //-----------------------
     /**
-     * Advances game state, then draws the new frame.
+     * Advances BrickBreaker state, then draws the new frame.
      */
     @Override
     public void onDrawFrame(GL10 unused) {
     	
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
-
-        //if (started) {     		
-        	Log.v(TAG, "CRIANDO NoVO FRAME");
-        	BrickBreakerState.calculateNextFrame();
-        //}
+           		
+        Log.v(TAG, "CREATING A NEW FRAME");
+        BrickBreakerState.calculateNextFrame();
 
         // Simulate slow game state update, to see impact on animation.
         // try { Thread.sleep(33); }
@@ -212,9 +210,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.drawButtons();
         TexturedBasicAlignedRect.finishedDrawing();
 
-        //if (!started) 
-    	//	return;
-        
         BrickBreakerState.drawDebugStuff();
 
         // Turn alpha blending off.
@@ -222,7 +217,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         if (EXTRA_CHECK) Library.checkGlError("onDrawFrame end");
 
-        // Stop animating if the game is over  or if there is a ball lost.  
+        // Stop animating if the game is over  or if there is a ball was lost.  
         if (!BrickBreakerState.isAnimating()) {
         	 Log.d(TAG, "Game over or before start game, stopping animation");
              mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -231,8 +226,8 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Handles pausing of the game Activity.  This is called by the View (via queueEvent) at
-     * pause time.  It tells BrickBreakerState to save its state.
+     * Handles pausing of the BrickBreaker Activity.  This is called by the View (via queueEvent) at
+     * pause time. It tells BrickBreakerState to save its state.
      *
      * @param syncObj Object to notify when we have finished saving state.
      */
@@ -249,14 +244,13 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     public void actionMoveTouchEvent(float x, float y) {        
 
         float arenaX = (x - mViewportXoff) * (BrickBreakerState.ARENA_WIDTH / mViewportWidth);
-        float arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
         //Log.v(TAG, "touch at x=" + (int) x + " y=" + (int) y + " --> arenaX=" + (int) arenaX);
 
         mBrickBreakerState.movePaddle(arenaX);
     }
     
     /**
-     * Restart game after the player touches the screen
+     * Restart the game or it shows a menu (exit, next level, restart) after the player touches the screen
      */
     public void actionDownTouchEvent(float x, float y){
     	Log.v(TAG, "Restarting the game..."+ String.valueOf(mBrickBreakerState.getGamePlayState()));
@@ -266,15 +260,18 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 		arenaY = (y - mViewportYoff) * (BrickBreakerState.ARENA_HEIGHT / mViewportHeight);
 		
         switch (mBrickBreakerState.getGamePlayState()) {
-			case BrickBreakerState.GAME_PAUSE:
+			case BrickBreakerState.GAME_PAUSE:				
 				mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+				// Restart the game,  after the player touches the screen
 				mBrickBreakerState.RestartGame();
 				break;
 			case BrickBreakerState.GAME_LOST:
-				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+				// Show a menu with exit and restart buttons
+				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY, true);
 				break;
 			case BrickBreakerState.GAME_WON:
-				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY);
+				// show a menu with exit and next level buttons
+				mBrickBreakerState.gameOptions(mSurfaceView, mContext, arenaX, arenaY, false);
 				break;
 			default:
 				break;

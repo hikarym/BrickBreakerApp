@@ -1,5 +1,6 @@
 package br.usp.ime.brickbreakerapp;
 
+import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -78,7 +79,7 @@ public class BrickBreakerState {
 	private static final float BRICK_VERTICAL_GAP_PERC = 20 / 100.0f;// 50 /  100.0f
 	
 
-	private static final float PADDLE_VERTICAL_PERC = 12 / 100.0f;
+	private static final float PADDLE_VERTICAL_PERC = 8 / 100.0f;
 	private static final float PADDLE_HEIGHT_PERC = 3 / 100.0f; //1/100.0f
 	private static final float PADDLE_WIDTH_PERC = 2 / 100.0f;
 	private static final int PADDLE_DEFAULT_WIDTH = 8; //6
@@ -92,9 +93,9 @@ public class BrickBreakerState {
 	private BasicAlignedRect mBorders[] = new BasicAlignedRect[NUM_BORDERS];
 	private BasicAlignedRect mBackgroundColor;
 	private TexturedBasicAlignedRect mBackgroundImg;
-	private TexturedBasicAlignedRect mButtonRestart;
-	private TexturedBasicAlignedRect mButtonMenu;
-	private TexturedBasicAlignedRect mButtonQuit;
+	//private TexturedBasicAlignedRect mButtonRestart;
+	//private TexturedBasicAlignedRect mButtonMenu;
+	//private TexturedBasicAlignedRect mButtonQuit;
 	/*Images for textures*/
 	private String mBrickNormalTextureImg = "drawable/brick_normal";
 	private String mBrickRockTextureImg = "drawable/brick_rock";
@@ -283,7 +284,7 @@ public class BrickBreakerState {
 		mRecentTimeDeltaNext = -1;
 		mLivesRemaining = mMaxLives;
 		mScore = 0;
-		mGameLevel = 1;
+		//mGameLevel = 1;
 		resetBall();
 		//mLiveBrickCount = 0;      // initialized by allocBricks
 		resetPaddle();
@@ -388,6 +389,7 @@ public class BrickBreakerState {
 			movePaddle(save.mPaddlePosition);
 
 			mGamePlayState = save.mGamePlayState;
+			mGameLevel = save.
 			mGameStatusMessageNum = save.mGameStatusMessageNum;
 			mLivesRemaining = save.mLivesRemaining;
 			mScore = save.mScore;
@@ -519,41 +521,44 @@ public class BrickBreakerState {
 	 */
 	void allocBricks(Context context) {		
 		// Textures for different types of bricks
-		// 1. texture for normal brick
+		// 1. texture for normal brick.
+		// (The brick with this texture é destroyed with 1 hit)
 		mBMPBrickTexture[0] = getBitmapTexture(context, mBrickNormalTextureImg);
 		
 		// 2. texture for rock brick
+		// (The brick with this texture é destroyed with 2 hits)
 		mBMPBrickTexture[1] = getBitmapTexture(context, mBrickRockTextureImg);
 		
 		// 3. texture for mix brick
+		// (The brick with this texture é destroyed with 3 hit, and it reduces the 
+		// speed of ball)
 		mBMPBrickTexture[2] = getBitmapTexture(context, mBrickMixTextureImg);		
 
 		// 4. texture for especial brick
+		// (The brick with this texture é destroyed with 4 hits, but it increases
+		// the size of the paddle)
 		mBMPBrickTexture[3] = getBitmapTexture(context, mBrickEspecial1TextureImg);
 		
 		// 5. texture for especial brick
+		// (The brick with this texture é destroyed with 4 hits, and increases 
+		// one live more, that it says, one chance to play)
 		mBMPBrickTexture[4] = getBitmapTexture(context, mBrickEspecial2TextureImg);
 		
 		//------------------------
 		
 		final float totalBrickWidth = ARENA_WIDTH - BORDER_WIDTH * 2;
 		final float brickWidth = totalBrickWidth / BRICK_COLUMNS;
-		//final float brickWidth = 100;
 		final float totalBrickHeight = ARENA_HEIGHT * (BRICK_TOP_PERC - BRICK_BOTTOM_PERC);
 		final float brickHeight = totalBrickHeight / BRICK_ROWS;
-		//final float brickHeight = 100;
-
 		final float zoneBottom = ARENA_HEIGHT * BRICK_BOTTOM_PERC;
 		final float zoneLeft = BORDER_WIDTH;
 
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			for (int j = 0; j < BRICK_COLUMNS; j++) {
+		for (int r = 0; r < BRICK_ROWS; r++) {
+			for (int c = 0; c < BRICK_COLUMNS; c++) {
 				Brick brick = new Brick();
-				int row = i;
-				int col = j;
 	
-				float bottom = zoneBottom + row * brickHeight;
-				float left = zoneLeft + col * brickWidth;
+				float bottom = zoneBottom + r * brickHeight;
+				float left = zoneLeft + c * brickWidth;
 	
 				// Brick position specifies the center point, so need to offset from bottom left.
 				brick.setPosition(left + brickWidth / 2, bottom + brickHeight / 2);
@@ -562,33 +567,28 @@ public class BrickBreakerState {
 				brick.setScale(brickWidth * (1.0f - BRICK_HORIZONTAL_GAP_PERC),
 						brickHeight * (1.0f - BRICK_VERTICAL_GAP_PERC));
 	
-				// The score value of brick is his row by 100
+				// The score value of brick is VALUE_BRICK_DEFAULT
 				brick.setScoreValue(VALUE_BRICK_DEFAULT);
-				//int minR = 1;
-				//int maxR = BMPs.length;
-				//int ind = minR + (int)(Math.random() * ((maxR - minR) + 1));
-				//Log.v(TAG, "ind texture:"+ ind);
-				//brick.setBrickState(ind);
-				//brick.setTexture(BMPs[ind - 1]);
-				brick.setBrickState(mBrickStatesConfig[i][j]);
-				if (mBrickStatesConfig[i][j]!=BRICK_EMPTY) {
-					brick.setTexture(mBMPBrickTexture[mBrickStatesConfig[i][j]-1]);
+				brick.setBrickState(mBrickStatesConfig[r][c]);
+				if (mBrickStatesConfig[r][c]!=BRICK_EMPTY) {
+					brick.setTexture(mBMPBrickTexture[mBrickStatesConfig[r][c]-1]);
+					// counting the number of bricks to draw
 					mLiveBrickCount ++;
 				}				
-	
-				mBricks[i][j] = brick;
+				// Building the matrix of bricks
+				mBricks[r][c] = brick;
 			}
 		}
 		
 	}
 
 	/**
-	 * Draws the "live" bricks.
+	 * Drawing the "live" bricks.
 	 */
 	void drawBricks() {
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			for (int j = 0; j < BRICK_COLUMNS; j++) {
-				Brick brick = mBricks[i][j];
+		for (int r = 0; r < BRICK_ROWS; r++) {
+			for (int c = 0; c < BRICK_COLUMNS; c++) {
+				Brick brick = mBricks[r][c];
 				//if brick isn't configured as empty, the we can draw it 
 				if (brick.getBrickState()!=BRICK_EMPTY) {
 					//if the brick was not destroyed
@@ -662,7 +662,7 @@ public class BrickBreakerState {
 
 		rect.setScale(DEFAULT_PADDLE_WIDTH * mPaddleSizeMultiplier,
 				ARENA_HEIGHT * PADDLE_HEIGHT_PERC);
-		rect.setColor(1.0f, 1.0f, 1.0f);        // note color is cycled during pauses
+		//rect.setColor(1.0f, 1.0f, 1.0f);        
 
 		rect.setPosition(ARENA_WIDTH / 2.0f, ARENA_HEIGHT * PADDLE_VERTICAL_PERC);
 		//Log.d(TAG, "paddle y=" + rect.getYPosition());
@@ -679,11 +679,7 @@ public class BrickBreakerState {
 	}
 
 	/**
-	 * Moves the paddle to a new location.  The requested position is expressed in arena
-	 * coordinates, but does not need to be clamped to the viewable region.
-	 * <p>
-	 * The final position may be slightly different due to collisions with walls or
-	 * side-contact with the ball.
+	 * Moves the paddle to a new location.  
 	 */
 	void movePaddle(float arenaX) {
 
@@ -718,41 +714,39 @@ public class BrickBreakerState {
 	 * Draws the "live" ball and the remaining-lives display.
 	 */
 	void drawBall() {
-		/*
-		 * We use the lone mBall object to draw all instances of the ball.  We just move it
-		 * around for each instance.
-		 */
-
 		Ball ball = mBall;
 		float savedX = ball.getXPosition();
 		float savedY = ball.getYPosition();
 		float radius = ball.getRadius();
 
-		float xpos = BORDER_WIDTH * 2 + radius;
-		float ypos = BORDER_WIDTH + radius;
+		float xpos = BORDER_WIDTH * 1.5f + radius;
+		float ypos = ARENA_HEIGHT - (BORDER_WIDTH + radius*1.2f);
 		int lives = mLivesRemaining;
 		boolean ballIsLive = (mGamePlayState != GAME_PAUSE && mGamePlayState != GAME_READY);
 		if (ballIsLive) {
-			// In READY state we show the "live" ball next to the "remaining" balls, rather than
-			// in the play area.
+			// it decreasing  the number of "live" balls  whether the game is animated
 			lives--;
 		}
+		
+		Log.v(TAG, "ballIsLive: "+ String.valueOf(ballIsLive)+"|lives: "+String.valueOf(lives)
+				+"|mLiveBrickCount: "+String.valueOf(mLiveBrickCount));
 
 		for (int i = 0; i < lives; i++) {
-			// Vibrate the "remaining lives" balls when we're almost out of bricks.  It's
-			// kind of silly, but it's easy to do.
 			float jitterX = 0.0f;
 			float jitterY = 0.0f;
-			if (mLiveBrickCount > 0 && mLiveBrickCount < 4) {
-				jitterX = (float) ((4 - mLiveBrickCount) * (Math.random() - 0.5) * 2);
-				jitterY = (float) ((4 - mLiveBrickCount) * (Math.random() - 0.5) * 2);
+			// Vibrate the "remaining lives" balls when we're almost out of lives.
+			if (mLivesRemaining > 0 && mLivesRemaining < 3) {
+				jitterX = (float) ((4 - mLivesRemaining) * (Math.random() - 0.5) * 2);
+				jitterY = (float) ((4 - mLivesRemaining) * (Math.random() - 0.5) * 2);
 			}
+			// Draw the remaining balls
 			ball.setPosition(xpos + jitterX, ypos + jitterY);
 			ball.draw();
-
-			xpos += radius * 3;
+			//changing xpos to draw the new remaining ball
+			xpos += radius * 2.2f ;
 		}
-
+		
+		// drawing the ball is moving 
 		ball.setPosition(savedX, savedY);
 		if (ballIsLive) {
 			ball.draw();
@@ -779,8 +773,8 @@ public class BrickBreakerState {
 		float cellWidth = cellHeight * widthHeightRatio * 1.05f; // add 5% spacing between digits
 
 		// Note these are laid out from right to left, i.e. mScoreDigits[0] is the 1s digit.
-		float top = SCORE_TOP;
-		float right = SCORE_RIGHT;
+		//float top = SCORE_TOP;
+		//float right = SCORE_RIGHT;
 		for (int i = 0; i < NUM_SCORE_DIGITS; i++) {
 			mScoreDigits[i] = new TexturedAlignedRect();
 			mScoreDigits[i].setTexture(mTextRes.getTextureHandle(),
@@ -805,10 +799,11 @@ public class BrickBreakerState {
 			scoreCell.setTextureCoords(boundsRect);
 			scoreCell.setScale(boundsRect.width() * ratio,  cellHeight);
 			scoreCell.draw();
-
+			
 			score /= 10;
 		}
 	}
+	// PENDIENTE PENDIENTE REVISAR REVISAR
 
 	/**
 	 * Creates storage for a message to display in the middle of the screen.
@@ -1376,7 +1371,9 @@ public class BrickBreakerState {
 						
 						if(!brick.isAlive()){
 							mLiveBrickCount--;
+							
 							mScore += brick.getScoreValue() * mScoreMultiplier;
+							Log.v(TAG, "score value"+brick.getScoreValue()+ "| score mult"+ String.valueOf(mScoreMultiplier));
 						}
 						if (mLiveBrickCount == 0) {
 							Log.d(TAG, "*** won ***");
@@ -1780,11 +1777,13 @@ public class BrickBreakerState {
 		public int mGameStatusMessageNum;
 		public int mLivesRemaining;
 		public int mScore;
+		public int mGameLevel;
 
 		public boolean mIsValid = false;        // set when state has been written out
 	}
 
 	public void RestartGame(){
+		resetPaddle();
 		mGamePlayState = GAME_READY;
 		mIsAnimating = true;
 	}
@@ -1793,7 +1792,8 @@ public class BrickBreakerState {
 		return (mGamePlayState == GAME_PAUSE) ? true : false;
 	}	
 	
-	public void gameOptions(BrickBreakerSurfaceView surfaceView, Context context, float arenaX, float arenaY){
+	public void gameOptions(BrickBreakerSurfaceView surfaceView, Context context, 
+			float arenaX, float arenaY, boolean isGameLost){
 		float posXTouch = arenaX;
 		float posYTouch = ARENA_HEIGHT - arenaY;
 		
@@ -1801,20 +1801,17 @@ public class BrickBreakerState {
 		
 		//
 		float minXQuitBu = mQuit.getXPosition() - mQuit.getXScale()/2;
-		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;
-		
+		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;		
 		float minYQuitBu = mQuit.getYPosition() - mQuit.getYScale()/2;
 		float maxYQuitBu = mQuit.getYPosition() + mQuit.getYScale()/2;
 		
 		float minXReloadBu = mReload.getXPosition() - mQuit.getXScale()/2;
-		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;
-		
+		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;	
 		float minYReloadBu = mReload.getYPosition() - mReload.getYScale()/2;
 		float maxYReloadBu = mReload.getYPosition() + mReload.getYScale()/2;
 		
 		float minXNextBu = mNextLevel.getXPosition() - mNextLevel.getXScale()/2;
-		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;
-		
+		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;		
 		float minYNextBu = mNextLevel.getYPosition() - mNextLevel.getYScale()/2;
 		float maxYNextBu = mNextLevel.getYPosition() + mNextLevel.getYScale()/2;
 		
@@ -1830,42 +1827,53 @@ public class BrickBreakerState {
 			
 		}	
 		else if ((minXReloadBu <= posXTouch && posXTouch<= maxXReloadBu) && 
-				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu)){
-			// Touch on Restart button
-			Log.v(TAG, "Restart the game");
-			//BrickBreakerActivity.invalidateSavedGame();
-			reset();
-			TexturedBasicAlignedRect.prepareToDraw();
+				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu) && isGameLost){
+			// Touch on RESTART button (THE SAME LEVEL)
+			Log.v(TAG, "Restart the same game level");
+			BrickBreakerActivity.invalidateSavedGame();						
 			allocBricks(context);
-	        //drawBricks();
-	        TexturedBasicAlignedRect.finishedDrawing();
-	        TexturedAlignedRect.prepareToDraw();
-	        allocScore();
-	        //drawScore();      
-	        TexturedAlignedRect.finishedDrawing();
+			allocScore();
+	        reset();
+	        // Continue the game
         	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        	
-			//Show frament_main layout
-			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
-			//configuring the parameters to start the same  level
-			context.startActivity(myIntent);
-			
 			
 		}		
 		else if ((minXNextBu <= posXTouch && posXTouch<= maxXNextBu) && 
-				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu)) {
+				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu) && !isGameLost) {
 			// Touch  on Next Button
 			Log.v(TAG, "Next level");
 			//restore 
-			BrickBreakerActivity.invalidateSavedGame();
-			reset();
-        	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        	RestartGame();
-			 //Show frament_main layout
-			Intent myIntent = new Intent(context, BrickBreakerActivity.class);
-			//configurating the parameters for next level
-			context.startActivity(myIntent);	        
-			
+			//BrickBreakerActivity.invalidateSavedGame();
+			//reset();
+			if (mGameLevel< BrickBreakerActivity.MAX_LEVEL) {
+				int newGameLevel = mGameLevel + 1;
+				
+				// Configure the next level of game
+				ParametersConfig param = LevelParameters.configLevelParameters(newGameLevel);				
+
+				mBrickStatesConfig = Library.buildBrickStatesConfig(BRICK_ROWS, BRICK_COLUMNS, param.configStr);				
+		        setBallSizeMultiplier(param.ballSize);
+		        setPaddleSizeMultiplier(param.paddleSize);
+		        setScoreMultiplier(param.scoreMultiplier);
+		        setMaxLives(param.maxLives);
+		        setBallInitialSpeed(param.minSpeed);
+		        setBallMaximumSpeed(param.maxSpeed);
+		        setGameLevel(newGameLevel);
+		        setBrickStatesConfig(mBrickStatesConfig);
+		        setBackgroundLevel(param.backgroundTextureImg);
+		        
+		        allocBackground(context);
+		        allocBackground(context);
+		        allocBricks(context);
+		        allocPaddle(context);
+		        allocBall(context);		        
+		        allocScore();
+		        
+		        reset();
+		        
+		        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			}
 		}
 	}
+	
 }

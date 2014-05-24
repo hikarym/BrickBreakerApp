@@ -148,14 +148,16 @@ public class BrickBreakerActivity extends Activity {
             case 1:                     // easy
                 ballSize = 2.0f;
                 paddleSize = 2.0f;
+                //Scale growth of score 
                 scoreMultiplier = 0.75f;
                 maxLives = 4;
-                minSpeed = 200;
-                maxSpeed = 500;
+                minSpeed = 300;//200
+                maxSpeed = 500;//500
                 
                 // configuration of bricks
                 // NIVEL I: NORMAL BRICKS
-        		configStr = new String[]{"111111111","111111111", "111111111", "111111111", "111111111", "111111111"};   
+        		//configStr = new String[]{"111111111","111111111", "111111111", "111111111", "111111111", "111111111"};   
+                configStr = new String[]{"000000000","000000000", "000111000", "000010000", "000000000", "000000000"};
         		mBackgroundTextureImg = "drawable/background_3";
                 break;
             case 2:                     // normal
@@ -243,7 +245,7 @@ public class BrickBreakerActivity extends Activity {
                 throw new RuntimeException("bad difficulty index " + sLevelGame);
         }
         
-        mBrickStatesConfig = buildBrickStatesConfig(rows, columns, configStr);
+        mBrickStatesConfig = Library.buildBrickStatesConfig(rows, columns, configStr);
 
         mBrickBreakerState.setBallSizeMultiplier(ballSize);
         mBrickBreakerState.setPaddleSizeMultiplier(paddleSize);
@@ -267,7 +269,7 @@ public class BrickBreakerActivity extends Activity {
 	 * each string must be have BRICK_COLUMNS characters)
 	 * 
 	 */
-	private int[][] buildBrickStatesConfig(int rows, int columns, String[] configStr){
+	/*private int[][] buildBrickStatesConfig(int rows, int columns, String[] configStr){
 		int[][] mBrickStatesConfig = new int[rows][columns];
 		for (int i = 0; i < rows; i++) {
 			
@@ -278,7 +280,7 @@ public class BrickBreakerActivity extends Activity {
 		}
 		return mBrickStatesConfig;
 		
-	}
+	}*/
 	
     //---Returns the default level index
     public static int getLevelIndex() {
