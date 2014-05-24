@@ -45,6 +45,17 @@ public class BrickBreakerState {
 	private static final int BRICK_ESPECIAL1 = 4;
 	private static final int BRICK_ESPECIAL2 = 5;
 	
+	/*
+	 * Value of each type of brick
+	 * 1: normal,
+	 * 2: the brick is destroyed with 2 hits,
+	 * 3: the brick is destroyed with 3 hits,
+	 * 4: increases the size of the brick
+	 * 5: increases the number of lives
+	 */
+	
+	private static final int[] VALUES_BRICKS_DEFAULTS = new int[]{100,200,300,300,300};
+	
 	// Number of brick states
 	private static final int BRICK_STATES = 6;
 	// Number of levels
@@ -163,8 +174,7 @@ public class BrickBreakerState {
 	private int mHitFace;                   // result from findFirstCollision()
 	private OutlineAlignedRect mDebugCollisionRect;  // visual debugging
 
-	// Score value defaul
-	private static final int VALUE_BRICK_DEFAULT = 100;
+	
 	/*
 	 * Game play state.
 	 */
@@ -567,12 +577,13 @@ public class BrickBreakerState {
 				// Brick size is the size of the "brick zone", scaled down by a few % on each edge.
 				brick.setScale(brickWidth * (1.0f - BRICK_HORIZONTAL_GAP_PERC),
 						brickHeight * (1.0f - BRICK_VERTICAL_GAP_PERC));
-	
-				// The score value of brick is VALUE_BRICK_DEFAULT
-				brick.setScoreValue(VALUE_BRICK_DEFAULT);
+				
 				brick.setBrickState(mBrickStatesConfig[r][c]);
 				if (mBrickStatesConfig[r][c]!=BRICK_EMPTY) {
+					// The score value of brick is VALUE_BRICK_DEFAULT
+					brick.setScoreValue(VALUES_BRICKS_DEFAULTS[mBrickStatesConfig[r][c]-1]);
 					brick.setTexture(mBMPBrickTexture[mBrickStatesConfig[r][c]-1]);
+					
 					// counting the number of bricks to draw
 					mLiveBrickCount ++;
 				}				
@@ -1479,18 +1490,7 @@ public class BrickBreakerState {
 						event = EVENT_BALL_LOST;						
 						distance = 0.0f;
 						SoundResources.play(SoundResources.BALL_LOST);
-
-						/*if (!mNeverLoseBall) {
-                            event = EVENT_BALL_LOST;
-                            distance = 0.0f;
-                            SoundResources.play(SoundResources.BALL_LOST);
-                        } else {
-                            mScore -= 500 * mScoreMultiplier;
-                            if (mScore < 0) {
-                                mScore = 0;
-                            }
-                            SoundResources.play(SoundResources.WALL_HIT);
-                        }*/
+						
 					} else {
 						// hit a border or a score digit
 						SoundResources.play(SoundResources.WALL_HIT);

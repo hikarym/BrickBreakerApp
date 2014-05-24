@@ -18,7 +18,7 @@ public class LevelParameters {
                 
                 // configuration of bricks
                 // NIVEL I: NORMAL BRICKS
-                param.configStr = new String[]{"111111111","111111111", "111141111", "111111111", "111111111", "111111111"};   
+                param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
                 //param.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
                 param.backgroundTextureImg = "drawable/background_3";
                 break;
@@ -32,7 +32,7 @@ public class LevelParameters {
                 
                 // configuration of bricks
         		// NIVEL II: Letter I
-            	param.configStr = new String[]{"001111100","001111100", "000242000", "000232000", "001111100", "001111100"};
+            	param.configStr = new String[]{"002222200","001111100", "000242000", "000232000", "001111100", "002222200"};
             	param.backgroundTextureImg = "drawable/background_4";
                 break;
             case 3:                     // normal
@@ -45,7 +45,8 @@ public class LevelParameters {
                 
                 // configuration of bricks
         		// NIVEL III: FACE
-            	param.configStr = new String[]{"000111000", "111000111", "011111110", "111515111", "101111101", "000101000"};
+            	//param.configStr = new String[]{"000111000", "111000111", "011111110", "111515111", "101111101", "000101000"};
+            	param.configStr = new String[]{"000222000", "111000111", "011333110", "111535111", "102222201", "000202000"};
             	param.backgroundTextureImg = "drawable/background_5";
                 break;
             case 4:                     // hard
