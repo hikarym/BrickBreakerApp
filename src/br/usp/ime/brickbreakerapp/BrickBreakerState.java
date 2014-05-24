@@ -35,7 +35,8 @@ public class BrickBreakerState {
 	 * 1: normal,
 	 * 2: the brick is destroyed with 2 hits,
 	 * 3: the brick is destroyed with 3 hits,
-	 * 4: if this brick is hit, then the game finishes)
+	 * 4: increases the size of the brick
+	 * 5: increases the number of lives
 	 */
 	private static final int BRICK_EMPTY = 0;
 	private static final int BRICK_NORMAL = 1;
@@ -535,12 +536,12 @@ public class BrickBreakerState {
 		mBMPBrickTexture[2] = getBitmapTexture(context, mBrickMixTextureImg);		
 
 		// 4. texture for especial brick
-		// (The brick with this texture é destroyed with 4 hits, but it increases
+		// (The brick with this texture é destroyed with 1 hit, and it increases
 		// the size of the paddle)
 		mBMPBrickTexture[3] = getBitmapTexture(context, mBrickEspecial1TextureImg);
 		
 		// 5. texture for especial brick
-		// (The brick with this texture é destroyed with 4 hits, and increases 
+		// (The brick with this texture é destroyed with 1 hit, and increases 
 		// one live more, that it says, one chance to play)
 		mBMPBrickTexture[4] = getBitmapTexture(context, mBrickEspecial2TextureImg);
 		
@@ -720,7 +721,7 @@ public class BrickBreakerState {
 		float radius = ball.getRadius();
 
 		float xpos = BORDER_WIDTH * 1.5f + radius;
-		float ypos = ARENA_HEIGHT - (BORDER_WIDTH + radius*1.2f);
+		float ypos = ARENA_HEIGHT - (BORDER_WIDTH + radius * 1.2f);
 		int lives = mLivesRemaining;
 		boolean ballIsLive = (mGamePlayState != GAME_PAUSE && mGamePlayState != GAME_READY);
 		if (ballIsLive) {
@@ -1035,7 +1036,7 @@ public class BrickBreakerState {
 	 * Updates all game state for the next frame.  This primarily consists of moving the ball
 	 * and checking for collisions.
 	 */
-	void calculateNextFrame() {
+	void calculateNextFrame(Context context) {
 		Log.v(TAG, "calcula frame");
 		// First frame has no time delta, so make it a no-op.
 		if (mPrevFrameWhenNsec == 0) {
@@ -1140,7 +1141,8 @@ public class BrickBreakerState {
 
 		// If we're playing, move the ball around.
 		if (advanceFrame) {
-			int event = moveBall(deltaSec);
+			int event = moveBall(context, deltaSec);
+			Log.v(TAG, "EVENT dep: "+String.valueOf(event));
 			switch (event) {
 			case EVENT_LAST_BRICK:
 				mGamePlayState = GAME_WON;
@@ -1178,7 +1180,7 @@ public class BrickBreakerState {
 	 *
 	 * @return A value indicating special events (won game, lost ball).
 	 */
-	private int moveBall(double deltaSec) {
+	private int moveBall(Context context, double deltaSec) {
 		/*
 		 * Movement and collision detection is done with two checks, "coarse" and "fine".
 		 *
@@ -1366,8 +1368,33 @@ public class BrickBreakerState {
 					if (hit instanceof Brick) {
 						Brick brick = (Brick) hit;
 						//brick.setAlive(false);
-						int newBrickState = brick.getBrickState() - 1;
-						brick.setBrickState(newBrickState);
+						
+						int brickState = brick.getBrickState();
+						if (brickState == BRICK_ESPECIAL1) {
+							//increases the  size paddle
+							brickState = 0;
+							setPaddleSizeMultiplier(mPaddleSizeMultiplier * 1.5f);
+							allocPaddle(context);  
+						}
+						else if (brickState == BRICK_ESPECIAL2) {
+							// increases the number of lives
+							brickState= 0;
+							mLivesRemaining ++;
+							//setBallMaximumSpeed(mBallInitialSpeed * 3);
+							setBallSizeMultiplier(mBallSizeMultiplier * 1.2f);
+							
+							//TexturedAlignedRect.prepareToDraw();
+							//allocBall(context);
+							Log.v(TAG, "EVENT ant: "+String.valueOf(event));
+					        //drawBall();        
+					        //TexturedAlignedRect.finishedDrawing();
+							
+							
+						}
+						else{
+							brickState --;
+						}
+						brick.setBrickState(brickState);
 						
 						if(!brick.isAlive()){
 							mLiveBrickCount--;
@@ -1381,6 +1408,7 @@ public class BrickBreakerState {
 							distance = 0.0f;
 						}
 						SoundResources.play(SoundResources.BRICK_HIT);
+						Log.v(TAG, "EVENT ant 2: "+String.valueOf(event));
 						
 					} else if (hit == mPaddle) {
 						if (mHitFace == HIT_FACE_HORIZONTAL) {
@@ -1448,7 +1476,7 @@ public class BrickBreakerState {
 						// off screen doesn't work -- too far and there's a long delay waiting
 						// for a slow ball to drain, too close and we still get the bounce effect
 						// from a fast-moving ball.)
-						event = EVENT_BALL_LOST;
+						event = EVENT_BALL_LOST;						
 						distance = 0.0f;
 						SoundResources.play(SoundResources.BALL_LOST);
 

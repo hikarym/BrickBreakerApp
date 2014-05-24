@@ -164,7 +164,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState BrickBreakerState = mBrickBreakerState;
            		
         Log.v(TAG, "CREATING A NEW FRAME");
-        BrickBreakerState.calculateNextFrame();
+        BrickBreakerState.calculateNextFrame(mContext);
 
         // Simulate slow game state update, to see impact on animation.
         // try { Thread.sleep(33); }

@@ -1,6 +1,8 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -181,7 +183,21 @@ public class Library {
 						String.valueOf(configStr[i].charAt(j)));
 			}
 		}
+		Log.v(TAG, "param.mBrickStatesConfig1:"+String.valueOf(mBrickStatesConfig[5][8]));
 		return mBrickStatesConfig;
 		
+	}
+	
+	/**
+	 * Get a bitmap object from a source
+	 * @param context
+	 * @param src i.e: "drawable/background_3" 
+	 * @return a Bitmap object
+	 */
+	public static Bitmap getBitmapTexture(Context context, String src){
+		int id = context.getResources().getIdentifier(src, null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		return bmp;
 	}
 }

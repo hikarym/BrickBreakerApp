@@ -17,7 +17,7 @@ public class BrickBreakerActivity extends Activity {
     public static final int MAX_LEVEL = LevelsFragment.MAX_LEVEL;
     
 	// Flag to indicate if sounds effects of game are enabled or not
-    private static int sLevelGame = 1;
+    private static int sLevelGame = DEFAULT_LEVEL;
     
 	// Flag to indicate if sounds effects of game are enabled or not
 	private static boolean sSfxEnabled;
@@ -145,12 +145,11 @@ public class BrickBreakerActivity extends Activity {
         	throw new RuntimeException("bad difficulty index " + sLevelGame);
         }
         
-        // Configure the next level of game
+        // Configure the level of game
 		ParametersConfig param = LevelParameters.configLevelParameters(sLevelGame);				
-
         
         mBrickStatesConfig = Library.buildBrickStatesConfig(rows, columns, param.configStr);
-
+        
         mBrickBreakerState.setBallSizeMultiplier(param.ballSize);
         mBrickBreakerState.setPaddleSizeMultiplier(param.paddleSize);
         mBrickBreakerState.setScoreMultiplier(param.scoreMultiplier);
@@ -160,6 +159,9 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setGameLevel(sLevelGame);
         mBrickBreakerState.setBrickStatesConfig(mBrickStatesConfig);
         mBrickBreakerState.setBackgroundLevel(param.backgroundTextureImg);
+        
+        
+        
         
 
         SoundResources.setSoundEffectsEnabled(sSfxEnabled);
