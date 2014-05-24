@@ -1,5 +1,6 @@
 package br.usp.ime.brickbreakerapp;
 
+import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -136,151 +137,33 @@ public class BrickBreakerActivity extends Activity {
      * Configures the BrickBreakerState object with the configuration options set by MainActivity.
      */
     private void configureBrickBreakerState() {
-        int maxLives, minSpeed, maxSpeed;
-        float ballSize, paddleSize, scoreMultiplier;
         int rows = BrickBreakerState.BRICK_ROWS;
 		int columns = BrickBreakerState.BRICK_COLUMNS;
         int[][] mBrickStatesConfig = new int[rows][columns];
-        String[] configStr = null;
-        String mBackgroundTextureImg = "drawable/background_3";
 
-        switch (sLevelGame) {
-            case 1:                     // easy
-                ballSize = 2.0f;
-                paddleSize = 2.0f;
-                //Scale growth of score 
-                scoreMultiplier = 0.75f;
-                maxLives = 4;
-                minSpeed = 300;//200
-                maxSpeed = 500;//500
-                
-                // configuration of bricks
-                // NIVEL I: NORMAL BRICKS
-        		//configStr = new String[]{"111111111","111111111", "111111111", "111111111", "111111111", "111111111"};   
-                configStr = new String[]{"000000000","000000000", "000111000", "000010000", "000000000", "000000000"};
-        		mBackgroundTextureImg = "drawable/background_3";
-                break;
-            case 2:                     // normal
-                ballSize = 1;
-                paddleSize = 1.0f;
-                scoreMultiplier = 1.0f;
-                maxLives = 3;
-                minSpeed = 300;
-                maxSpeed = 800;
-                
-                // configuration of bricks
-        		// NIVEL II: Letter I
-        		configStr = new String[]{"001111100","001111100", "000232000", "000232000", "001111100", "001111100"};
-        		mBackgroundTextureImg = "drawable/background_4";
-                break;
-            case 3:                     // normal
-            	ballSize = 1;
-                paddleSize = 1.0f;
-                scoreMultiplier = 1.0f;
-                maxLives = 3;
-                minSpeed = 300;
-                maxSpeed = 800;
-                
-                // configuration of bricks
-        		// NIVEL III: FACE
-        		configStr = new String[]{"000111000", "111000111", "011111110", "111414111", "101111101", "000101000"};
-        		mBackgroundTextureImg = "drawable/background_5";
-                break;
-            case 4:                     // hard
-            	ballSize = 1;
-                paddleSize = 1.0f;
-                scoreMultiplier = 1.0f;
-                maxLives = 3;
-                minSpeed = 300;
-                maxSpeed = 800;
-                		
-        		// NIVEL IV: CASTLE
-        		configStr = new String[]{"021222120", "021222120", "021222120", "021111120", "222222222", "220222522"};
-        		mBackgroundTextureImg = "drawable/background_6";
-                break;
-                
-            case 5:                     // hard
-                ballSize = 1.0f;
-                paddleSize = 0.8f;
-                scoreMultiplier = 1.25f;
-                maxLives = 3;
-                minSpeed = 600;
-                maxSpeed = 1200;
-                
-                // configuration of bricks
-        		// NIVEL V : (SNAKE)
-        		configStr = new String[]{"333033303", "202020202", "202020202", "202020202", "202020202", "303330333"};
-        		mBackgroundTextureImg = "drawable/background_7";
-                break;
-                
-            case 6:                     // hard
-                ballSize = 1.0f;
-                paddleSize = 0.8f;
-                scoreMultiplier = 1.25f;
-                maxLives = 3;
-                minSpeed = 600;
-                maxSpeed = 1200;
-                
-                // configuration of bricks    
-        		// NIVEL VI : USP
-        		configStr = new String[]{"222222222", "111333100", "101003100", "101333111", "101300101", "101333111"};
-        		mBackgroundTextureImg = "drawable/background_8";
-                break;    
-                
-            case 7:                     // hard
-            	 ballSize = 1.0f;
-                 paddleSize = 0.5f;
-                 scoreMultiplier = 0.1f;
-                 maxLives = 1;
-                 minSpeed = 1000;
-                 maxSpeed = 100000;
-                
-                // configuration of bricks    
-        		// NIVEL VI : USP
-        		configStr = new String[]{"222222222", "111333100", "101003100", "101333111", "101300101", "101333111"};  
-        		mBackgroundTextureImg = "drawable/background_8";
-                break;    
-                
-            default:
-                throw new RuntimeException("bad difficulty index " + sLevelGame);
+        if(sLevelGame > MAX_LEVEL){            
+        	throw new RuntimeException("bad difficulty index " + sLevelGame);
         }
         
-        mBrickStatesConfig = Library.buildBrickStatesConfig(rows, columns, configStr);
+        // Configure the next level of game
+		ParametersConfig param = LevelParameters.configLevelParameters(sLevelGame);				
 
-        mBrickBreakerState.setBallSizeMultiplier(ballSize);
-        mBrickBreakerState.setPaddleSizeMultiplier(paddleSize);
-        mBrickBreakerState.setScoreMultiplier(scoreMultiplier);
-        mBrickBreakerState.setMaxLives(maxLives);
-        mBrickBreakerState.setBallInitialSpeed(minSpeed);
-        mBrickBreakerState.setBallMaximumSpeed(maxSpeed);
+        
+        mBrickStatesConfig = Library.buildBrickStatesConfig(rows, columns, param.configStr);
+
+        mBrickBreakerState.setBallSizeMultiplier(param.ballSize);
+        mBrickBreakerState.setPaddleSizeMultiplier(param.paddleSize);
+        mBrickBreakerState.setScoreMultiplier(param.scoreMultiplier);
+        mBrickBreakerState.setMaxLives(param.maxLives);
+        mBrickBreakerState.setBallInitialSpeed(param.minSpeed);
+        mBrickBreakerState.setBallMaximumSpeed(param.maxSpeed);
         mBrickBreakerState.setGameLevel(sLevelGame);
         mBrickBreakerState.setBrickStatesConfig(mBrickStatesConfig);
-        mBrickBreakerState.setBackgroundLevel(mBackgroundTextureImg);
+        mBrickBreakerState.setBackgroundLevel(param.backgroundTextureImg);
         
 
         SoundResources.setSoundEffectsEnabled(sSfxEnabled);
     }
-    
-    /**
-	 * Build a brick configuration of the game
-	 * (Each brick must be a value between 0 e 4) 
-	 * @param configStr: array[001111100, 001111100, 000232000, 000232000, 001111100, 001111100])
-	 * (The array must be BRICK_ROWS elements and 
-	 * each string must be have BRICK_COLUMNS characters)
-	 * 
-	 */
-	/*private int[][] buildBrickStatesConfig(int rows, int columns, String[] configStr){
-		int[][] mBrickStatesConfig = new int[rows][columns];
-		for (int i = 0; i < rows; i++) {
-			
-			for (int j = 0; j < columns; j++) {				
-				mBrickStatesConfig[i][j] = Integer.parseInt(
-						String.valueOf(configStr[i].charAt(j)));
-			}
-		}
-		return mBrickStatesConfig;
-		
-	}*/
 	
     //---Returns the default level index
     public static int getLevelIndex() {

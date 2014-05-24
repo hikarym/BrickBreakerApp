@@ -1845,7 +1845,7 @@ public class BrickBreakerState {
 			//restore 
 			//BrickBreakerActivity.invalidateSavedGame();
 			//reset();
-			if (mGameLevel< BrickBreakerActivity.MAX_LEVEL) {
+			if (mGameLevel< LevelsFragment.MAX_LEVEL) {
 				int newGameLevel = mGameLevel + 1;
 				
 				// Configure the next level of game
