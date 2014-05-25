@@ -1,13 +1,19 @@
 package br.usp.ime.brickbreakerapp;
 
+import java.io.IOException;
+
 import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
@@ -215,6 +221,7 @@ public class BrickBreakerState {
 
 	/* Text resources, notably including an image texture for our various text strings. */
 	private TextResources mTextRes;
+	
 
 	public void setGamePlayState(int state){
 		mGamePlayState = state; 
@@ -1418,7 +1425,9 @@ public class BrickBreakerState {
 							event = EVENT_LAST_BRICK;
 							distance = 0.0f;
 						}
+						
 						SoundResources.play(SoundResources.BRICK_HIT);
+						
 						Log.v(TAG, "EVENT ant 2: "+String.valueOf(event));
 						
 					} else if (hit == mPaddle) {
