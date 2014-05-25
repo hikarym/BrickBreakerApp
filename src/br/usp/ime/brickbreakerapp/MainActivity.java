@@ -95,8 +95,8 @@ public class MainActivity extends Activity {
 
 		mFragmentManager = getFragmentManager();
 		
-		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		doMusicBindService();
+		//mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		//doMusicBindService();
 		
 		// Start listening for button presses
 		//mAudioManager.registerMediaButtonEventReceiver(RemoteControlReceiver);---------------------------------
@@ -118,6 +118,13 @@ public class MainActivity extends Activity {
 		// Show main menu
 		mFragment = new MainFragment();
 		displayFragment(mFragment);
+		
+		
+		/*
+		Intent music = new Intent();
+		music.setClass(this, MusicService.class);
+		
+		startService(music);*/
 	}
 
 	@Override
@@ -126,10 +133,6 @@ public class MainActivity extends Activity {
 		
 		super.onStart();
 		
-		Intent music = new Intent();
-		music.setClass(this,MusicService.class);
-		
-		startService(music);
 	}
 	
 	@Override
@@ -137,7 +140,7 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "MainActivity.onResume");
 		
 		super.onResume();
-		
+		//mMusicService.resumeMusic();
 		restorePreferences();
 	}
 	
@@ -158,8 +161,8 @@ public class MainActivity extends Activity {
 		
 		savePreferences();
 		
-		mMusicService.stopMusic();
-		doMusicUnbindService();
+		//mMusicService.stopMusic();
+		//doMusicUnbindService();
 		
 		// Stop listening for button presses
 		//mAudioManager.unregisterMediaButtonEventReceiver(RemoteControlReceiver);------------------------------
