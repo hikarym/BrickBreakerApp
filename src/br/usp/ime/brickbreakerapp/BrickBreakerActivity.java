@@ -35,7 +35,7 @@ public class BrickBreakerActivity extends Activity {
 
         Log.d(TAG, "BrickBreakerActivity onCreate");
 
-        // Initialize data that depends on Android resources.
+        // Initialize the sounds
         SoundResources.initialize(this);
         TextResources.Configuration textConfig = TextResources.configure(this);
         
