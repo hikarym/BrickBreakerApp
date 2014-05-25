@@ -1,5 +1,6 @@
 package br.usp.ime.brickbreakerapp;
 
+import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -34,7 +35,8 @@ public class BrickBreakerState {
 	 * 1: normal,
 	 * 2: the brick is destroyed with 2 hits,
 	 * 3: the brick is destroyed with 3 hits,
-	 * 4: if this brick is hit, then the game finishes)
+	 * 4: increases the size of the brick
+	 * 5: increases the number of lives
 	 */
 	private static final int BRICK_EMPTY = 0;
 	private static final int BRICK_NORMAL = 1;
@@ -42,6 +44,17 @@ public class BrickBreakerState {
 	private static final int BRICK_3HITS = 3;
 	private static final int BRICK_ESPECIAL1 = 4;
 	private static final int BRICK_ESPECIAL2 = 5;
+	
+	/*
+	 * Value of each type of brick
+	 * 1: normal,
+	 * 2: the brick is destroyed with 2 hits,
+	 * 3: the brick is destroyed with 3 hits,
+	 * 4: increases the size of the brick
+	 * 5: increases the number of lives
+	 */
+	
+	private static final int[] VALUES_BRICKS_DEFAULTS = new int[]{100,200,300,300,300};
 	
 	// Number of brick states
 	private static final int BRICK_STATES = 6;
@@ -78,7 +91,7 @@ public class BrickBreakerState {
 	private static final float BRICK_VERTICAL_GAP_PERC = 20 / 100.0f;// 50 /  100.0f
 	
 
-	private static final float PADDLE_VERTICAL_PERC = 12 / 100.0f;
+	private static final float PADDLE_VERTICAL_PERC = 8 / 100.0f;
 	private static final float PADDLE_HEIGHT_PERC = 3 / 100.0f; //1/100.0f
 	private static final float PADDLE_WIDTH_PERC = 2 / 100.0f;
 	private static final int PADDLE_DEFAULT_WIDTH = 8; //6
@@ -92,9 +105,9 @@ public class BrickBreakerState {
 	private BasicAlignedRect mBorders[] = new BasicAlignedRect[NUM_BORDERS];
 	private BasicAlignedRect mBackgroundColor;
 	private TexturedBasicAlignedRect mBackgroundImg;
-	private TexturedBasicAlignedRect mButtonRestart;
-	private TexturedBasicAlignedRect mButtonMenu;
-	private TexturedBasicAlignedRect mButtonQuit;
+	//private TexturedBasicAlignedRect mButtonRestart;
+	//private TexturedBasicAlignedRect mButtonMenu;
+	//private TexturedBasicAlignedRect mButtonQuit;
 	/*Images for textures*/
 	private String mBrickNormalTextureImg = "drawable/brick_normal";
 	private String mBrickRockTextureImg = "drawable/brick_rock";
@@ -161,6 +174,7 @@ public class BrickBreakerState {
 	private int mHitFace;                   // result from findFirstCollision()
 	private OutlineAlignedRect mDebugCollisionRect;  // visual debugging
 
+	
 	/*
 	 * Game play state.
 	 */
@@ -219,41 +233,6 @@ public class BrickBreakerState {
 	}
 	
 	public BrickBreakerState() {
-		//Values default for brick States		
-		// NIVEL I: NORMAL BRICKS
-		//String[] configStr = new String[]{"111111111","111111111", "111111111", "111111111", "111111111", "111111111"};
-		// NIVEL II: Letter I
-		//String[] configStr = new String[]{"001111100","001111100", "000232000", "000232000", "001111100", "001111100"};
-		// NIVEL III: FACE
-		//String[] configStr = new String[]{"000111000", "111000111", "011111110", "111414111", "101111101", "000101000"};		
-		// NIVEL IV: CASTLE
-		//String[] configStr = new String[]{"021222120", "021222120", "021222120", "021111120", "222222222", "220222522"};
-		// NIVEL V : (SNAKE)
-		//String[] configStr = new String[]{"333033303", "202020202", "202020202", "202020202", "202020202", "303330333"};
-		// NIVEL VI : USP
-		//String[] configStr = new String[]{"222222222", "111333100", "101003100", "101333111", "101300101", "101333111"};
-		//buildBrickStatesConfig(configStr);
-	}
-	
-	
-	
-	/**
-	 * Build a brick configuration of the game
-	 * (Each brick must be a value between 0 e 4) 
-	 * @param configStr: array[001111100, 001111100, 000232000, 000232000, 001111100, 001111100])
-	 * (The array must be BRICK_ROWS elements and 
-	 * each string must be have BRICK_COLUMNS characters)
-	 * 
-	 */
-	private void buildBrickStatesConfig(String[] configStr){
-		
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			
-			for (int j = 0; j < BRICK_COLUMNS; j++) {				
-				mBrickStatesConfig[i][j] = Integer.parseInt(
-						String.valueOf(configStr[i].charAt(j)));
-			}
-		}
 		
 	}
 	
@@ -291,8 +270,6 @@ public class BrickBreakerState {
 	}
 	
 	private int genRandomNumber(int min, int max){
-		//int minR = 1;
-		//int maxR = BMPs.length;
 		return min + (int)(Math.random() * ((max - min) + 1));
 	}
 
@@ -318,7 +295,7 @@ public class BrickBreakerState {
 		mRecentTimeDeltaNext = -1;
 		mLivesRemaining = mMaxLives;
 		mScore = 0;
-		mGameLevel = 1;
+		//mGameLevel = 1;
 		resetBall();
 		//mLiveBrickCount = 0;      // initialized by allocBricks
 		resetPaddle();
@@ -388,7 +365,7 @@ public class BrickBreakerState {
 			save.mIsValid = true;
 		}
 
-		//Log.d(TAG, "game saved");
+		Log.d(TAG, "game saved");
 	}
 
 	/**
@@ -410,15 +387,12 @@ public class BrickBreakerState {
 			for (int i = 0; i < BRICK_ROWS; i++) {
 				for (int j = 0; j < BRICK_COLUMNS; j++) {	
 					mBricks[i][j].setBrickState(bricks[i][j]);
-					if (bricks[i][j]!=0) {
-						// board creation sets all bricks to "live", don't need to setAlive() here						
-					} else {
-						//mBricks[i][j].setBrickState(0);
-						mLiveBrickCount--;
-					}
+					if (bricks[i][j]==BRICK_EMPTY) {
+						mLiveBrickCount--;						
+					} 
 				}
 			}
-			Log.d(TAG, "live brickcount is " + mLiveBrickCount);
+			Log.d(TAG, "llive brickcount is " + mLiveBrickCount);
 
 			mBall.setDirection(save.mBallXDirection, save.mBallYDirection);
 			mBall.setPosition(save.mBallXPosition, save.mBallYPosition);
@@ -426,6 +400,7 @@ public class BrickBreakerState {
 			movePaddle(save.mPaddlePosition);
 
 			mGamePlayState = save.mGamePlayState;
+			mGameLevel = save.
 			mGameStatusMessageNum = save.mGameStatusMessageNum;
 			mLivesRemaining = save.mLivesRemaining;
 			mScore = save.mScore;
@@ -445,13 +420,10 @@ public class BrickBreakerState {
 		// rotation or switching back from another app.
 		setPauseTime(1.5f);
 
-		// Reset this so we don't leap forward.  (Not strictly necessary because of the
-		// game pause we set above -- we don't advance the ball state on the first frames we
-		// draw, so this will reset naturally.)
+		// Reset this so we don't leap forward.  
 		mPrevFrameWhenNsec = 0;
 
-		// We need to draw the screen at least once, so set this whether or not we're actually
-		// animating.  If we're in a "game over" state, this will go back to "false" right away.
+		// We need to draw the screen at least once
 		mIsAnimating = true;
 	}
 
@@ -518,17 +490,11 @@ public class BrickBreakerState {
 	 * Allocates the background texture to game
 	 */
 	void allocBackground(Context context) {
-		/*
-		 * The messages (e.g. "won" and "lost") are stored in the same texture, so the choice
-		 * of which text to show is determined by the texture coordinates stored in the
-		 * TexturedAlignedRect.  We can update those without causing an allocation, so there's
-		 * no need to allocate a separate drawable rect for every possible message.
-		 */
-
-		mBackgroundImg = new TexturedBasicAlignedRect();
-		int id = context.getResources().getIdentifier(mBackgroundTextureImg, null, context.getPackageName());		
+		
+		mBackgroundImg = new TexturedBasicAlignedRect();			
+		
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);        
+		Bitmap bmp = getBitmapTexture(context, mBackgroundTextureImg);        
 
 		TexturedBasicAlignedRect rectBack = new TexturedBasicAlignedRect();
 		//Log.d(TAG, "paddle y=" + rect.getYPosition());
@@ -537,66 +503,73 @@ public class BrickBreakerState {
 		//rectBack.setColor(0.1f, 0.1f, 0.1f);
 		rectBack.setTexture(bmp);
 
-
 		mBackgroundImg = rectBack;
 	}
 
 
 	/**
-	 * If appropriate, draw a message in the middle of the screen.
+	 * Draw the background of a game level
 	 */
 	void drawBackground() {
 		mBackgroundImg.draw();              
 	}
-
+	
+	/**
+	 * Get a bitmap object from a source
+	 * @param context
+	 * @param src i.e: "drawable/background_3" 
+	 * @return a Bitmap object
+	 */
 	private Bitmap getBitmapTexture(Context context, String src){
 		int id = context.getResources().getIdentifier(src, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
 		return bmp;
 	}
+	
 	/**
-	 * Allocates the bricks, setting their sizes and positions.  Sets mLiveBrickCount.
+	 * Allocates the bricks, setting their sizes and positions and textures.  Sets mLiveBrickCount.
 	 */
 	void allocBricks(Context context) {		
-		// 1. texture for normal brick
+		// Textures for different types of bricks
+		// 1. texture for normal brick.
+		// (The brick with this texture é destroyed with 1 hit)
 		mBMPBrickTexture[0] = getBitmapTexture(context, mBrickNormalTextureImg);
 		
 		// 2. texture for rock brick
+		// (The brick with this texture é destroyed with 2 hits)
 		mBMPBrickTexture[1] = getBitmapTexture(context, mBrickRockTextureImg);
 		
 		// 3. texture for mix brick
+		// (The brick with this texture é destroyed with 3 hit, and it reduces the 
+		// speed of ball)
 		mBMPBrickTexture[2] = getBitmapTexture(context, mBrickMixTextureImg);		
 
 		// 4. texture for especial brick
+		// (The brick with this texture é destroyed with 1 hit, and it increases
+		// the size of the paddle)
 		mBMPBrickTexture[3] = getBitmapTexture(context, mBrickEspecial1TextureImg);
 		
 		// 5. texture for especial brick
+		// (The brick with this texture é destroyed with 1 hit, and increases 
+		// one live more, that it says, one chance to play)
 		mBMPBrickTexture[4] = getBitmapTexture(context, mBrickEspecial2TextureImg);
 		
 		//------------------------
 		
 		final float totalBrickWidth = ARENA_WIDTH - BORDER_WIDTH * 2;
 		final float brickWidth = totalBrickWidth / BRICK_COLUMNS;
-		//final float brickWidth = 100;
 		final float totalBrickHeight = ARENA_HEIGHT * (BRICK_TOP_PERC - BRICK_BOTTOM_PERC);
 		final float brickHeight = totalBrickHeight / BRICK_ROWS;
-		//final float brickHeight = 100;
-
 		final float zoneBottom = ARENA_HEIGHT * BRICK_BOTTOM_PERC;
 		final float zoneLeft = BORDER_WIDTH;
 
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			for (int j = 0; j < BRICK_COLUMNS; j++) {
+		for (int r = 0; r < BRICK_ROWS; r++) {
+			for (int c = 0; c < BRICK_COLUMNS; c++) {
 				Brick brick = new Brick();
 	
-				//int row = i / BRICK_COLUMNS;
-				//int col = i % BRICK_COLUMNS;
-				int row = i;
-				int col = j;
-	
-				float bottom = zoneBottom + row * brickHeight;
-				float left = zoneLeft + col * brickWidth;
+				float bottom = zoneBottom + r * brickHeight;
+				float left = zoneLeft + c * brickWidth;
 	
 				// Brick position specifies the center point, so need to offset from bottom left.
 				brick.setPosition(left + brickWidth / 2, bottom + brickHeight / 2);
@@ -604,51 +577,30 @@ public class BrickBreakerState {
 				// Brick size is the size of the "brick zone", scaled down by a few % on each edge.
 				brick.setScale(brickWidth * (1.0f - BRICK_HORIZONTAL_GAP_PERC),
 						brickHeight * (1.0f - BRICK_VERTICAL_GAP_PERC));
-	
-				// Score is based on row, with lower bricks being worth less than the top bricks.
-				// The point value here is for a game at normal difficulty.  We multiply by 100
-				// because that makes everything MORE EXCITING!!!
-				brick.setScoreValue((row + 1) * 100);
-				//int minR = 1;
-				//int maxR = BMPs.length;
-				//int ind = minR + (int)(Math.random() * ((maxR - minR) + 1));
-				//Log.v(TAG, "ind texture:"+ ind);
-				//brick.setBrickState(ind);
-				//brick.setTexture(BMPs[ind - 1]);
-				brick.setBrickState(mBrickStatesConfig[i][j]);
-				if (mBrickStatesConfig[i][j]!=BRICK_EMPTY) {
-					brick.setTexture(mBMPBrickTexture[mBrickStatesConfig[i][j]-1]);
+				
+				brick.setBrickState(mBrickStatesConfig[r][c]);
+				if (mBrickStatesConfig[r][c]!=BRICK_EMPTY) {
+					// The score value of brick is VALUE_BRICK_DEFAULT
+					brick.setScoreValue(VALUES_BRICKS_DEFAULTS[mBrickStatesConfig[r][c]-1]);
+					brick.setTexture(mBMPBrickTexture[mBrickStatesConfig[r][c]-1]);
+					
+					// counting the number of bricks to draw
+					mLiveBrickCount ++;
 				}				
-	
-				mBricks[i][j] = brick;
+				// Building the matrix of bricks
+				mBricks[r][c] = brick;
 			}
 		}
-
-		//Log.d(TAG, "Brick zw=" + brickWidth + " zh=" + brickHeight
-		//        + " w=" + mBricks[0].getXScale() + " h=" + mBricks[0].getYScale()
-		//        + " gapw=" + (brickWidth - mBricks[0].getXScale())
-		//        + " gaph=" + (brickHeight - mBricks[0].getYScale()));
-
-		if (false) {
-			// The maximum possible score determines how many digits we need to display.
-			int max = 0;
-			for (int j = 0; j < BRICK_ROWS; j++) {
-				max += (j+1) * BRICK_COLUMNS;
-			}
-			Log.d(TAG, "max score on 'normal' is " + (max * 100));
-		}
-
-
-		mLiveBrickCount = BRICK_ROWS * BRICK_COLUMNS;
+		
 	}
 
 	/**
-	 * Draws the "live" bricks.
+	 * Drawing the "live" bricks.
 	 */
 	void drawBricks() {
-		for (int i = 0; i < BRICK_ROWS; i++) {
-			for (int j = 0; j < BRICK_COLUMNS; j++) {
-				Brick brick = mBricks[i][j];
+		for (int r = 0; r < BRICK_ROWS; r++) {
+			for (int c = 0; c < BRICK_COLUMNS; c++) {
+				Brick brick = mBricks[r][c];
 				//if brick isn't configured as empty, the we can draw it 
 				if (brick.getBrickState()!=BRICK_EMPTY) {
 					//if the brick was not destroyed
@@ -679,8 +631,6 @@ public class BrickBreakerState {
 		rect = new BasicAlignedRect();
 		rect.setPosition(ARENA_WIDTH/2, -BORDER_WIDTH/2);
 		rect.setScale(ARENA_WIDTH, BORDER_WIDTH);
-		//rect.setColor(1.0f, 0.65f, 0.0f);
-		//rect.setColor(0.451f, 0.541f, 0.322f);
 		rect.setColor(0.1f, 0.1f, 0.1f);
 		mBorders[BOTTOM_BORDER] = rect;
 
@@ -719,13 +669,12 @@ public class BrickBreakerState {
 	 */
 	void allocPaddle(Context context) {
 		TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
-		int id = context.getResources().getIdentifier(mPaddleTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		Bitmap bmp = getBitmapTexture(context, mPaddleTextureImg);      
 
 		rect.setScale(DEFAULT_PADDLE_WIDTH * mPaddleSizeMultiplier,
 				ARENA_HEIGHT * PADDLE_HEIGHT_PERC);
-		rect.setColor(1.0f, 1.0f, 1.0f);        // note color is cycled during pauses
+		//rect.setColor(1.0f, 1.0f, 1.0f);        
 
 		rect.setPosition(ARENA_WIDTH / 2.0f, ARENA_HEIGHT * PADDLE_VERTICAL_PERC);
 		//Log.d(TAG, "paddle y=" + rect.getYPosition());
@@ -742,11 +691,7 @@ public class BrickBreakerState {
 	}
 
 	/**
-	 * Moves the paddle to a new location.  The requested position is expressed in arena
-	 * coordinates, but does not need to be clamped to the viewable region.
-	 * <p>
-	 * The final position may be slightly different due to collisions with walls or
-	 * side-contact with the ball.
+	 * Moves the paddle to a new location.  
 	 */
 	void movePaddle(float arenaX) {
 
@@ -767,11 +712,9 @@ public class BrickBreakerState {
 	 * Creates the ball.
 	 */
 	void allocBall(Context context) {
-		Ball ball = new Ball();
-		int id = context.getResources().getIdentifier(mBallTextureImg, null, context.getPackageName());		
+		Ball ball = new Ball();				
 		// Temporary create a bitmap
-		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
-
+		Bitmap bmp = getBitmapTexture(context, mBallTextureImg);
 		int diameter = (int) (DEFAULT_BALL_DIAMETER * mBallSizeMultiplier);
 		// ovals don't work right -- collision detection requires a circle
 		ball.setScale(diameter, diameter);
@@ -783,41 +726,39 @@ public class BrickBreakerState {
 	 * Draws the "live" ball and the remaining-lives display.
 	 */
 	void drawBall() {
-		/*
-		 * We use the lone mBall object to draw all instances of the ball.  We just move it
-		 * around for each instance.
-		 */
-
 		Ball ball = mBall;
 		float savedX = ball.getXPosition();
 		float savedY = ball.getYPosition();
 		float radius = ball.getRadius();
 
-		float xpos = BORDER_WIDTH * 2 + radius;
-		float ypos = BORDER_WIDTH + radius;
+		float xpos = BORDER_WIDTH * 1.5f + radius;
+		float ypos = ARENA_HEIGHT - (BORDER_WIDTH + radius * 1.2f);
 		int lives = mLivesRemaining;
 		boolean ballIsLive = (mGamePlayState != GAME_PAUSE && mGamePlayState != GAME_READY);
 		if (ballIsLive) {
-			// In READY state we show the "live" ball next to the "remaining" balls, rather than
-			// in the play area.
+			// it decreasing  the number of "live" balls  whether the game is animated
 			lives--;
 		}
+		
+		Log.v(TAG, "ballIsLive: "+ String.valueOf(ballIsLive)+"|lives: "+String.valueOf(lives)
+				+"|mLiveBrickCount: "+String.valueOf(mLiveBrickCount));
 
 		for (int i = 0; i < lives; i++) {
-			// Vibrate the "remaining lives" balls when we're almost out of bricks.  It's
-			// kind of silly, but it's easy to do.
 			float jitterX = 0.0f;
 			float jitterY = 0.0f;
-			if (mLiveBrickCount > 0 && mLiveBrickCount < 4) {
-				jitterX = (float) ((4 - mLiveBrickCount) * (Math.random() - 0.5) * 2);
-				jitterY = (float) ((4 - mLiveBrickCount) * (Math.random() - 0.5) * 2);
+			// Vibrate the "remaining lives" balls when we're almost out of lives.
+			if (mLivesRemaining > 0 && mLivesRemaining < 3) {
+				jitterX = (float) ((4 - mLivesRemaining) * (Math.random() - 0.5) * 2);
+				jitterY = (float) ((4 - mLivesRemaining) * (Math.random() - 0.5) * 2);
 			}
+			// Draw the remaining balls
 			ball.setPosition(xpos + jitterX, ypos + jitterY);
 			ball.draw();
-
-			xpos += radius * 3;
+			//changing xpos to draw the new remaining ball
+			xpos += radius * 2.2f ;
 		}
-
+		
+		// drawing the ball is moving 
 		ball.setPosition(savedX, savedY);
 		if (ballIsLive) {
 			ball.draw();
@@ -828,22 +769,6 @@ public class BrickBreakerState {
 	 * Creates objects required to display a numeric score.
 	 */
 	void allocScore() {
-		/*
-		 * The score digits occupy a fixed position at the top right of the screen.  They're
-		 * actually part of the arena, and sit "under" the ball.  (We could, in fact, have the
-		 * ball collide with them.)
-		 *
-		 * We want to use fixed-size cells for the digits.  Each digit has a different width
-		 * though (which is somewhat true even if we use a monospace font -- a '1' can measure
-		 * narrower than an '8' because the text metrics ignore the padding).  We want to run
-		 * through and figure out what the widest glyph is, and use that as the cell width.
-		 *
-		 * The basic plan is to find the widest glyph, scale it up to match the height we
-		 * want, and use that as the size of a cell.  The digits are drawn scaled up to that
-		 * height, with the width increased proportionally (a given digit may not fill the
-		 * entire width of the cell).
-		 */
-
 		int maxWidth = 0;
 		Rect widest = null;
 		for (int i = 0 ; i < 10; i++) {
@@ -860,8 +785,8 @@ public class BrickBreakerState {
 		float cellWidth = cellHeight * widthHeightRatio * 1.05f; // add 5% spacing between digits
 
 		// Note these are laid out from right to left, i.e. mScoreDigits[0] is the 1s digit.
-		float top = SCORE_TOP;
-		float right = SCORE_RIGHT;
+		//float top = SCORE_TOP;
+		//float right = SCORE_RIGHT;
 		for (int i = 0; i < NUM_SCORE_DIGITS; i++) {
 			mScoreDigits[i] = new TexturedAlignedRect();
 			mScoreDigits[i].setTexture(mTextRes.getTextureHandle(),
@@ -886,22 +811,16 @@ public class BrickBreakerState {
 			scoreCell.setTextureCoords(boundsRect);
 			scoreCell.setScale(boundsRect.width() * ratio,  cellHeight);
 			scoreCell.draw();
-
+			
 			score /= 10;
 		}
 	}
+	// PENDIENTE PENDIENTE REVISAR REVISAR
 
 	/**
 	 * Creates storage for a message to display in the middle of the screen.
 	 */
 	void allocMessages() {
-		/*
-		 * The messages (e.g. "won" and "lost") are stored in the same texture, so the choice
-		 * of which text to show is determined by the texture coordinates stored in the
-		 * TexturedAlignedRect.  We can update those without causing an allocation, so there's
-		 * no need to allocate a separate drawable rect for every possible message.
-		 */
-
 		mGameStatusMessages = new TexturedAlignedRect();
 		mGameStatusMessages.setTexture(mTextRes.getTextureHandle(),
 				mTextRes.getTextureWidth(), mTextRes.getTextureHeight());
@@ -926,12 +845,9 @@ public class BrickBreakerState {
 
 		} 
 	}
-
+	
 	/**
-	 * Allocates Buttons 
-	 */
-	/**
-	 * Creates the buttons.
+	 * Allocates the buttons.
 	 */
 	void allocButtonQuit(Context context) {
 
@@ -1131,8 +1047,8 @@ public class BrickBreakerState {
 	 * Updates all game state for the next frame.  This primarily consists of moving the ball
 	 * and checking for collisions.
 	 */
-	void calculateNextFrame() {
-		Log.v(TAG, "calcula frma");
+	void calculateNextFrame(Context context) {
+		Log.v(TAG, "calcula frame");
 		// First frame has no time delta, so make it a no-op.
 		if (mPrevFrameWhenNsec == 0) {
 			mPrevFrameWhenNsec = System.nanoTime();     // use monotonic clock
@@ -1236,7 +1152,8 @@ public class BrickBreakerState {
 
 		// If we're playing, move the ball around.
 		if (advanceFrame) {
-			int event = moveBall(deltaSec);
+			int event = moveBall(context, deltaSec);
+			Log.v(TAG, "EVENT dep: "+String.valueOf(event));
 			switch (event) {
 			case EVENT_LAST_BRICK:
 				mGamePlayState = GAME_WON;
@@ -1274,7 +1191,7 @@ public class BrickBreakerState {
 	 *
 	 * @return A value indicating special events (won game, lost ball).
 	 */
-	private int moveBall(double deltaSec) {
+	private int moveBall(Context context, double deltaSec) {
 		/*
 		 * Movement and collision detection is done with two checks, "coarse" and "fine".
 		 *
@@ -1462,12 +1379,39 @@ public class BrickBreakerState {
 					if (hit instanceof Brick) {
 						Brick brick = (Brick) hit;
 						//brick.setAlive(false);
-						int newBrickState = brick.getBrickState() - 1;
-						brick.setBrickState(newBrickState);
+						
+						int brickState = brick.getBrickState();
+						if (brickState == BRICK_ESPECIAL1) {
+							//increases the  size paddle
+							brickState = 0;
+							setPaddleSizeMultiplier(mPaddleSizeMultiplier * 1.5f);
+							allocPaddle(context);  
+						}
+						else if (brickState == BRICK_ESPECIAL2) {
+							// increases the number of lives
+							brickState= 0;
+							mLivesRemaining ++;
+							//setBallMaximumSpeed(mBallInitialSpeed * 3);
+							setBallSizeMultiplier(mBallSizeMultiplier * 1.2f);
+							
+							//TexturedAlignedRect.prepareToDraw();
+							//allocBall(context);
+							Log.v(TAG, "EVENT ant: "+String.valueOf(event));
+					        //drawBall();        
+					        //TexturedAlignedRect.finishedDrawing();
+							
+							
+						}
+						else{
+							brickState --;
+						}
+						brick.setBrickState(brickState);
 						
 						if(!brick.isAlive()){
 							mLiveBrickCount--;
+							
 							mScore += brick.getScoreValue() * mScoreMultiplier;
+							Log.v(TAG, "score value"+brick.getScoreValue()+ "| score mult"+ String.valueOf(mScoreMultiplier));
 						}
 						if (mLiveBrickCount == 0) {
 							Log.d(TAG, "*** won ***");
@@ -1475,6 +1419,7 @@ public class BrickBreakerState {
 							distance = 0.0f;
 						}
 						SoundResources.play(SoundResources.BRICK_HIT);
+						Log.v(TAG, "EVENT ant 2: "+String.valueOf(event));
 						
 					} else if (hit == mPaddle) {
 						if (mHitFace == HIT_FACE_HORIZONTAL) {
@@ -1542,21 +1487,10 @@ public class BrickBreakerState {
 						// off screen doesn't work -- too far and there's a long delay waiting
 						// for a slow ball to drain, too close and we still get the bounce effect
 						// from a fast-moving ball.)
-						event = EVENT_BALL_LOST;
+						event = EVENT_BALL_LOST;						
 						distance = 0.0f;
 						SoundResources.play(SoundResources.BALL_LOST);
-
-						/*if (!mNeverLoseBall) {
-                            event = EVENT_BALL_LOST;
-                            distance = 0.0f;
-                            SoundResources.play(SoundResources.BALL_LOST);
-                        } else {
-                            mScore -= 500 * mScoreMultiplier;
-                            if (mScore < 0) {
-                                mScore = 0;
-                            }
-                            SoundResources.play(SoundResources.WALL_HIT);
-                        }*/
+						
 					} else {
 						// hit a border or a score digit
 						SoundResources.play(SoundResources.WALL_HIT);
@@ -1871,11 +1805,13 @@ public class BrickBreakerState {
 		public int mGameStatusMessageNum;
 		public int mLivesRemaining;
 		public int mScore;
+		public int mGameLevel;
 
 		public boolean mIsValid = false;        // set when state has been written out
 	}
 
 	public void RestartGame(){
+		resetPaddle();
 		mGamePlayState = GAME_READY;
 		mIsAnimating = true;
 	}
@@ -1884,7 +1820,8 @@ public class BrickBreakerState {
 		return (mGamePlayState == GAME_PAUSE) ? true : false;
 	}	
 	
-	public void gameOptions(BrickBreakerSurfaceView surfaceView, Context context, float arenaX, float arenaY){
+	public void gameOptions(BrickBreakerSurfaceView surfaceView, Context context, 
+			float arenaX, float arenaY, boolean isGameLost){
 		float posXTouch = arenaX;
 		float posYTouch = ARENA_HEIGHT - arenaY;
 		
@@ -1892,20 +1829,17 @@ public class BrickBreakerState {
 		
 		//
 		float minXQuitBu = mQuit.getXPosition() - mQuit.getXScale()/2;
-		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;
-		
+		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;		
 		float minYQuitBu = mQuit.getYPosition() - mQuit.getYScale()/2;
 		float maxYQuitBu = mQuit.getYPosition() + mQuit.getYScale()/2;
 		
 		float minXReloadBu = mReload.getXPosition() - mQuit.getXScale()/2;
-		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;
-		
+		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;	
 		float minYReloadBu = mReload.getYPosition() - mReload.getYScale()/2;
 		float maxYReloadBu = mReload.getYPosition() + mReload.getYScale()/2;
 		
 		float minXNextBu = mNextLevel.getXPosition() - mNextLevel.getXScale()/2;
-		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;
-		
+		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;		
 		float minYNextBu = mNextLevel.getYPosition() - mNextLevel.getYScale()/2;
 		float maxYNextBu = mNextLevel.getYPosition() + mNextLevel.getYScale()/2;
 		
@@ -1915,49 +1849,59 @@ public class BrickBreakerState {
 			Log.v(TAG, "Show the menu game");
 			 //Show frament_main layout
 			Intent myIntent = new Intent(context,MainActivity.class);			
-			context.startActivity(myIntent);	
+			context.startActivity(myIntent);
+			
 			return;
 			
 		}	
 		else if ((minXReloadBu <= posXTouch && posXTouch<= maxXReloadBu) && 
-				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu)){
-			// Touch on Restart button
-			Log.v(TAG, "Restart the game");
-			//BrickBreakerActivity.invalidateSavedGame();
-			reset();
-			TexturedBasicAlignedRect.prepareToDraw();
+				(minYReloadBu <= posYTouch && posYTouch<= maxYReloadBu) && isGameLost){
+			// Touch on RESTART button (THE SAME LEVEL)
+			Log.v(TAG, "Restart the same game level");
+			BrickBreakerActivity.invalidateSavedGame();						
 			allocBricks(context);
-	        //drawBricks();
-	        TexturedBasicAlignedRect.finishedDrawing();
-	        TexturedAlignedRect.prepareToDraw();
-	        allocScore();
-	        //drawScore();      
-	        TexturedAlignedRect.finishedDrawing();
+			allocScore();
+	        reset();
+	        // Continue the game
         	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        	
-			//Show frament_main layout
-			Intent myIntent = new Intent(context,BrickBreakerActivity.class);
-			//configuring the parameters to start the same  level
-			context.startActivity(myIntent);
-			
 			
 		}		
 		else if ((minXNextBu <= posXTouch && posXTouch<= maxXNextBu) && 
-				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu)) {
+				(minYNextBu <= posYTouch && posYTouch<= maxYNextBu) && !isGameLost) {
 			// Touch  on Next Button
 			Log.v(TAG, "Next level");
 			//restore 
-			BrickBreakerActivity.invalidateSavedGame();
-			reset();
-        	surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        	RestartGame();
-			 //Show frament_main layout
-			Intent myIntent = new Intent(context, BrickBreakerActivity.class);
-			//configurating the parameters for next level
-			context.startActivity(myIntent);
-			
-	        
-			
+			//BrickBreakerActivity.invalidateSavedGame();
+			//reset();
+			if (mGameLevel< LevelsFragment.MAX_LEVEL) {
+				int newGameLevel = mGameLevel + 1;
+				
+				// Configure the next level of game
+				ParametersConfig param = LevelParameters.configLevelParameters(newGameLevel);				
+
+				mBrickStatesConfig = Library.buildBrickStatesConfig(BRICK_ROWS, BRICK_COLUMNS, param.configStr);				
+		        setBallSizeMultiplier(param.ballSize);
+		        setPaddleSizeMultiplier(param.paddleSize);
+		        setScoreMultiplier(param.scoreMultiplier);
+		        setMaxLives(param.maxLives);
+		        setBallInitialSpeed(param.minSpeed);
+		        setBallMaximumSpeed(param.maxSpeed);
+		        setGameLevel(newGameLevel);
+		        setBrickStatesConfig(mBrickStatesConfig);
+		        setBackgroundLevel(param.backgroundTextureImg);
+		        
+		        allocBackground(context);
+		        allocBackground(context);
+		        allocBricks(context);
+		        allocPaddle(context);
+		        allocBall(context);		        
+		        allocScore();
+		        
+		        reset();
+		        
+		        surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			}
 		}
 	}
+	
 }

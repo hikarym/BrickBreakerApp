@@ -2,13 +2,11 @@ package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.sqlite.BbSQliteHelper;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,52 +14,35 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	
-	public static final String TAG = "BrickBreakerApp";
-	
+	// Application Name. 
+	// it will be used with LOG(utils) to track the execution of the game
+	public static final String TAG = "BrickBreakerApp";	
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
-
-	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
-	
-	// This is done so we won't have to create new fragments all the time
-	//private OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
-	//private LevelsFragment mLevelsFragment = null; // Level fragment to help handle the preferences
-	
+	private static SharedPreferences mPrefs; // Helper to handle the user's preferences	
 	private FragmentManager mFragmentManager = null;
 	private Fragment mFragment = null; // Helper to handle current fragment
 	
 	private AudioManager mAudioManager = null;
 	
 	/** Preference keys **/
-
 	// Shared preferences file
-    public static final String PREFS_NAME = "Prefs";
-    
+    public static final String PREFS_NAME = "Prefs";    
     // Keys for the values to be saved in our preferences file
 	public static final String USERNAME_KEY = "username";
     public static final String HIGH_SCORE_KEY = "high-score";
-    public static final String SFX_ENABLED_KEY = "sound-effects-enabled"; // Sound effects enabled key
+    // Sound effects enabled key
+    public static final String SFX_ENABLED_KEY = "sound-effects-enabled"; 
     public static final String GAME_LEVEL_KEY = "game-level";
 	
 	// Default values for the keys
@@ -232,24 +213,16 @@ public class MainActivity extends Activity {
 	
 	//---Copies settings to the saved preferences' file
 	private void savePreferences() {
-		//SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor editor = mPrefs.edit();
-		
-		//editor.putInt(DIFFICULTY_KEY, BrickBreakerActivity.getDifficultyIndex());
-		//editor.putBoolean(NEVER_LOSE_BALL_KEY, BrickBreakerActivity.getNeverLoseBall());
 		editor.putBoolean(SFX_ENABLED_KEY, BrickBreakerActivity.isSoundEffectsEnabled());
 		editor.putString(USERNAME_KEY, OptionFragment.getCurrentUsername());
 		editor.putInt(GAME_LEVEL_KEY, BrickBreakerActivity.getLevelIndex());
+
 		editor.commit();
 	}
 	
 	//---Retrieves settings from the saved preferences' file
 	private void restorePreferences() {
-		//BrickBreakerActivity.setDifficultyIndex(mPrefs.getInt(DIFFICULTY_KEY,
-		//		BrickBreakerActivity.getDefaultDifficultyIndex()));
-		//BrickBreakerActivity.setNeverLoseBall(mPrefs.getBoolean(NEVER_LOSE_BALL_KEY, false));
-		//BrickBreakerActivity.setLevel(mPrefs.getInt(LEVEL_KEY, 1));
 		BrickBreakerActivity.setSoundEffectsEnabled(
 				mPrefs.getBoolean(SFX_ENABLED_KEY, DEFAULT_SFX_STATUS));
 		

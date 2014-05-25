@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 
 /**
  * Generate and play sound data.
@@ -38,9 +37,6 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
     // Maximum simultaneous sounds.  Four seems nice.
     private static final int MAX_STREAMS = 4;
 
-    // Global mute flag.  This should arguably be in BrickBreakerState, i.e. the game shouldn't be trying
-    // to play sounds at all, but it's convenient to have a single check in the code here.  This
-    // is not immutable state, so it does not belong in the singleton.
     private static boolean sSoundEffectsEnabled = true;
 
     // The actual sound data.  Must be "final" for immutability guarantees.
@@ -54,11 +50,6 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
      * We need the application context to figure out where files will live.
      */
     public static synchronized void initialize(Context context) {
-        /*
-         * In theory, this could be called from two different threads at the same time, and
-         * we'd end up with two sets of sounds.  This isn't a huge problem for us, but the
-         * correct thing to do is use a mutex to ensure it only gets initialized once.
-         */
 
         if (sSoundResources == null) {
             File dir = context.getFilesDir();
@@ -70,12 +61,6 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
      * Starts playing the specified sound.
      */
     public static void play(int soundNum) {
-        /*
-         * Because this method is not declared synchronized, we're not actually guaranteed to
-         * see the initialization of sSoundResources.  The immutable instance rules do
-         * guarantee that we either see a null pointer or a fully-constructed instance, so
-         * rather than using "synchronized" or "volatile" we just do a null check here.
-         */
 
         if (SoundResources.sSoundEffectsEnabled) {
             SoundResources instance = sSoundResources;
@@ -99,33 +84,11 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
     private SoundResources(File privateDir) {
         SoundPool soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(this);
-        generateSoundFiles(soundPool, privateDir);
-
-        if (false) {
-            // Sleep briefly to allow SoundPool to finish loading, then play each sound.
-            try { Thread.sleep(1000); }
-            catch (InterruptedException ie) {}
-
-            for (int i = 0; i < NUM_SOUNDS; i++) {
-                mSounds[i].play();
-                try { Thread.sleep(800); } catch (InterruptedException ie) {}
-            }
-        }
+        generateSoundFiles(soundPool, privateDir);        
     }
 
     @Override
     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-        /*
-         * Complain about any failures.  We could update mSounds[n] (where "n" is the index
-         * of the Sound whose mHandle matches "sampleId") with a status enum like {pending,
-         * ready, failed}, but the only advantage to doing so would be that we could skip the
-         * SoundPool call and avoid filling the log with complaints.  In practice we should
-         * never see a failure here, and the brief pause we do before releasing the ball at the
-         * start of the game should provide more than enough time to load the sounds.
-         *
-         * If not, we'd want to add a "SoundPool response" counter and signal when the
-         * counter reached the expected count.
-         */
         if (status != 0) {
             Log.w(TAG, "onLoadComplete: pool=" + soundPool + " sampleId=" + sampleId
                     + " status=" + status);
@@ -149,16 +112,6 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
      */
     private Sound generateSound(SoundPool soundPool, File dir, String name, int lengthMsec,
             int freqHz) {
-        /*
-         * Since we're generating trivial tones, we could just generate a short set of samples
-         * and then set a nonzero loop count in SoundPool.  We could also generate it at twice
-         * the frequency for half the duration, and then use a playback rate of 0.5.  These would
-         * save space on disk and in memory, but our sounds are already pretty tiny.
-         *
-         * These files can be erased by the user (using the "clear app data") function, so we
-         * need to be able to regenerate them.  If they already exist we can skip the process
-         * and save some wear on flash memory.
-         */
 
         Sound sound = null;
 
@@ -247,17 +200,7 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
                 }
                 buf.put((byte) (peak * sinValue + 127.0));
             }
-        } else if (BITS_PER_SAMPLE == 16) {
-            final double peak = 32767.0;
-
-            ShortBuffer sbuf = buf.asShortBuffer();
-            for (int i = 0; i < sampleCount; i++) {
-                double timeSec = i / (double) SAMPLE_RATE;
-                double sinValue = Math.sin(2 * Math.PI * freq * timeSec);
-                // 16-bit data is signed, +/- 32767
-                sbuf.put((short) (peak * sinValue));
-            }
-        }
+        } 
 
         buf.position(0);
         return buf;
@@ -267,7 +210,7 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
      * A self-contained sound effect.
      */
     private static class Sound {
-        private String mName;   // reference name, useful for debugging
+        private String mName;   
         private SoundPool mSoundPool;
         private int mHandle;    // SoundPool handle
         private float mVolume = 0.5f;// 0.5f

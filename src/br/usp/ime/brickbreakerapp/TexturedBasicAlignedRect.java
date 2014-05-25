@@ -1,17 +1,12 @@
 package br.usp.ime.brickbreakerapp;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 /**
  * Represents a two-dimensional axis-aligned solid-color rectangle.
@@ -86,21 +81,9 @@ public class TexturedBasicAlignedRect extends BaseRect {
     // RGBA color vector.
     float[] mColor = new float[4];
     
-    // Geometric variables
- 	//public static float vertices[];
- 	//public static short indices[];
-
     // Sanity check on draw prep.
     private static boolean sDrawPrepared;
-
-    /*
-     * Scratch storage for the model/view/projection matrix.  We don't actually need to retain
-     * it between calls, but we also don't want to re-allocate space for it every time we draw
-     * this object.
-     *
-     * Because all of our rendering happens on a single thread, we can make this static instead
-     * of per-object.  To avoid clashes within a thread, this should only be used in draw().
-     */
+    
     static float[] sTempMVP = new float[16];
 
 
@@ -146,11 +129,6 @@ public class TexturedBasicAlignedRect extends BaseRect {
      * the values in the returned array.
      */
     public float[] getColor() {
-        /*
-         * Normally this sort of function would make a copy of the color data and return that, but
-         * we want to avoid allocating objects.  We could also implement this as four separate
-         * methods, one for each component, but that's slower and annoying.
-         */
         return mColor;
     }
     
@@ -187,17 +165,6 @@ public class TexturedBasicAlignedRect extends BaseRect {
      * Performs setup common to all BasicAlignedRects.
      */
     public static void prepareToDraw() {
-        /*
-         * We could do this setup in every draw() call.  However, experiments on a couple of
-         * different devices indicated that we can increase the CPU time required to draw a
-         * frame by as much as 2x.  Doing the setup once, then drawing all objects of that
-         * type (basic, outline, textured) provides a substantial CPU cost savings.
-         *
-         * It's a lot more awkward this way -- we want to draw similar types of objects
-         * together whenever possible, and we have to wrap calls with prepare/finish -- but
-         * avoiding configuration changes can improve efficiency, and the explicit prepare
-         * calls highlight potential efficiency problems.
-         */
 
         // Select the program.
         GLES20.glUseProgram(sProgramHandle);
@@ -253,10 +220,6 @@ public class TexturedBasicAlignedRect extends BaseRect {
         // Copy the model / view / projection matrix over.
         GLES20.glUniformMatrix4fv(sMVPMatrixHandle, 1, false, mvp, 0);
         if (BrickBreakerSurfaceRenderer.EXTRA_CHECK) Library.checkGlError("glUniformMatrix4fv");
-
-        // Copy the color vector into the program.
-        //GLES20.glUniform4fv(sColorHandle, 1, mColor, 0);
-        //if (BrickBreakerSurfaceRenderer.EXTRA_CHECK) Library.checkGlError("glUniform4fv ");
         
         // Set the sampler texture unit to 0, where we have saved the texture.
         GLES20.glUniform1i(sTextureHandle, 0);
@@ -274,9 +237,6 @@ public class TexturedBasicAlignedRect extends BaseRect {
         
         // Draw the rect.
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
-        // Draw the triangle
-        //GLES20.glDrawElements(GLES20.GL_TRIANGLES, getIndices().length,
-          //      GLES20.GL_UNSIGNED_SHORT, sDrawListBuffer);
         if (BrickBreakerSurfaceRenderer.EXTRA_CHECK) Library.checkGlError("glDrawArrays");
     }
 }

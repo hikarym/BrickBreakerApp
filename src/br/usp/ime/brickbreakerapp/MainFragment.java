@@ -1,21 +1,13 @@
 package br.usp.ime.brickbreakerapp;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
 public class MainFragment extends Fragment {

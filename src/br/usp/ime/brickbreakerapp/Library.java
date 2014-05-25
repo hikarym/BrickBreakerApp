@@ -1,6 +1,8 @@
 package br.usp.ime.brickbreakerapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -163,4 +165,39 @@ public class Library {
             throw new RuntimeException(msg + ": glError " + lastError);
         }
     }
+    
+    /**
+	 * Build a brick configuration of the game
+	 * (Each brick must be a value between 0 e 4) 
+	 * @param configStr: array[001111100, 001111100, 000232000, 000232000, 001111100, 001111100])
+	 * (The array must be BRICK_ROWS elements and 
+	 * each string must be have BRICK_COLUMNS characters)
+	 * 
+	 */
+	public static int[][] buildBrickStatesConfig(int rows, int columns, String[] configStr){
+		int[][] mBrickStatesConfig = new int[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			
+			for (int j = 0; j < columns; j++) {				
+				mBrickStatesConfig[i][j] = Integer.parseInt(
+						String.valueOf(configStr[i].charAt(j)));
+			}
+		}
+		Log.v(TAG, "param.mBrickStatesConfig1:"+String.valueOf(mBrickStatesConfig[5][8]));
+		return mBrickStatesConfig;
+		
+	}
+	
+	/**
+	 * Get a bitmap object from a source
+	 * @param context
+	 * @param src i.e: "drawable/background_3" 
+	 * @return a Bitmap object
+	 */
+	public static Bitmap getBitmapTexture(Context context, String src){
+		int id = context.getResources().getIdentifier(src, null, context.getPackageName());		
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		return bmp;
+	}
 }
