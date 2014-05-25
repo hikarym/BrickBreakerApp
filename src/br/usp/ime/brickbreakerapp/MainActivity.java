@@ -2,13 +2,11 @@ package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.sqlite.BbSQliteHelper;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,17 +25,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class MainActivity extends Activity {
-	
-	public static final String TAG = "BrickBreakerApp";
-	
+	// Application Name. 
+	// it will be used with LOG(utils) to track the execution of the game
+	public static final String TAG = "BrickBreakerApp";	
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
-
-	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
-	
-	// This is done so we won't have to create new fragments all the time
-	//private OptionFragment mOptionFragment = null; // Option fragment to help handle the preferences
-	//private LevelsFragment mLevelsFragment = null; // Level fragment to help handle the preferences
-	
+	private static SharedPreferences mPrefs; // Helper to handle the user's preferences	
 	private FragmentManager mFragmentManager = null;
 	private Fragment mFragment = null; // Helper to handle current fragment
 	
