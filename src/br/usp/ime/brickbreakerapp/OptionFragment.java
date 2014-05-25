@@ -151,22 +151,22 @@ public class OptionFragment extends Fragment {
     	@Override
     	public Dialog onCreateDialog(Bundle savedInstanceState) {
     		return new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), android.R.style.Theme_Dialog))
-			    		.setIcon(android.R.drawable.ic_dialog_alert)
-			    		.setTitle(R.string.app_name)
-			            .setMessage(R.string.msg_reset_scores)
-			            .setNegativeButton(R.string.cancel, null)
-			            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			    			@Override
-			                public void onClick(DialogInterface dialog, int id) {
-			                    // Reset scores
-			            		MainActivity.getBbSQliteHelper().dropDatabaseTables();
-			            		MainActivity.getBbSQliteHelper().createDatabaseTables();
-			            		
-			    				Toast.makeText(getActivity(),
-			    						"All scores have been deleted",
-			    						Toast.LENGTH_SHORT).show();
-			                }
-			            }).create();
+		    		.setIcon(android.R.drawable.ic_dialog_alert)
+		    		.setTitle(R.string.app_name)
+		            .setMessage(R.string.msg_reset_scores)
+		            .setNegativeButton(R.string.cancel, null)
+		            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+		    			@Override
+		                public void onClick(DialogInterface dialog, int id) {
+		                    // Reset scores
+		            		MainActivity.getBbSQliteHelper().dropDatabaseTables();
+		            		MainActivity.getBbSQliteHelper().createDatabaseTables();
+		            		
+		    				Toast.makeText(getActivity(),
+		    						"All scores have been deleted",
+		    						Toast.LENGTH_SHORT).show();
+		                }
+		            }).create();
         }
     }
 }

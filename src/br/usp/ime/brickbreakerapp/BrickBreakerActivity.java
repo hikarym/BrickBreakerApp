@@ -1,9 +1,14 @@
 package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 
 /**
  * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
@@ -47,20 +52,16 @@ public class BrickBreakerActivity extends Activity {
         setContentView(mGLView);
     }
     
-    protected void exitGame() {
+    @Override
+    protected void onPause() {
     	Log.d(TAG, "BrickBreakerActivity pausing");
-        
+    	
     	super.onPause();
         mGLView.onPause();
         
         updateHighScore(BrickBreakerState.getFinalScore());
     }
     
-    @Override
-    protected void onPause() {
-		exitGame();
-    }
-
     @Override
     protected void onResume() {
         Log.d(TAG, "BrickBreakerActivity resuming");
@@ -126,11 +127,28 @@ public class BrickBreakerActivity extends Activity {
 	public void onBackPressed() {
 		Log.d(TAG, "BrickBreakerActivity.onBackPressed");
 		
-		super.onBackPressed();
+		onPause();
+
+        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Dialog))
+				.setTitle(R.string.app_name)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage(R.string.msg_exit)
+				.setNegativeButton(R.string.cancel, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+				        onResume();
+					}
+		        })
+				.setPositiveButton(R.string.ok, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+			        	dialog.dismiss();
+			        	finish();
+			        	overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+					}
+		        }).create();
 		
-		overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
-		
-		// finish();
+        dialog.show();
 	}
 
     /**
@@ -228,7 +246,8 @@ public class BrickBreakerActivity extends Activity {
 
         Log.d(TAG, "final score was " + lastScore);
         
-        MainActivity.getBbSQliteHelper().addScore(username, lastScore);
+        if (lastScore >= 0)
+        	MainActivity.getBbSQliteHelper().addScore(username, lastScore);
         
         if (lastScore > highScore) {
             Log.d(TAG, "new high score!  (" + highScore + " vs. " + lastScore + ")");
