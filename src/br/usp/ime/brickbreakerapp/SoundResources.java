@@ -26,12 +26,18 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
     public static final int PADDLE_HIT = 1;
     public static final int WALL_HIT = 2;
     public static final int BALL_LOST = 3;
-    private static final int NUM_SOUNDS = 4;
+    public static final int GAME_MUSIC = 4;
+    public static final int WINNER_MUSIC = 5;
+    public static final int GAME_OVER_MUSIC = 6;
+    private static final int NUM_SOUNDS = 7;
     // Sources
     public static final String BRICK_HIT_ASSET = "explosion.ogg";
     public static final String PADDLE_HIT_ASSET = "laser.ogg";
-    public static final String WALL_HIT_ASSET = "laser.ogg";
-    public static final String BALL_LOST_ASSET = "alarm.ogg";
+    public static final String WALL_HIT_ASSET = "Crush8-Bit.ogg";
+    public static final String BALL_LOST_ASSET = "Oddbounce.ogg";
+    public static final String GAME_MUSIC_ASSET = "game_music.ogg";
+    public static final String WINNER_MUSIC_ASSET = "winner.wav";
+    public static final String GAME_OVER_MUSIC_ASSET = "game_music.ogg";
 
     // Singleton instance.
     private static SoundResources sSoundResources;
@@ -59,7 +65,7 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
             File dir = context.getFilesDir();
             // The AssetManager handle reproduction of sounds
             assetManager = context.getAssets();
-            sSoundResources = new SoundResources(dir);
+            sSoundResources = new SoundResources();
             
         }
     }
@@ -88,10 +94,10 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
     /**
      * Instantiate the SOUNDPOOL
      */
-    private SoundResources(File privateDir) {
+    private SoundResources() {
     	SoundPool soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(this);
-        generateSoundFiles(soundPool, privateDir);        
+        generateSoundFiles(soundPool);        
     }
 
     @Override
@@ -105,11 +111,14 @@ public class SoundResources implements SoundPool.OnLoadCompleteListener {
     /**
      * Generates all sounds.
      */
-    private void generateSoundFiles(SoundPool soundPool, File privateDir) {
+    private void generateSoundFiles(SoundPool soundPool) {
         mSounds[BRICK_HIT] = generateSound(soundPool, BRICK_HIT_ASSET);
         mSounds[PADDLE_HIT] = generateSound(soundPool,PADDLE_HIT_ASSET);
         mSounds[WALL_HIT] = generateSound(soundPool, WALL_HIT_ASSET);
         mSounds[BALL_LOST] = generateSound(soundPool, BALL_LOST_ASSET);
+        mSounds[GAME_MUSIC] = generateSound(soundPool, GAME_MUSIC_ASSET);
+        mSounds[WINNER_MUSIC] = generateSound(soundPool, WINNER_MUSIC_ASSET);
+        mSounds[GAME_OVER_MUSIC] = generateSound(soundPool, GAME_OVER_MUSIC_ASSET);
     }
 
     /**

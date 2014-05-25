@@ -66,19 +66,6 @@ public class MainActivity extends Activity {
 		
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		
-		// Start listening for button presses
-		//mAudioManager.registerMediaButtonEventReceiver(RemoteControlReceiver);---------------------------------
-		
-		
-		/*
-		// Retrieve and cache the system's default "short" animation time.
-		mShortAnimationDuration = getResources().getInteger(
-				android.R.integer.config_shortAnimTime);
-		*/
-		// Initialize the fragments
-		//mOptionFragment = new OptionFragment();
-		//mLevelsFragment = new LevelsFragment();
-		
 		//mPrefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		mBbScoreDB = new BbSQliteHelper(this);
@@ -113,9 +100,6 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		
 		savePreferences();
-		
-		// Stop listening for button presses
-		//mAudioManager.unregisterMediaButtonEventReceiver(RemoteControlReceiver);------------------------------
 		
 		// Closes the BbSQLiteHelper
 		mBbScoreDB.close();

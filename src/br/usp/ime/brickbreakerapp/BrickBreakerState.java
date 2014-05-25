@@ -1164,16 +1164,15 @@ public class BrickBreakerState {
 			switch (event) {
 			case EVENT_LAST_BRICK:
 				mGamePlayState = GAME_WON;
-				// We're already playing the brick sound; play the other three sounds
-				// simultaneously.  Cheap substitute for an actual "victory" sound.
-				SoundResources.play(SoundResources.PADDLE_HIT);
-				SoundResources.play(SoundResources.WALL_HIT);
-				SoundResources.play(SoundResources.BALL_LOST);
+				setPauseTime(1.5f);
+				SoundResources.play(SoundResources.WINNER_MUSIC);
 				break;
 			case EVENT_BALL_LOST:
 				if (--mLivesRemaining == 0) {
-					// game over, man
+					// game over
+					//SoundResources.play(SoundResources.GAME_OVER_MUSIC);
 					mGamePlayState = GAME_LOST;
+					
 				} else {
 					// switch back to "ready" state, reset ball position
 					//mGamePlayState = GAME_READY;
@@ -1184,6 +1183,8 @@ public class BrickBreakerState {
 				}
 				break;
 			case EVENT_NONE:
+				//SoundResources.play(SoundResources.GAME_OVER_MUSIC);
+				//setPauseTime(1.5f);
 				break;
 			default:
 				throw new RuntimeException("bad game event: " + event);
