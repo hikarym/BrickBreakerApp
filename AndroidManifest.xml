@@ -37,12 +37,9 @@
 		</receiver>
 		-->
 		<!-- Service for music -->
-		<!--
 		<service
 		    android:name="MusicService"
 		    android:enabled="true" />
-		
-		-->
 		
         <!-- MainActivity -->
         <activity

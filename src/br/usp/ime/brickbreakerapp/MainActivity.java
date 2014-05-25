@@ -7,13 +7,16 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -27,13 +30,29 @@ import android.widget.EditText;
 public class MainActivity extends Activity {
 	// Application Name. 
 	// it will be used with LOG(utils) to track the execution of the game
-	public static final String TAG = "BrickBreakerApp";	
+	public static final String TAG = "BrickBreakerApp";
+	
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
 	private static SharedPreferences mPrefs; // Helper to handle the user's preferences	
 	private FragmentManager mFragmentManager = null;
 	private Fragment mFragment = null; // Helper to handle current fragment
 	
 	private AudioManager mAudioManager = null;
+	private boolean isMusicBound = false;
+	private MusicService mMusicService;
+	private ServiceConnection mMusicServCon = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder binder) {
+			mMusicService = ((MusicService.ServiceBinder) binder).getService();
+			
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mMusicService = null;
+			
+		}
+	};
 	
 	/** Preference keys **/
 	// Shared preferences file
@@ -49,6 +68,18 @@ public class MainActivity extends Activity {
 	public static final String DEFAULT_USERNAME = OptionFragment.DEFAULT_USERNAME;
 	public static final Boolean DEFAULT_SFX_STATUS = OptionFragment.DEFAULT_SFX_STATUS;
 	public static final int DEFAULT_LEVEL = LevelsFragment.MIN_LEVEL;
+
+	void doMusicBindService() {
+		bindService(new Intent(this, MusicService.class), mMusicServCon, Context.BIND_AUTO_CREATE);
+		isMusicBound = true;
+	}
+	
+	void doMusicUnbindService() {
+		if(isMusicBound) {
+			unbindService(mMusicServCon);
+			isMusicBound = false;
+		}
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +95,8 @@ public class MainActivity extends Activity {
 
 		mFragmentManager = getFragmentManager();
 		
-		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		//mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		//doMusicBindService();
 		
 		//mPrefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
 		mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -73,6 +105,21 @@ public class MainActivity extends Activity {
 		// Show main menu
 		mFragment = new MainFragment();
 		displayFragment(mFragment);
+		
+		
+		/*
+		Intent music = new Intent();
+		music.setClass(this, MusicService.class);
+		
+		startService(music);*/
+	}
+
+	@Override
+	protected void onStart() {
+		Log.d(TAG, "MainActivity.onStart");
+		
+		super.onStart();
+		
 	}
 	
 	@Override
@@ -80,7 +127,7 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "MainActivity.onResume");
 		
 		super.onResume();
-		
+		//mMusicService.resumeMusic();
 		restorePreferences();
 	}
 	
@@ -100,7 +147,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		
 		savePreferences();
-		
+
 		// Closes the BbSQLiteHelper
 		mBbScoreDB.close();
 	}
