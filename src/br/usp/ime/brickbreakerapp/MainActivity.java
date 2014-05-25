@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -301,7 +303,6 @@ public class MainActivity extends Activity {
 			new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Dialog))
 					.setTitle(R.string.title_no_ranking)
 					.setIcon(android.R.drawable.ic_dialog_alert)
-					//.setIcon(R.drawable.ic_dark_action_warning)
 					.setMessage(R.string.msg_no_scores)
 					.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		
@@ -418,8 +419,11 @@ public class MainActivity extends Activity {
 							
 							OptionFragment.setCurrentUsername(newUsername);
 							
+							// Here we should add the Username on the table, but since we are not showing a
+							// list of options from where the user can choose the name, there's no need to.
+							
 							// Add user name
-							MainActivity.getBbSQliteHelper().addUser(newUsername);
+							//MainActivity.getBbSQliteHelper().addUser(newUsername);
 							
 							savePreferences();
 							

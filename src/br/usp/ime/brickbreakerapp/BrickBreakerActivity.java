@@ -53,22 +53,6 @@ public class BrickBreakerActivity extends Activity {
         SoundResources.initialize(this);
         TextResources.Configuration textConfig = TextResources.configure(this);
         
-        /*new AlertDialog.Builder(this)
-        .setTitle("Delete entry")
-        .setMessage("Are you sure you want to delete this entry?")
-        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) { 
-                // continue with delete
-            }
-         })
-        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) { 
-                // do nothing
-            }
-         })
-        .setIcon(android.R.drawable.ic_dialog_alert)
-         .show();*/
-
         mBrickBreakerState = new BrickBreakerState();
         configureBrickBreakerState();
 
@@ -82,9 +66,10 @@ public class BrickBreakerActivity extends Activity {
         setContentView(mGLView);
     }
     
-    protected void exitGame() {
+    @Override
+    protected void onPause() {
     	Log.d(TAG, "BrickBreakerActivity pausing");
-
+    	
         /*
          * We must call the GLView's onPause() function when the framework tells us to pause.
          * We're also expected to deallocate any large OpenGL resources, though presumably
@@ -97,7 +82,7 @@ public class BrickBreakerActivity extends Activity {
          */
     	super.onPause();
         mGLView.onPause();
-        //------------------------------------------------------------------------------------------------------
+        
         /*
          * If the game is over, record the new high score.
          *
@@ -124,27 +109,6 @@ public class BrickBreakerActivity extends Activity {
          * BrickBreakerState to save the game to static storage, and that's what we read the score from.
          */
         updateHighScore(BrickBreakerState.getFinalScore());
-    }
-    
-    @Override
-    protected void onPause() {/*
-		AlertDialog.Builder builder = new AlertDialog.Builder(
-				new ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog));
-		
-		builder.setTitle(R.string.app_name);
-		builder.setIcon(android.R.drawable.ic_dialog_alert);
-		builder.setMessage(R.string.msg_exit);
-		builder.setNegativeButton(R.string.cancel, null);
-		builder.setPositiveButton(R.string.ok, new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-		        BrickBreakerActivity.exitGame();
-			}
-        });
-		
-		builder.show();
-		*/
-		exitGame();
     }
 
     @Override
@@ -220,11 +184,28 @@ public class BrickBreakerActivity extends Activity {
 	public void onBackPressed() {
 		Log.d(TAG, "BrickBreakerActivity.onBackPressed");
 		
-		super.onBackPressed();
+		onPause();
+
+        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Dialog))
+				.setTitle(R.string.app_name)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage(R.string.msg_exit)
+				.setNegativeButton(R.string.cancel, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+				        onResume();
+					}
+		        })
+				.setPositiveButton(R.string.ok, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+			        	dialog.dismiss();
+			        	finish();
+			        	overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+					}
+		        }).create();
 		
-		overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
-		
-		// finish();
+        dialog.show();
 	}
 	
     /**
@@ -436,7 +417,8 @@ public class BrickBreakerActivity extends Activity {
 
         Log.d(TAG, "final score was " + lastScore);
         
-        MainActivity.getBbSQliteHelper().addScore(username, lastScore);
+        if (lastScore >= 0)
+        	MainActivity.getBbSQliteHelper().addScore(username, lastScore);
         
         if (lastScore > highScore) {
             Log.d(TAG, "new high score!  (" + highScore + " vs. " + lastScore + ")");

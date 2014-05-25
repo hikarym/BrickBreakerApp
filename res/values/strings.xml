@@ -45,7 +45,7 @@
     <string name="msg_no_scores">There are no recorded scores!</string>
     
     <string name="msg_reset_scores">Do you want to reset all scores?</string>
-    <string name="msg_exit">Do you want to exit?</string>
+    <string name="msg_exit">Are you sure you want to exit the game?</string>
 	
     <string name="title_change_username">Enter User Name:</string>
     
