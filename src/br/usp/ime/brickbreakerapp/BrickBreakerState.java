@@ -110,13 +110,14 @@ public class BrickBreakerState {
 	private String mBallTextureImg = "drawable/ball_angry_red";
 	private String mButtonQuitTextureImg = "drawable/exit";
 	private String mButtonNextLevelTextureImg = "drawable/next";
-	private String mButtonBackTextureImg = "drawable/back";
 	private String mButtonSettingsTextureImg = "drawable/settings";
 	private String mButtonReloadLevelTextureImg = "drawable/reload";
 
 	// Button size
-	private static final int DEFAULT_BUTTON_WIDTH = (int) (ARENA_WIDTH * BUTTON_WIDTH_PERC * BUTTON_DEFAULT_WIDTH);
-	private static final int DEFAULT_BUTTON_HEIGHT = (int) (ARENA_WIDTH * BUTTON_HEIGHT_PERC * BUTTON_DEFAULT_WIDTH);
+	private static final int DEFAULT_BUTTON_WIDTH =
+			(int) (ARENA_WIDTH * BUTTON_WIDTH_PERC * BUTTON_DEFAULT_WIDTH);
+	private static final int DEFAULT_BUTTON_HEIGHT =
+			(int) (ARENA_WIDTH * BUTTON_HEIGHT_PERC * BUTTON_DEFAULT_WIDTH);
 
 	private Brick mBricks[][] = new Brick[BRICK_ROWS][BRICK_COLUMNS];
 	private int mLiveBrickCount;
@@ -124,12 +125,15 @@ public class BrickBreakerState {
 	private static final int DEFAULT_PADDLE_WIDTH =
 			(int) (ARENA_WIDTH * PADDLE_WIDTH_PERC * PADDLE_DEFAULT_WIDTH);
 	private TexturedBasicAlignedRect mPaddle;
-	//Buttons 
+	
+	//Buttons
 	private TexturedBasicAlignedRect mQuitButton;
 	private TexturedBasicAlignedRect mNextLevelButton;
 	private TexturedBasicAlignedRect mBack;
 	private TexturedBasicAlignedRect mSettings;
 	private TexturedBasicAlignedRect mReloadButton;
+	
+	private TexturedBasicAlignedRect mSettingsLayer;
 
 	private static final int DEFAULT_BALL_DIAMETER = (int) (ARENA_WIDTH * BALL_WIDTH_PERC);
 	private Ball mBall;
@@ -457,7 +461,7 @@ public class BrickBreakerState {
 	 * Draw the background of a game level
 	 */
 	void drawBackground() {
-		mBackgroundImg.draw();              
+		mBackgroundImg.draw();
 	}
 	
 	/**
@@ -572,7 +576,7 @@ public class BrickBreakerState {
 
 		// This rect is just off the bottom of area of game.  
 		rect = new BasicAlignedRect();
-		rect.setPosition(ARENA_WIDTH/2, -BORDER_WIDTH/2);
+		rect.setPosition(ARENA_WIDTH/2, -BORDER_WIDTH/2);//---------------------------------------------------
 		rect.setScale(ARENA_WIDTH, BORDER_WIDTH);
 		rect.setColor(0.1f, 0.1f, 0.1f);
 		mBorders[BOTTOM_BORDER] = rect;
@@ -591,7 +595,7 @@ public class BrickBreakerState {
 		mBorders[2] = rect;
 
 		rect = new BasicAlignedRect();
-		rect.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT - BORDER_WIDTH/2);
+		rect.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT - BORDER_WIDTH/2);//--------------------------------------
 		rect.setScale(ARENA_WIDTH - BORDER_WIDTH*2, BORDER_WIDTH);
 		rect.setColor(0.6f, 0.6f, 0.6f);
 		mBorders[3] = rect;
@@ -814,9 +818,6 @@ public class BrickBreakerState {
 		rect.setTexture(bmp);
 
 		mQuitButton = rect;
-
-		
-
 	}
 	
 	void allocButtonNextLevel(Context context) {
@@ -855,7 +856,8 @@ public class BrickBreakerState {
 		float h = DEFAULT_BUTTON_HEIGHT * mButtonMultiplier;
 
 		// --------------------Button Reload level
-		int id = context.getResources().getIdentifier(mButtonReloadLevelTextureImg, null, context.getPackageName());		
+		int id = context.getResources().getIdentifier(
+				mButtonReloadLevelTextureImg, null, context.getPackageName());		
 		// Temporary create a bitmap
 		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
 		
@@ -871,14 +873,64 @@ public class BrickBreakerState {
 		rect.setTexture(bmp);
 
 		mReloadButton = rect;
-
 	}
 
+	void allocButtonSettings(Context context) {
+		// Show button settings
+
+		TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
+		float w = DEFAULT_BUTTON_WIDTH * mButtonMultiplier;
+		float h = DEFAULT_BUTTON_HEIGHT * mButtonMultiplier;
+
+		// --------------------Button Settings
+		int id = context.getResources().getIdentifier(
+				mButtonSettingsTextureImg, null, context.getPackageName());
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		
+		rect.setScale(w, h);
+
+		rect.setColor(1.0f, 1.0f, 1.0f);        // note color is cycled during pauses
+
+		float pos_x = ARENA_WIDTH / 2.0f + w;
+		float pos_y = ARENA_HEIGHT / 2.0f - h;
+
+		rect.setPosition(pos_x, pos_y);
+		//Log.d(TAG, "button x=" + String.valueof(pos_x));
+		rect.setTexture(bmp);
+
+		mSettings = rect;
+	}
+/*
+	void allocLayerSettings(Context context) {
+
+		TexturedBasicAlignedRect rect = new TexturedBasicAlignedRect();
+
+		// --------------------Button Settings
+		int id = context.getResources().getIdentifier(
+				mLayerSettingsTextureImg, null, context.getPackageName());
+		// Temporary create a bitmap
+		Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), id);
+		
+		rect.setPosition(-ARENA_WIDTH/2, -ARENA_HEIGHT/2);
+		rect.setScale(ARENA_WIDTH, WINDOW_WIDTH - ARENA_HEIGHT);
+		rect.setColor(0.1f, 0.1f, 0.1f);
+		rect.setTexture(bmp);
+		
+		mSettingsLayer = rect;
+	}
+*/
+	//---Draw the layer that will be used for settings and the part that can move the paddle
+	void drawSettingsLayer() {
+		mSettingsLayer.draw();
+		mSettings.draw();
+	}
+	
 	/**
 	 * Draw the buttons for GAME OVER and WINNER screen
 	 */
 	void drawButtons(){
-		Log.v(TAG, "mGameStatusMessageNum: "+String.valueOf(mGameStatusMessageNum));
+		Log.v(TAG, "mGameStatusMessageNum: " + String.valueOf(mGameStatusMessageNum));
 		switch (mGameStatusMessageNum) {
 		case TextResources.GAME_OVER:
 			mQuitButton.draw();
@@ -1100,7 +1152,8 @@ public class BrickBreakerState {
 			// test paddle
 			if (checkCoarseCollision(mPaddle, left, right, bottom, top)) {
 				mPossibleCollisions[hits++] = mPaddle;
-			}	
+
+			}
 
 			if (hits != 0) {
 				// may have hit something, look closer
@@ -1206,7 +1259,7 @@ public class BrickBreakerState {
 							if (hitAdjust > 1.0f) {
 								hitAdjust = 1.0f;
 							}
-							int hitPercent = (int) (hitAdjust * 100.0f);
+							
 							hitAdjust -= 0.5f;
 							if (Math.abs(hitAdjust) > 0.25) {   // outer 25% on each side
 								if (dirX < 0 && hitAdjust > 0 || dirX > 0 && hitAdjust < 0) {
@@ -1312,8 +1365,6 @@ public class BrickBreakerState {
 		float radiusSq = radius * radius;
 		int faceHit = HIT_FACE_NONE;
 		int faceToAdjust = HIT_FACE_NONE;
-		float xadj = 0.0f;
-		float yadj = 0.0f;
 		float traveled = 0.0f;
 
 		while (traveled < distance) {
@@ -1450,7 +1501,6 @@ public class BrickBreakerState {
 		public int mGameStatusMessageNum;
 		public int mLivesRemaining;
 		public int mScore;
-		public int mGameLevel;
 
 		public boolean mIsValid = false;        // set when state has been written out
 	}

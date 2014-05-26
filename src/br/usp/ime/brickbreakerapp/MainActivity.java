@@ -33,11 +33,10 @@ public class MainActivity extends Activity {
 	public static final String TAG = "BrickBreakerApp";
 	
 	private static BbSQliteHelper mBbScoreDB; // SQLiteHelper to handle the BbScoreBD
-	private static SharedPreferences mPrefs; // Helper to handle the user's preferences	
+	private static SharedPreferences mPrefs; // Helper to handle the user's preferences
 	private FragmentManager mFragmentManager = null;
 	private Fragment mFragment = null; // Helper to handle current fragment
 	
-	private AudioManager mAudioManager = null;
 	private boolean isMusicBound = false;
 	private MusicService mMusicService;
 	private ServiceConnection mMusicServCon = new ServiceConnection() {
@@ -95,7 +94,6 @@ public class MainActivity extends Activity {
 
 		mFragmentManager = getFragmentManager();
 		
-		//mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		//doMusicBindService();
 		
 		//mPrefs = PreferenceManager.getDefaultSharedPreferences(MODE_PRIVATE);
@@ -172,16 +170,7 @@ public class MainActivity extends Activity {
 	
 	//---Reload the view of the fragment
 	private void reloadFragment(Fragment fragment) {
-		/*
-		mFragmentManager.popBackStack();
-		
-		mFragmentManager.beginTransaction()
-				.replace(R.id.container, fragment)
-				.addToBackStack(null)
-				.commit();
-		*/
-		
-		// There's no need to create
+		// There's no need to recreate the fragment
 		fragment.onResume();
 	}
 	
@@ -347,9 +336,6 @@ public class MainActivity extends Activity {
 		mFragmentManager.popBackStackImmediate();
 	}
 	
-	/**
-	 * onClick handler for "sound effects enabled".
-	 */
 	//---onClick handler for "sound effects enabled"
 	public void onClickSoundEffectsEnabled(View view) {
 		Log.d(TAG, "MainActivity.onClickSoundEffectsEnabled");
@@ -437,52 +423,4 @@ public class MainActivity extends Activity {
 						}
 				}).show();
 	}
-	
-	/*
-	public class RemoteControlReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-				
-				int volume = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-				
-				if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
-					BrickBreakerActivity.setSoundEffectsEnabled(true);
-					savePreferences();
-				}
-
-				else if (KeyEvent.KEYCODE_VOLUME_UP == event.getKeyCode()) {
-					BrickBreakerActivity.setSoundEffectsEnabled(true);
-					// Handle key press.
-
-					savePreferences();
-				}
-				else if (KeyEvent.KEYCODE_VOLUME_MUTE == event.getKeyCode()) {
-					BrickBreakerActivity.setSoundEffectsEnabled(false);
-					// Handle key press.
-
-					savePreferences();
-				}
-			}
-			
-			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-				KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-				
-				if (KeyEvent.KEYCODE_MEDIA_PLAY == event.getKeyCode()) {
-					BrickBreakerActivity.setSoundEffectsEnabled(true);
-					savePreferences();
-				}
-				
-				else if (KeyEvent.KEYCODE_MEDIA_STOP == event.getKeyCode()) {
-					BrickBreakerActivity.setSoundEffectsEnabled(false);
-					// Handle key press.
-
-					savePreferences();
-				}
-			}
-		}
-	}
-	*/
 }

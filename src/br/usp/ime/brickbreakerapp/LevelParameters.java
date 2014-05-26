@@ -5,7 +5,7 @@ public class LevelParameters {
     // configuration of bricks
 	
 	public static ParametersConfig configLevelParameters(int level){
-		ParametersConfig param= new ParametersConfig();
+		ParametersConfig param = new ParametersConfig();
         switch (level) {
             case 1:                     // easy
                 param.ballSize = 1.2f; //2.0f
@@ -18,8 +18,8 @@ public class LevelParameters {
                 
                 // configuration of bricks
                 // NIVEL I: NORMAL BRICKS
-                //param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
-                param.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
+                param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
+                //aram.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
                 param.backgroundTextureImg = "drawable/background_3";
                 break;
             case 2:                     // normal
@@ -33,7 +33,7 @@ public class LevelParameters {
                 // configuration of bricks
         		// NIVEL II: Letter I
             	param.configStr = new String[]{"002222200","001111100", "000242000", "000232000", "001111100", "002222200"};
-            	param.backgroundTextureImg = "drawable/background_4";
+            	param.backgroundTextureImg = "drawable/background_2";
                 break;
             case 3:                     // normal
             	param.ballSize = 1;
@@ -47,7 +47,7 @@ public class LevelParameters {
         		// NIVEL III: FACE
             	//param.configStr = new String[]{"000111000", "111000111", "011111110", "111515111", "101111101", "000101000"};
             	param.configStr = new String[]{"000222000", "111000111", "011333110", "111535111", "102222201", "000202000"};
-            	param.backgroundTextureImg = "drawable/background_5";
+            	param.backgroundTextureImg = "drawable/background_3";
                 break;
             case 4:                     // hard
             	param.ballSize = 1;
@@ -59,7 +59,7 @@ public class LevelParameters {
                 		
         		// NIVEL IV: CASTLE
             	param.configStr = new String[]{"021242120", "021222120", "021222120", "021111120", "222222222", "225222522"};
-            	param.backgroundTextureImg = "drawable/background_6";
+            	param.backgroundTextureImg = "drawable/background_4";
                 break;
                 
             case 5:                     // hard
@@ -73,7 +73,7 @@ public class LevelParameters {
                 // configuration of bricks
         		// NIVEL V : (SNAKE)
             	param.configStr = new String[]{"533033304", "202020202", "202020202", "202020202", "202020202", "403330335"};
-            	param.backgroundTextureImg = "drawable/background_7";
+            	param.backgroundTextureImg = "drawable/background_5";
                 break;
                 
             case 6:                     // hard
@@ -87,7 +87,7 @@ public class LevelParameters {
                 // configuration of bricks    
         		// NIVEL VI : USP
             	param.configStr = new String[]{"522212225", "111333100", "101003100", "101343111", "101300101", "101333111"};
-            	param.backgroundTextureImg = "drawable/background_8";
+            	param.backgroundTextureImg = "drawable/background_6";
                 break;    
                 
             case 7:                     // hard
@@ -101,7 +101,7 @@ public class LevelParameters {
                 // configuration of bricks    
         		// NIVEL VI : USP
             	param.configStr = new String[]{"222222222", "111333100", "101003100", "101333111", "101300101", "101333111"};  
-            	param.backgroundTextureImg = "drawable/background_8";
+            	param.backgroundTextureImg = "drawable/background_7";
                 break;    
                 
             default:

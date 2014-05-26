@@ -41,8 +41,8 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     /**
      * Constructs the Renderer.  
      */
-    public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState, BrickBreakerSurfaceView surfaceView,
-            TextResources.Configuration textConfig) {
+    public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState,
+    		BrickBreakerSurfaceView surfaceView, TextResources.Configuration textConfig) {
     	mContext = context;
         mSurfaceView = surfaceView;
         mBrickBreakerState = BrickBreakerState;
@@ -74,7 +74,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocButtonQuit(mContext);
         BrickBreakerState.allocButtonReloadLevel(mContext);
         BrickBreakerState.allocButtonNextLevel(mContext);
-        //BrickBreakerState.allocDebugStuff();
+        //BrickBreakerState.allocButtonSettings(mContext);
 
         // Restore game state from static storage.
         BrickBreakerState.restore();

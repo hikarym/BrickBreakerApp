@@ -43,7 +43,7 @@ public class OptionFragment extends Fragment {
 		mOptionView = inflater.inflate(
 				R.layout.fragment_option, container, false);
 		
-		setUpButtons();
+		setUp();
 		
 		return mOptionView;
 	}
@@ -67,7 +67,7 @@ public class OptionFragment extends Fragment {
         return mCurrentUsername;
     }
     
-    private void setUpButtons() {
+    private void setUp() {
     	CheckBox soundEffectsEnabled = (CheckBox) mOptionView.findViewById(R.id.checkSound);
     	soundEffectsEnabled.setTextColor(Color.GREEN);
 		soundEffectsEnabled.setOnTouchListener(new TextView.OnTouchListener() {
@@ -109,8 +109,6 @@ public class OptionFragment extends Fragment {
     		}
 		});
     }
-    
-/************************************* Handling saved preferences *********************************************/
     
 	//---Sets the state of the UI controls to match our internal state
 	protected void updateControls() {
