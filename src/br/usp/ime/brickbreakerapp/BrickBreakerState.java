@@ -1,19 +1,12 @@
 package br.usp.ime.brickbreakerapp;
 
 import java.io.IOException;
-
 import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
@@ -22,11 +15,9 @@ import android.util.Log;
  */
 public class BrickBreakerState {
 	private static final String TAG = MainActivity.TAG;
-	public static final boolean DEBUG_COLLISIONS = false;       // enable increased logging
 	public static final boolean SHOW_DEBUG_STUFF = false;       // enable on-screen debugging
 	
-	// Gameplay configurables.  These may not be changed while the game is in progress, and
-	// changing a value invalidates the saved game.	
+	// Gameplay configurables.  
 	private int mMaxLives = 3;
 	private int mBallInitialSpeed = 300;
 	private int mBallMaximumSpeed = 800;
@@ -71,21 +62,18 @@ public class BrickBreakerState {
 	private Bitmap[] mBMPBkgLevel = new Bitmap[BRICK_LEVELS];
 	
 
-	// In-memory saved game.  The game is saved and restored whenever the Activity is paused
-	// and resumed.  This should be the only static variable in BrickBreakerState.
+	// In-memory saved game.  
+	//The game is saved and restored whenever the Activity is paused and resumed
 	private static SavedGame sSavedGame = new SavedGame();
-
 
 	static final float ARENA_WIDTH = 768.0f;
 	static final float ARENA_HEIGHT = 1024.0f;
-
 
 	private static final float BRICK_TOP_PERC = 85 / 100.0f;
 	private static final float BRICK_BOTTOM_PERC = 43 / 100.0f;
 	private static final float BORDER_WIDTH_PERC = 2 / 100.0f;
 	public static final int BRICK_COLUMNS = 9;//12
 	public static final int BRICK_ROWS = 6;//8
-	
 
 	private static final float BORDER_WIDTH = (int) (BORDER_WIDTH_PERC * ARENA_WIDTH);
 	private static final float SCORE_TOP = ARENA_HEIGHT - BORDER_WIDTH * 2;
@@ -111,9 +99,6 @@ public class BrickBreakerState {
 	private BasicAlignedRect mBorders[] = new BasicAlignedRect[NUM_BORDERS];
 	private BasicAlignedRect mBackgroundColor;
 	private TexturedBasicAlignedRect mBackgroundImg;
-	//private TexturedBasicAlignedRect mButtonRestart;
-	//private TexturedBasicAlignedRect mButtonMenu;
-	//private TexturedBasicAlignedRect mButtonQuit;
 	/*Images for textures*/
 	private String mBrickNormalTextureImg = "drawable/brick_normal";
 	private String mBrickRockTextureImg = "drawable/brick_rock";
@@ -140,11 +125,11 @@ public class BrickBreakerState {
 			(int) (ARENA_WIDTH * PADDLE_WIDTH_PERC * PADDLE_DEFAULT_WIDTH);
 	private TexturedBasicAlignedRect mPaddle;
 	//Buttons 
-	private TexturedBasicAlignedRect mQuit;
-	private TexturedBasicAlignedRect mNextLevel;
+	private TexturedBasicAlignedRect mQuitButton;
+	private TexturedBasicAlignedRect mNextLevelButton;
 	private TexturedBasicAlignedRect mBack;
 	private TexturedBasicAlignedRect mSettings;
-	private TexturedBasicAlignedRect mReload;
+	private TexturedBasicAlignedRect mReloadButton;
 
 	private static final int DEFAULT_BALL_DIAMETER = (int) (ARENA_WIDTH * BALL_WIDTH_PERC);
 	private Ball mBall;
@@ -158,7 +143,7 @@ public class BrickBreakerState {
 	 */
 	private float mPauseDuration;
 
-	private int mDebugSlowMotionFrames;
+	//private int mDebugSlowMotionFrames;
 
 	// If FRAME_RATE_SMOOTHING is true, then the rest of these fields matter.
 	private static final boolean FRAME_RATE_SMOOTHING = false;
@@ -166,9 +151,7 @@ public class BrickBreakerState {
 	double mRecentTimeDelta[] = new double[RECENT_TIME_DELTA_COUNT];
 	int mRecentTimeDeltaNext;
 
-	/*
-	 * Storage for collision detection results.
-	 */
+	// Storage for collision detection results.
 	private static final int HIT_FACE_NONE = 0;
 	private static final int HIT_FACE_VERTICAL = 1;
 	private static final int HIT_FACE_HORIZONTAL = 2;
@@ -178,12 +161,9 @@ public class BrickBreakerState {
 	private float mHitDistanceTraveled;     // result from findFirstCollision()
 	private float mHitXAdj, mHitYAdj;       // result from findFirstCollision()
 	private int mHitFace;                   // result from findFirstCollision()
-	private OutlineAlignedRect mDebugCollisionRect;  // visual debugging
-
+	//private OutlineAlignedRect mDebugCollisionRect;  // visual debugging
 	
-	/*
-	 * Game play state.
-	 */
+	// Game play state.	 
 	public static final int GAME_INITIALIZING = 0;
 	public static final int GAME_READY = 1;
 	public static final int GAME_PLAYING = 2;
@@ -197,29 +177,24 @@ public class BrickBreakerState {
 	private int mScore;
 	// Level of the game
 	private int mGameLevel = 1;
-	// Brick configuration in strings
-	private String[] mBricksConfigStrings = new String[BRICK_ROWS];
-
-	/*
-	 * Events that can happen when the ball moves.
-	 */
+	
+	//Events that can happen when the ball moves.
 	private static final int EVENT_NONE = 0;
 	private static final int EVENT_LAST_BRICK = 1;
 	private static final int EVENT_BALL_LOST = 2;
 
-	/*
-	 * Text message to display in the middle of the screen (e.g. "won" or "game over").
-	 */
+	
+	// Text message to display in the middle of the screen (e.g. "won" or "game over").	
 	private static final float STATUS_MESSAGE_WIDTH_PERC = 85 / 100.0f;
 	private TexturedAlignedRect mGameStatusMessages;
 	private int mGameStatusMessageNum;
 	private int mDebugFramedString;
 
-	/* Score display */
+	// Score display
 	private static final int NUM_SCORE_DIGITS = 5;
 	private TexturedAlignedRect[] mScoreDigits = new TexturedAlignedRect[NUM_SCORE_DIGITS];
 
-	/* Text resources, notably including an image texture for our various text strings. */
+	// Text resources, notably including an image texture for our various text strings.
 	private TextResources mTextRes;
 	
 
@@ -275,21 +250,11 @@ public class BrickBreakerState {
 	public void setBrickStatesConfig(int[][] brickStatesConfig){
 		mBrickStatesConfig = brickStatesConfig;
 	}
-	
-	private int genRandomNumber(int min, int max){
-		return min + (int)(Math.random() * ((max - min) + 1));
-	}
 
 	/**
-	 * Resets game state to initial values.  Does not reallocate any storage or access saved
-	 * game state.
+	 * Resets game state to initial values.  
 	 */
 	private void reset() {
-		/*
-		 * This is called when we're asked to restore a game, but no saved game exists.  The
-		 * various objects (e.g. bricks) have already been initialized.  If a saved game
-		 * does exist, we'll never call here, so don't treat this like a constructor.
-		 */
 
 		//mGamePlayState = GAME_INITIALIZING;
 		mGamePlayState = GAME_PAUSE;
@@ -327,21 +292,6 @@ public class BrickBreakerState {
 	}
 	
 	/**
-	 * Reset score
-	 */
-	private void resetScore(){
-		//mScore
-		//mScoreDigits.
-	}
-	
-	/**
-	 * Reset the bricks distribution
-	 */
-	private void resetBricks(){
-		
-	}
-
-	/**
 	 * Saves game state into static storage.
 	 */
 	public void save() {
@@ -376,10 +326,7 @@ public class BrickBreakerState {
 	}
 
 	/**
-	 * Restores game state from save area.  If no saved game is available, we just reset
-	 * the values.
-	 *
-	 * @return true if we restored from a saved game.
+	 * Restores game state from save area.  
 	 */
 	public boolean restore() {
 		synchronized (sSavedGame) {
@@ -419,8 +366,6 @@ public class BrickBreakerState {
 
 	/**
 	 * Performs some housekeeping after the Renderer surface has changed.
-	 * <p>
-	 * This is called after a screen rotation or when returning to the app from the home screen.
 	 */
 	public void surfaceChanged() {
 		// Pause briefly.  This gives the user time to orient themselves after a screen
@@ -443,8 +388,6 @@ public class BrickBreakerState {
 
 	/**
 	 * Marks the saved game as invalid.
-	 * <p>
-	 * May be called from a non-Renderer thread.
 	 */
 	public static void invalidateSavedGame() {
 		synchronized (sSavedGame) {
@@ -453,10 +396,7 @@ public class BrickBreakerState {
 	}
 
 	/**
-	 * Determines whether we have saved a game that can be resumed.  We would need to have a valid
-	 * saved game and be playing or about to play.
-	 * <p>
-	 * May be called from a non-Renderer thread.
+	 * Determines whether we have saved a game that can be resumed.  
 	 */
 	public static boolean canResumeFromSave() {
 		synchronized (sSavedGame) {
@@ -470,7 +410,6 @@ public class BrickBreakerState {
 
 	/**
 	 * Gets the score from a completed game.
-	 * @return The score, or -1 if the current save state doesn't hold a completed game.
 	 */
 	public static int getFinalScore() {
 		synchronized (sSavedGame) {
@@ -622,10 +561,8 @@ public class BrickBreakerState {
 	 */
 	void allocBorders() {
 		BasicAlignedRect rect;
-
-		// Need one rect that covers the entire play area (i.e. viewport) in the background color.
-		// (We could tighten this up a bit so we don't get overdrawn by the borders, but that's
-		// a minor concern.)
+		
+		// play area
 		rect = new BasicAlignedRect();
 		rect.setPosition(ARENA_WIDTH/2, ARENA_HEIGHT/2);
 		rect.setScale(ARENA_WIDTH, ARENA_HEIGHT);
@@ -633,8 +570,7 @@ public class BrickBreakerState {
 		rect.setColor(0.451f, 0.541f, 0.322f);
 		mBackgroundColor = rect;
 
-		// This rect is just off the bottom of the arena.  If we collide with it, the ball is
-		// lost.  This must be BOTTOM_BORDER (zero).
+		// This rect is just off the bottom of area of game.  
 		rect = new BasicAlignedRect();
 		rect.setPosition(ARENA_WIDTH/2, -BORDER_WIDTH/2);
 		rect.setScale(ARENA_WIDTH, BORDER_WIDTH);
@@ -790,10 +726,7 @@ public class BrickBreakerState {
 		float widthHeightRatio = (float) widest.width() / widest.height();
 		float cellHeight = ARENA_HEIGHT * SCORE_HEIGHT_PERC;
 		float cellWidth = cellHeight * widthHeightRatio * 1.05f; // add 5% spacing between digits
-
-		// Note these are laid out from right to left, i.e. mScoreDigits[0] is the 1s digit.
-		//float top = SCORE_TOP;
-		//float right = SCORE_RIGHT;
+		
 		for (int i = 0; i < NUM_SCORE_DIGITS; i++) {
 			mScoreDigits[i] = new TexturedAlignedRect();
 			mScoreDigits[i].setTexture(mTextRes.getTextureHandle(),
@@ -821,8 +754,7 @@ public class BrickBreakerState {
 			
 			score /= 10;
 		}
-	}
-	// PENDIENTE PENDIENTE REVISAR REVISAR
+	}	
 
 	/**
 	 * Creates storage for a message to display in the middle of the screen.
@@ -836,6 +768,7 @@ public class BrickBreakerState {
 
 	/**
 	 * If appropriate, draw a message in the middle of the screen.
+	 * GAME OVER, WINNER, TOUCH SCREEN TO START, READY?
 	 */
 	void drawMessages() {
 		//Log.v(TAG,"MESSAGE NUM "+ String.valueOf(mGameStatusMessageNum) + "state: "+String.valueOf(mGamePlayState));
@@ -880,7 +813,7 @@ public class BrickBreakerState {
 		//Log.d(TAG, "button x=" + String.valueof(pos_x));
 		rect.setTexture(bmp);
 
-		mQuit = rect;
+		mQuitButton = rect;
 
 		
 
@@ -910,7 +843,7 @@ public class BrickBreakerState {
 		//Log.d(TAG, "button x=" + String.valueof(pos_x));
 		rect.setTexture(bmp);
 
-		mNextLevel = rect;
+		mNextLevelButton = rect;
 	}
 	
 	void allocButtonReloadLevel(Context context) {
@@ -937,7 +870,7 @@ public class BrickBreakerState {
 		//Log.d(TAG, "button x=" + String.valueof(pos_x));
 		rect.setTexture(bmp);
 
-		mReload = rect;
+		mReloadButton = rect;
 
 	}
 
@@ -948,111 +881,27 @@ public class BrickBreakerState {
 		Log.v(TAG, "mGameStatusMessageNum: "+String.valueOf(mGameStatusMessageNum));
 		switch (mGameStatusMessageNum) {
 		case TextResources.GAME_OVER:
-			mQuit.draw();
-			mReload.draw();
+			mQuitButton.draw();
+			mReloadButton.draw();
 			break;
 		case TextResources.WINNER:
-			mQuit.draw();
-			mNextLevel.draw();
+			mQuitButton.draw();
+			mNextLevelButton.draw();
 			break;
 		default:
 			break;
 		}
-	}
-
-
-	/**
-	 * Allocates shapes that we use for "visual debugging".
-	 */
-	void allocDebugStuff() {
-		mDebugCollisionRect = new OutlineAlignedRect();
-		mDebugCollisionRect.setColor(1.0f, 0.0f, 0.0f);
-	}
+	}	
 
 	/**
-	 * Renders debug features.
-	 * <p>
-	 * This function is allowed to violate the "don't allocate objects" rule.
-	 */
-	void drawDebugStuff() {
-		if (!SHOW_DEBUG_STUFF) {
-			return;
-		}
-
-		// Draw a red outline rectangle around the ball.  This shows the area that was
-		// examined for collisions during the "coarse" pass.
-		if (true) {
-			OutlineAlignedRect.prepareToDraw();
-			mDebugCollisionRect.draw();
-			OutlineAlignedRect.finishedDrawing();
-		}
-
-		// Draw the entire message texture so we can see what it looks like.
-		if (true) {
-			int textureWidth = mTextRes.getTextureWidth();
-			int textureHeight = mTextRes.getTextureHeight();
-			float scale = (ARENA_WIDTH * STATUS_MESSAGE_WIDTH_PERC) / textureWidth;
-
-			// Draw an orange rect around the texture.
-			OutlineAlignedRect outline = new OutlineAlignedRect();
-			outline.setPosition(ARENA_WIDTH / 2, ARENA_HEIGHT / 2);
-			outline.setScale(textureWidth * scale + 2, textureHeight * scale + 2);
-			outline.setColor(1.0f, 0.65f, 0.0f);
-			OutlineAlignedRect.prepareToDraw();
-			outline.draw();
-			OutlineAlignedRect.finishedDrawing();
-
-			// Draw the full texture.  Note you can set the background to opaque white in
-			// TextResources to see what the drop shadow looks like.
-			Rect boundsRect = new Rect(0, 0, textureWidth, textureHeight);
-			TexturedAlignedRect msgBox = mGameStatusMessages;
-			msgBox.setTextureCoords(boundsRect);
-			msgBox.setScale(textureWidth * scale, textureHeight * scale);
-			TexturedAlignedRect.prepareToDraw();
-			msgBox.draw();
-			TexturedAlignedRect.finishedDrawing();
-
-			// Draw a rectangle around each individual text item.  We draw a different one each
-			// time to get a flicker effect, so it doesn't fully obscure the text.
-			if (true) {
-				outline.setColor(1.0f, 1.0f, 1.0f);
-				int stringNum = mDebugFramedString;
-				mDebugFramedString = (mDebugFramedString + 1) % TextResources.getNumStrings();
-				boundsRect = mTextRes.getTextureRect(stringNum);
-				// The bounds rect is in bitmap coordinates, with (0,0) in the top left.  Translate
-				// it to an offset from the center of the bitmap, and find the center of the rect.
-				float boundsCenterX = boundsRect.exactCenterX()- (textureWidth / 2);
-				float boundsCenterY = boundsRect.exactCenterY() - (textureHeight / 2);
-				// Now scale it to arena coordinates, using the same scale factor we used to
-				// draw the texture with all the messages, and translate it to the center of
-				// the arena.  We need to invert Y to match GL conventions.
-				boundsCenterX = ARENA_WIDTH / 2 + (boundsCenterX * scale);
-				boundsCenterY = ARENA_HEIGHT / 2 - (boundsCenterY * scale);
-				// Set the values and draw the rect.
-				outline.setPosition(boundsCenterX, boundsCenterY);
-				outline.setScale(boundsRect.width() * scale, boundsRect.height() * scale);
-				OutlineAlignedRect.prepareToDraw();
-				outline.draw();
-				OutlineAlignedRect.finishedDrawing();
-			}
-		}
-	}
-
-	/**
-	 * Sets the pause time.  The game will continue to execute and render, but won't advance
-	 * game state.  Used at the start of the game to give the user a chance to orient
-	 * themselves to the board.
-	 * <p>
-	 * May also be handy during debugging to see stuff (like the ball at the instant of a
-	 * collision) without fully stopping the game.
+	 * Sets the pause time.  
 	 */
 	void setPauseTime(float durationMsec) {
 		mPauseDuration = durationMsec;
 	}
 
 	/**
-	 * Updates all game state for the next frame.  This primarily consists of moving the ball
-	 * and checking for collisions.
+	 * Updates all game state for the next frame.  
 	 */
 	void calculateNextFrame(Context context) {
 		Log.v(TAG, "calcula frame");
@@ -1170,7 +1019,7 @@ public class BrickBreakerState {
 			case EVENT_BALL_LOST:
 				if (--mLivesRemaining == 0) {
 					// game over
-					//SoundResources.play(SoundResources.GAME_OVER_MUSIC);
+					SoundResources.play(SoundResources.GAME_OVER_MUSIC);
 					mGamePlayState = GAME_LOST;
 					
 				} else {
@@ -1200,56 +1049,11 @@ public class BrickBreakerState {
 	 * @return A value indicating special events (won game, lost ball).
 	 */
 	private int moveBall(Context context, double deltaSec) {
-		/*
-		 * Movement and collision detection is done with two checks, "coarse" and "fine".
-		 *
-		 * First, we take the current position of the ball, and compute where it will be
-		 * for the next frame.  We compute a box that encloses both the current and next
-		 * positions (an "axis-aligned bounding box", or AABB).  For every object in the list,
-		 * including the borders and paddle, we do quick test for a collision.  If nothing
-		 * matches, we just jump the ball forward.
-		 *
-		 * If we do get some matches, we need to do a finer-grained test to see if (a) we
-		 * actually hit something, and (b) how far along the ball's path we were when we
-		 * first collided.
-		 *
-		 * If we did hit something, we need to update the ball's motion vector based on which
-		 * edge or corner we hit, and restart the whole process from the point of the collision.
-		 * The ball is now moving in a different direction, so the "coarse" information we
-		 * gathered previously is no longer valid.
-		 *
-		 * There can be multiple collisions in a single frame, and we need to catch them all.
-		 *
-		 * (Given an insanely fast-moving ball, or a ball with a really large radius, or various
-		 * other crazy parameters, it's possible to hit every brick in a single frame.)
-		 */
-
 		int event = EVENT_NONE;
 
 		float radius = mBall.getRadius();
 		float distance = (float) (mBall.getSpeed() * deltaSec);
-		//Log.d(TAG, "delta=" + deltaSec * 60.0f + " dist=" + distance);
-
-		if (mDebugSlowMotionFrames > 0) {
-			// Simulate a "slow motion" mode by reducing distance.  The reduction is constant
-			// until the last 60 frames, which ramps the speed up gradually.
-			final float SLOW_FACTOR = 8.0f;
-			final float RAMP_FRAMES = 60.0f;
-			float div;
-			if (mDebugSlowMotionFrames > RAMP_FRAMES) {
-				div = SLOW_FACTOR;
-			} else {
-				// At frame 60, we want the full slowdown.  At frame 0, we want no slowdown.
-				// STEP is how much we want to subtract from SLOW_FACTOR at each step.
-				final float STEP = (SLOW_FACTOR - 1.0f) / RAMP_FRAMES;
-
-				div = SLOW_FACTOR - (STEP * (RAMP_FRAMES - mDebugSlowMotionFrames));
-			}
-			distance /= div;
-
-			mDebugSlowMotionFrames--;
-		}
-
+		
 		while (distance > 0.0f) {
 			float curX = mBall.getXPosition();
 			float curY = mBall.getYPosition();
@@ -1258,13 +1062,7 @@ public class BrickBreakerState {
 			float finalX = curX + dirX * distance;
 			float finalY = curY + dirY * distance;
 			float left, right, top, bottom;
-
-			/*
-			 * Find the edges of the rectangle described by the ball's start and end position.
-			 * The (x,y) values identify the center, so factor in the radius too.
-			 *
-			 * Per GL conventions, values get larger moving toward the top-right corner.
-			 */
+			
 			if (curX < finalX) {
 				left = curX - radius;
 				right = finalX + radius;
@@ -1279,9 +1077,6 @@ public class BrickBreakerState {
 				bottom = finalY - radius;
 				top = curY + radius;
 			}
-			/* debug */
-			mDebugCollisionRect.setPosition((curX + finalX) / 2, (curY + finalY) / 2);
-			mDebugCollisionRect.setScale(right - left, top - bottom);
 
 			int hits = 0;
 
@@ -1305,22 +1100,7 @@ public class BrickBreakerState {
 			// test paddle
 			if (checkCoarseCollision(mPaddle, left, right, bottom, top)) {
 				mPossibleCollisions[hits++] = mPaddle;
-			}
-
-			// test score... because we can
-			if (false) {
-				for (int i = 0; i < NUM_SCORE_DIGITS; i++) {
-					// It's possible to get the ball wedged up behind the score digits if they're
-					// too far from the wall relative to the size of the ball.  (I haven't seen it
-					// actually get stuck, but it's a possibility.)  To do this right, we need a
-					// collision rect that covers the digits and extends all the way to the
-					// borders, or some random jitter in the collision vector that ensures we
-					// can't enter a stable state.
-					if (checkCoarseCollision(mScoreDigits[i], left, right, bottom, top)) {
-						mPossibleCollisions[hits++] = mScoreDigits[i];
-					}
-				}
-			}
+			}	
 
 			if (hits != 0) {
 				// may have hit something, look closer
@@ -1341,10 +1121,7 @@ public class BrickBreakerState {
 					// Update posn for the actual distance traveled and the collision adjustment
 					float newPosX = curX + dirX * mHitDistanceTraveled + mHitXAdj;
 					float newPosY = curY + dirY * mHitDistanceTraveled + mHitYAdj;
-					mBall.setPosition(newPosX, newPosY);
-					if (DEBUG_COLLISIONS) {
-						Log.d(TAG, "COL: intermediate cx=" + newPosX + " cy=" + newPosY);
-					}
+					mBall.setPosition(newPosX, newPosY);					
 
 					// Update the direction vector based on the nature of the surface we
 					// struck.  We will override this for collisions with the paddle.
@@ -1366,24 +1143,7 @@ public class BrickBreakerState {
 						Log.e(TAG, "GLITCH: unexpected hit face" + mHitFace);
 						break;
 					}
-
-
-					/*
-					 * Figure out what we hit, and react.  A conceptually cleaner way to do
-					 * this would be to define a "collision" action on every BaseRect object,
-					 * and call that.  This is very straightforward for the object state update
-					 * handling (e.g. remove brick, make sound), but gets a little more
-					 * complicated for collisions that don't follow the basic rules (e.g. hitting
-					 * the paddle) or special events (like hitting the very last brick).  We're
-					 * not trying to build a game engine, so we just use a big if-then-else.
-					 *
-					 * Playing a sound here may not be the best approach.  If the sound code
-					 * takes a while to queue up sounds, we could stall the game/render thread
-					 * and reduce our frame rate.  It might be better to queue up sounds on a
-					 * separate thread.  However, unless the ball is moving at an absurd speed,
-					 * we shouldn't be colliding with more than two objects in a single frame,
-					 * so we shouldn't be stressing SoundPool much.
-					 */
+					
 					if (hit instanceof Brick) {
 						Brick brick = (Brick) hit;
 						//brick.setAlive(false);
@@ -1408,7 +1168,6 @@ public class BrickBreakerState {
 					        //drawBall();        
 					        //TexturedAlignedRect.finishedDrawing();
 							
-							
 						}
 						else{
 							brickState --;
@@ -1419,15 +1178,19 @@ public class BrickBreakerState {
 							mLiveBrickCount--;
 							
 							mScore += brick.getScoreValue() * mScoreMultiplier;
+							// explosion effect
+							SoundResources.play(SoundResources.BRICK_HIT);
 							Log.v(TAG, "score value"+brick.getScoreValue()+ "| score mult"+ String.valueOf(mScoreMultiplier));
+						}else{
+							// normal effect
+							SoundResources.play(SoundResources.BRICK_NORMAL_HIT);
 						}
+						
 						if (mLiveBrickCount == 0) {
 							Log.d(TAG, "*** won ***");
 							event = EVENT_LAST_BRICK;
 							distance = 0.0f;
 						}
-						
-						SoundResources.play(SoundResources.BRICK_HIT);
 						
 						Log.v(TAG, "EVENT ant 2: "+String.valueOf(event));
 						
@@ -1436,24 +1199,7 @@ public class BrickBreakerState {
 							float paddleWidth = mPaddle.getXScale();
 							float paddleLeft = mPaddle.getXPosition() - paddleWidth / 2;
 							float hitAdjust = (newPosX - paddleLeft) / paddleWidth;
-
-							// Adjust the ball's motion based on where it hit the paddle.
-							//
-							// hitPosn ranges from 0.0 to 1.0, with a little bit of overlap
-							// because the ball is round (it's based on the ball's *center*,
-							// not the actual point of impact on the paddle itself -- something
-							// we could correct by getting additional data out of the collision
-							// detection code, but we can just as easily clamp it).
-							//
-							// The location determines how we alter the X velocity.  We want
-							// this to be more pronounced at the edges of the paddle, especially
-							// if the ball is hitting the "outside edge".
-							//
-							// Direction is a vector, normalized by the "set direction" method.
-							// We don't need to worry about dirX growing without bound.
-							//
-							// This bit of code has a substantial impact on the "feel" of
-							// the game.  It could probably use more tweaking.
+							
 							if (hitAdjust < 0.0f) {
 								hitAdjust = 0.0f;
 							}
@@ -1477,11 +1223,6 @@ public class BrickBreakerState {
 							newDirX += hitAdjust;
 							float maxRatio = 3.0f;
 							if (Math.abs(newDirX) > Math.abs(newDirY) * maxRatio) {
-								// Limit the angle so we don't get too crazily horizontal.  Note
-								// the ball could be moving downward after a collision if we're
-								// in "never lose" mode and we bounced off the bottom of the
-								// paddle, so we can't assume newDirY is positive.
-								//Log.d(TAG, "capping Y vel to " + maxRatio + ":1");
 								if (newDirY < 0) {
 									maxRatio = -maxRatio;
 								}
@@ -1491,12 +1232,6 @@ public class BrickBreakerState {
 
 						SoundResources.play(SoundResources.PADDLE_HIT);
 					} else if (hit == mBorders[BOTTOM_BORDER]) {
-						// We hit the bottom border.  It might be a little weird visually to
-						// bounce off of it when the ball is lost, so if we hit it we stop the
-						// current frame of computation immediately.  (Moving the border farther
-						// off screen doesn't work -- too far and there's a long delay waiting
-						// for a slow ball to drain, too close and we still get the bounce effect
-						// from a fast-moving ball.)
 						event = EVENT_BALL_LOST;						
 						distance = 0.0f;
 						SoundResources.play(SoundResources.BALL_LOST);
@@ -1518,18 +1253,12 @@ public class BrickBreakerState {
 					mBall.setDirection(newDirX, newDirY);
 					distance -= mHitDistanceTraveled;
 
-					if (DEBUG_COLLISIONS) {
-						Log.d(TAG, "COL: remaining dist=" + distance + " new dirX=" +
-								mBall.getXDirection() + " dirY=" + mBall.getYDirection());
-					}
+					
 				}
 			}
 
 			if (hits == 0) {
 				// hit nothing, move ball to final position and bail
-				if (DEBUG_COLLISIONS) {
-					Log.d(TAG, "COL: none (dist was " + distance + ")");
-				}
 				mBall.setPosition(finalX, finalY);
 				distance = 0.0f;
 			}
@@ -1559,12 +1288,7 @@ public class BrickBreakerState {
 		targRight = xpos + xscale;
 		targBottom = ypos - yscale;
 		targTop = ypos + yscale;
-
-		// If the smallest right is bigger than the biggest left, and the smallest bottom is
-		// bigger than the biggest top, we overlap.
-		//
-		// FWIW, this is essentially an application of the Separating Axis Theorem for two
-		// axis-aligned rects.
+		
 		float checkLeft = targLeft > left ? targLeft : left;
 		float checkRight = targRight < right ? targRight : right;
 		float checkTop = targBottom > bottom ? targBottom : bottom;
@@ -1576,45 +1300,13 @@ public class BrickBreakerState {
 		return false;
 	}
 
-	/**
-	 * Tests for a collision with the rectangles in mPossibleCollisions as the ball travels from
-	 * (curX,curY).
-	 * <p>
-	 * We can't return multiple values from a method call in Java.  We don't want to allocate
-	 * storage for the return value on each frame (this being part of the main game loop).  We
-	 * can define a class that holds all of the return values and allocate a single instance
-	 * of it when BrickBreakerState is constructed, or just drop the values into dedicated return-value
-	 * fields.  The latter is incrementally easier, so we return the object we hit, and store
-	 * additional details in these fields:
-	 * <ul>
-	 * <li>mHitDistanceLeft - the amount of distance remaining to travel after impact
-	 * <li>mHitFace - what face orientation we hit
-	 * <li>mHitXAdj, mHitYAdj - position adjustment so objects won't intersect
-	 * </ul>
-	 *
-	 * @param rects Array of rects to test against.
-	 * @param numRects Number of rects in array.
-	 * @param curX Current X position.
-	 * @param curY Current Y position.
-	 * @param dirX X component of normalized direction vector.
-	 * @param dirY Y component of normalized direction vector.
-	 * @param distance Distance to travel.
-	 * @param radius Radius of the ball.
-	 * @return The object we struck, or null if none.
-	 */
+	
 	private BaseRect findFirstCollision(BaseRect[] rects, final int numRects, final float curX,
 			final float curY, final float dirX, final float dirY, final float distance,
 			final float radius) {
 
-		// Maximum distance, in arena coordinates, we advance the ball on each iteration of
-		// the loop.  If this is too small, we'll do a lot of unnecessary iterations.  If it's
-		// too large (e.g. more than the ball's radius), the ball can end up inside an object,
-		// or pass through one entirely.
+		
 		final float MAX_STEP = 2.0f;
-
-		// Minimum distance.  After a collision the objects are just barely in contact, so at
-		// each step we need to move a little or we'll double-collide.  The minimum exists to
-		// ensure that we don't get hosed by floating point round-off error.
 		final float MIN_STEP = 0.001f;
 
 		float radiusSq = radius * radius;
@@ -1680,11 +1372,7 @@ public class BrickBreakerState {
 					if (dirXSign == cornerXSign && dirYSign == cornerYSign) {
 						faceHit = HIT_FACE_SHARPCORNER;
 						msg = "sharp";
-						if (DEBUG_COLLISIONS) {
-							// Sharp corners can be interesting.  Slow it down for a few
-							// seconds.
-							mDebugSlowMotionFrames = 240;
-						}
+						
 					} else if (dirXSign == cornerXSign) {
 						faceHit = HIT_FACE_VERTICAL;
 						msg = "vert";
@@ -1697,13 +1385,7 @@ public class BrickBreakerState {
 						Log.w(TAG, "COL: impossible corner hit");
 						faceHit = HIT_FACE_SHARPCORNER;
 						msg = "???";
-					}
-
-					if (DEBUG_COLLISIONS) {
-						Log.d(TAG, "COL: " + msg + "-corner hit xd=" + xdist + " yd=" + ydist
-								+ " dir=" + dirXSign + "," + dirYSign
-								+ " cor=" + cornerXSign + "," + cornerYSign);
-					}
+					}					
 
 					// Adjust whichever requires the least movement to guarantee we're no
 					// longer colliding.
@@ -1713,50 +1395,10 @@ public class BrickBreakerState {
 						faceToAdjust = HIT_FACE_VERTICAL;
 					}
 				}
-
-				if (DEBUG_COLLISIONS) {
-					String msg = "?";
-					if (faceHit == HIT_FACE_SHARPCORNER) {
-						msg = "corner";
-					} else if (faceHit == HIT_FACE_HORIZONTAL) {
-						msg = "horiz";
-					} else if (faceHit == HIT_FACE_VERTICAL) {
-						msg = "vert";
-					}
-					Log.d(TAG, "COL: " + msg + " hit " + rect.getClass().getSimpleName() +
-							" cx=" + circleXWorld + " cy=" + circleYWorld +
-							" rx=" + rectXWorld + " ry=" + rectYWorld +
-							" rxh=" + rectXScaleHalf + " ryh=" + rectYScaleHalf);
-				}
+				
 
 				/*
-				 * Collision!
-				 *
-				 * Because we're moving in discrete steps rather than continuously, we will
-				 * usually end up slightly embedded in the object.  If, after reversing direction,
-				 * we subsequently step forward very slightly (assuming a non-destructable
-				 * object like a wall), we will detect a second collision with the same object,
-				 * and reverse direction back *into* the wall.  Visually, the ball will "stick"
-				 * to the wall and vibrate.
-				 *
-				 * We need to back the ball out slightly.  Ideally we'd back it along the path
-				 * the ball was traveling by just the right amount, but unless MAX_STEP is
-				 * really large the difference between that and a minimum-distance axis-aligned
-				 * shift is negligible -- and this is easier to compute.
-				 *
-				 * There's some risk that our adjustment will leave the ball trapped in a
-				 * different object.  Since the ball is the only object that's moving, and the
-				 * direction of adjustment shouldn't be too far from the angle of incidence, we
-				 * shouldn't have this problem in practice.
-				 *
-				 * Note this leaves the ball just *barely* in contact with the object it hit,
-				 * which means it's technically still colliding.  This won't cause us to
-				 * collide again and reverse course back into the object because we will move
-				 * the ball a nonzero distance away from the object before we check for another
-				 * collision.  The use of MIN_STEP ensures that we won't fall victim to floating
-				 * point round-off error.  (If we didn't want to guarantee movement, we could
-				 * shift the ball a tiny bit farther so that it simply wasn't in contact.)
-				 */
+				 * Collision! */
 				float hitXAdj, hitYAdj;
 				if (faceToAdjust == HIT_FACE_HORIZONTAL) {
 					hitXAdj = 0.0f;
@@ -1782,11 +1424,7 @@ public class BrickBreakerState {
 					Log.w(TAG, "GLITCH: unexpected faceToAdjust " + faceToAdjust);
 					hitXAdj = hitYAdj = 0.0f;
 				}
-
-				if (DEBUG_COLLISIONS) {
-					Log.d(TAG, "COL:  r=" + radius + " trav=" + traveled +
-							" xadj=" + hitXAdj + " yadj=" + hitYAdj);
-				}
+				
 				mHitFace = faceHit;
 				mHitDistanceTraveled = traveled;
 				mHitXAdj = hitXAdj;
@@ -1800,10 +1438,7 @@ public class BrickBreakerState {
 	}
 
 	/**
-	 * Game state storage.  Anything interesting gets copied in here.  If we wanted to save it
-	 * to disk we could just serialize the object.
-	 * <p>
-	 * This is "organized" as a dumping ground for BrickBreakerState to use.
+	 * Game state storage.  
 	 */
 	private static class SavedGame {
 		public int mBricksState[][];
@@ -1838,20 +1473,20 @@ public class BrickBreakerState {
 		Log.v(TAG, "arenaX=" + (int) arenaX + " --> arenaY=" + (int) posYTouch);
 		
 		//
-		float minXQuitBu = mQuit.getXPosition() - mQuit.getXScale()/2;
-		float maxXQuitBu = mQuit.getXPosition() + mQuit.getXScale()/2;		
-		float minYQuitBu = mQuit.getYPosition() - mQuit.getYScale()/2;
-		float maxYQuitBu = mQuit.getYPosition() + mQuit.getYScale()/2;
+		float minXQuitBu = mQuitButton.getXPosition() - mQuitButton.getXScale()/2;
+		float maxXQuitBu = mQuitButton.getXPosition() + mQuitButton.getXScale()/2;		
+		float minYQuitBu = mQuitButton.getYPosition() - mQuitButton.getYScale()/2;
+		float maxYQuitBu = mQuitButton.getYPosition() + mQuitButton.getYScale()/2;
 		
-		float minXReloadBu = mReload.getXPosition() - mQuit.getXScale()/2;
-		float maxXReloadBu = mReload.getXPosition() + mQuit.getXScale()/2;	
-		float minYReloadBu = mReload.getYPosition() - mReload.getYScale()/2;
-		float maxYReloadBu = mReload.getYPosition() + mReload.getYScale()/2;
+		float minXReloadBu = mReloadButton.getXPosition() - mReloadButton.getXScale()/2;
+		float maxXReloadBu = mReloadButton.getXPosition() + mReloadButton.getXScale()/2;	
+		float minYReloadBu = mReloadButton.getYPosition() - mReloadButton.getYScale()/2;
+		float maxYReloadBu = mReloadButton.getYPosition() + mReloadButton.getYScale()/2;
 		
-		float minXNextBu = mNextLevel.getXPosition() - mNextLevel.getXScale()/2;
-		float maxXNextBu = mNextLevel.getXPosition() + mNextLevel.getXScale()/2;		
-		float minYNextBu = mNextLevel.getYPosition() - mNextLevel.getYScale()/2;
-		float maxYNextBu = mNextLevel.getYPosition() + mNextLevel.getYScale()/2;
+		float minXNextBu = mNextLevelButton.getXPosition() - mNextLevelButton.getXScale()/2;
+		float maxXNextBu = mNextLevelButton.getXPosition() + mNextLevelButton.getXScale()/2;		
+		float minYNextBu = mNextLevelButton.getYPosition() - mNextLevelButton.getYScale()/2;
+		float maxYNextBu = mNextLevelButton.getYPosition() + mNextLevelButton.getYScale()/2;
 		
 		if ((minXQuitBu <= posXTouch && posXTouch<= maxXQuitBu) && 
 				(minYQuitBu <= posYTouch && posYTouch<= maxYQuitBu)){

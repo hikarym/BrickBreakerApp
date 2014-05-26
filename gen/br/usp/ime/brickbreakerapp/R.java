@@ -24,9 +24,6 @@ public final class R {
         public static final int slide_out_right=0x7f04000c;
         public static final int slide_up=0x7f04000d;
     }
-    public static final class array {
-        public static final int difficulty_level_names=0x7f090000;
-    }
     public static final class attr {
     }
     public static final class dimen {
@@ -44,102 +41,79 @@ public final class R {
     }
     public static final class drawable {
         public static final int back=0x7f020000;
-        public static final int background_10=0x7f020001;
-        public static final int background_3=0x7f020002;
-        public static final int background_4=0x7f020003;
-        public static final int background_5=0x7f020004;
-        public static final int background_6=0x7f020005;
-        public static final int background_7=0x7f020006;
-        public static final int background_8=0x7f020007;
-        public static final int background_9=0x7f020008;
-        public static final int background_levels=0x7f020009;
-        public static final int background_main=0x7f02000a;
-        public static final int background_option=0x7f02000b;
-        public static final int background_option2=0x7f02000c;
-        public static final int background_ranking=0x7f02000d;
-        public static final int ball=0x7f02000e;
-        public static final int ball_angry_pink=0x7f02000f;
-        public static final int ball_angry_red=0x7f020010;
-        public static final int bkg_clock=0x7f020011;
-        public static final int bkg_developer=0x7f020012;
-        public static final int bkg_golden_pot=0x7f020013;
-        public static final int bkg_rainbow=0x7f020014;
-        public static final int bkg_rays=0x7f020015;
-        public static final int bkg_space_squares=0x7f020016;
-        public static final int bkg_wood_floor=0x7f020017;
-        public static final int breakout_sprites=0x7f020018;
-        public static final int brick_angry_black=0x7f020019;
-        public static final int brick_angry_blue=0x7f02001a;
-        public static final int brick_angry_green=0x7f02001b;
-        public static final int brick_angry_red=0x7f02001c;
-        public static final int brick_angry_yellow=0x7f02001d;
-        public static final int brick_especial_1=0x7f02001e;
-        public static final int brick_magenta=0x7f02001f;
-        public static final int brick_mix=0x7f020020;
-        public static final int brick_normal=0x7f020021;
-        public static final int brick_pig_small=0x7f020022;
-        public static final int brick_prince_small=0x7f020023;
-        public static final int brick_red=0x7f020024;
-        public static final int brick_rock=0x7f020025;
-        public static final int brick_star=0x7f020026;
-        public static final int exit=0x7f020027;
-        public static final int font=0x7f020028;
-        public static final int home=0x7f020029;
-        public static final int ic_action_back=0x7f02002a;
-        public static final int ic_action_cancel=0x7f02002b;
-        public static final int ic_action_forward=0x7f02002c;
-        public static final int ic_action_next_item=0x7f02002d;
-        public static final int ic_action_previous_item=0x7f02002e;
-        public static final int ic_action_refresh=0x7f02002f;
-        public static final int ic_action_undo=0x7f020030;
-        public static final int ic_dark_action_warning=0x7f020031;
-        public static final int ic_launcher=0x7f020032;
-        public static final int next=0x7f020033;
-        public static final int paddle=0x7f020034;
-        public static final int reload=0x7f020035;
-        public static final int settings=0x7f020036;
+        public static final int background_3=0x7f020001;
+        public static final int background_4=0x7f020002;
+        public static final int background_5=0x7f020003;
+        public static final int background_6=0x7f020004;
+        public static final int background_7=0x7f020005;
+        public static final int background_8=0x7f020006;
+        public static final int background_9=0x7f020007;
+        public static final int background_levels=0x7f020008;
+        public static final int background_main=0x7f020009;
+        public static final int background_option=0x7f02000a;
+        public static final int background_option2=0x7f02000b;
+        public static final int background_ranking=0x7f02000c;
+        public static final int ball_angry_red=0x7f02000d;
+        public static final int brick_especial_1=0x7f02000e;
+        public static final int brick_mix=0x7f02000f;
+        public static final int brick_normal=0x7f020010;
+        public static final int brick_pig_small=0x7f020011;
+        public static final int brick_rock=0x7f020012;
+        public static final int exit=0x7f020013;
+        public static final int font=0x7f020014;
+        public static final int ic_action_back=0x7f020015;
+        public static final int ic_action_cancel=0x7f020016;
+        public static final int ic_action_forward=0x7f020017;
+        public static final int ic_action_next_item=0x7f020018;
+        public static final int ic_action_previous_item=0x7f020019;
+        public static final int ic_action_refresh=0x7f02001a;
+        public static final int ic_action_undo=0x7f02001b;
+        public static final int ic_dark_action_warning=0x7f02001c;
+        public static final int ic_launcher=0x7f02001d;
+        public static final int next=0x7f02001e;
+        public static final int paddle=0x7f02001f;
+        public static final int reload=0x7f020020;
     }
     public static final class id {
-        public static final int action_settings=0x7f0c0018;
-        public static final int btBackLevels=0x7f0c0003;
-        public static final int btBackOption=0x7f0c000e;
-        public static final int btBackRanking=0x7f0c0014;
-        public static final int btChangeUsername=0x7f0c0011;
-        public static final int btExit=0x7f0c000b;
-        public static final int btLevels=0x7f0c0008;
-        public static final int btOption=0x7f0c0009;
-        public static final int btPlay=0x7f0c0007;
-        public static final int btRanking=0x7f0c000a;
-        public static final int btResetScore=0x7f0c0010;
-        public static final int checkSound=0x7f0c000f;
-        public static final int container=0x7f0c0000;
-        public static final int fragment_levels=0x7f0c0001;
-        public static final int fragment_main=0x7f0c0005;
-        public static final int fragment_option=0x7f0c000c;
-        public static final int fragment_ranking=0x7f0c0012;
-        public static final int gridviewLevels=0x7f0c0004;
-        public static final int rankingTable=0x7f0c0017;
-        public static final int scrollViewRanking=0x7f0c0016;
-        public static final int textViewTitleDialog=0x7f0c0013;
-        public static final int textViewTitleLevels=0x7f0c0002;
-        public static final int textViewTitleMain=0x7f0c0006;
-        public static final int textViewTitleOption=0x7f0c000d;
-        public static final int titleDialogDivider=0x7f0c0015;
+        public static final int action_settings=0x7f0b0018;
+        public static final int btBackLevels=0x7f0b0003;
+        public static final int btBackOption=0x7f0b000e;
+        public static final int btBackRanking=0x7f0b0014;
+        public static final int btChangeUsername=0x7f0b0011;
+        public static final int btExit=0x7f0b000b;
+        public static final int btLevels=0x7f0b0008;
+        public static final int btOption=0x7f0b0009;
+        public static final int btPlay=0x7f0b0007;
+        public static final int btRanking=0x7f0b000a;
+        public static final int btResetScore=0x7f0b0010;
+        public static final int checkSound=0x7f0b000f;
+        public static final int container=0x7f0b0000;
+        public static final int fragment_levels=0x7f0b0001;
+        public static final int fragment_main=0x7f0b0005;
+        public static final int fragment_option=0x7f0b000c;
+        public static final int fragment_ranking=0x7f0b0012;
+        public static final int gridviewLevels=0x7f0b0004;
+        public static final int rankingTable=0x7f0b0017;
+        public static final int scrollViewRanking=0x7f0b0016;
+        public static final int textViewTitleDialog=0x7f0b0013;
+        public static final int textViewTitleLevels=0x7f0b0002;
+        public static final int textViewTitleMain=0x7f0b0006;
+        public static final int textViewTitleOption=0x7f0b000d;
+        public static final int titleDialogDivider=0x7f0b0015;
     }
     public static final class integer {
         public static final int card_flip_time_full=0x7f070000;
         public static final int card_flip_time_half=0x7f070001;
     }
     public static final class layout {
-        public static final int activity_breakout=0x7f030000;
-        public static final int activity_main=0x7f030001;
-        public static final int fragment_levels=0x7f030002;
-        public static final int fragment_main=0x7f030003;
-        public static final int fragment_option=0x7f030004;
-        public static final int fragment_ranking=0x7f030005;
+        public static final int activity_main=0x7f030000;
+        public static final int fragment_levels=0x7f030001;
+        public static final int fragment_main=0x7f030002;
+        public static final int fragment_option=0x7f030003;
+        public static final int fragment_ranking=0x7f030004;
     }
     public static final class menu {
-        public static final int main=0x7f0b0000;
+        public static final int main=0x7f0a0000;
     }
     public static final class raw {
         public static final int fail_buzzer=0x7f050000;
@@ -148,41 +122,33 @@ public final class R {
         public static final int page_flip=0x7f050003;
     }
     public static final class string {
-        public static final int about_text=0x7f080009;
         public static final int action_settings=0x7f080002;
         public static final int app_name=0x7f080000;
-        public static final int button_about=0x7f080005;
-        public static final int button_back=0x7f080018;
-        public static final int button_change_user=0x7f080015;
-        public static final int button_exit=0x7f080013;
-        public static final int button_levels=0x7f080010;
-        public static final int button_newGame=0x7f080003;
-        public static final int button_option=0x7f080011;
-        public static final int button_play=0x7f08000f;
-        public static final int button_ranking=0x7f080012;
-        public static final int button_reset_score=0x7f080014;
-        public static final int button_resumeGame=0x7f080004;
-        public static final int cancel=0x7f080021;
-        public static final int check_sound=0x7f080016;
-        public static final int check_vibration=0x7f080017;
-        public static final int checkbox_neverLoseBall=0x7f080006;
-        public static final int checkbox_soundEffectsEnabled=0x7f080007;
-        public static final int difficulty=0x7f08000d;
+        public static final int button_back=0x7f080010;
+        public static final int button_change_user=0x7f08000d;
+        public static final int button_exit=0x7f08000b;
+        public static final int button_levels=0x7f080008;
+        public static final int button_option=0x7f080009;
+        public static final int button_play=0x7f080007;
+        public static final int button_ranking=0x7f08000a;
+        public static final int button_reset_score=0x7f08000c;
+        public static final int cancel=0x7f080019;
+        public static final int check_sound=0x7f08000e;
+        public static final int check_vibration=0x7f08000f;
         public static final int hello_world=0x7f080001;
-        public static final int msg_exit=0x7f08001e;
-        public static final int msg_game_over=0x7f08000b;
-        public static final int msg_no_scores=0x7f08001c;
-        public static final int msg_ready=0x7f08000a;
-        public static final int msg_reset_scores=0x7f08001d;
-        public static final int msg_winner=0x7f08000c;
-        public static final int ok=0x7f080020;
-        public static final int save=0x7f080022;
-        public static final int text_highScoreLabel=0x7f080008;
-        public static final int title_activity_breakout=0x7f08000e;
-        public static final int title_change_username=0x7f08001f;
-        public static final int title_no_ranking=0x7f08001b;
-        public static final int title_option=0x7f080019;
-        public static final int title_ranking=0x7f08001a;
+        public static final int msg_exit=0x7f080016;
+        public static final int msg_game_over=0x7f080004;
+        public static final int msg_no_scores=0x7f080014;
+        public static final int msg_ready=0x7f080003;
+        public static final int msg_reset_scores=0x7f080015;
+        public static final int msg_winner=0x7f080005;
+        public static final int ok=0x7f080018;
+        public static final int save=0x7f08001a;
+        public static final int title_activity_breakout=0x7f080006;
+        public static final int title_change_username=0x7f080017;
+        public static final int title_no_ranking=0x7f080013;
+        public static final int title_option=0x7f080011;
+        public static final int title_ranking=0x7f080012;
     }
     public static final class style {
         /** 
@@ -206,10 +172,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f0a0000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f0a0001;
+        public static final int AppTheme=0x7f090001;
     }
 }

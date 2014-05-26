@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.os.ConditionVariable;
 
 /**
- * View object for the GL surface.  Wraps the renderer.
+ * View object for the GL surface view.  
  */
 public class BrickBreakerSurfaceView extends GLSurfaceView {
 	private static final String TAG = MainActivity.TAG;

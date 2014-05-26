@@ -18,8 +18,8 @@ public class LevelParameters {
                 
                 // configuration of bricks
                 // NIVEL I: NORMAL BRICKS
-                param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
-                //aram.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
+                //param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
+                param.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
                 param.backgroundTextureImg = "drawable/background_3";
                 break;
             case 2:                     // normal

@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 import java.nio.FloatBuffer;
 
 /**
- * A rectangle drawn as an outline rather than filled.  Useful for debugging.
+ * A rectangle drawn as an outline rather than filled.  
  */
 public class OutlineAlignedRect extends BasicAlignedRect {
     private static FloatBuffer sOutlineVertexBuffer = getOutlineVertexArray();

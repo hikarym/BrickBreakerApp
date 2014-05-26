@@ -12,10 +12,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Main game display class.
- * <p>
- * The methods here expect to run on the Renderer thread.  Calling them from other threads
- * must be done through GLSurfaceView.queueEvent().
+ * Main game display class. 
  */
 public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = MainActivity.TAG;
@@ -24,10 +21,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     // Orthographic projection matrix.  Must be updated when the available screen area
     // changes (e.g. when the device is rotated).
     static final float mProjectionMatrix[] = new float[16];
-
-    // Size and position of the GL viewport, in screen coordinates.  If the viewport covers the
-    // entire screen, the offsets will be zero and the width/height values will match the
-    // size of the display.  (This is one of the few places where we deal in actual pixels.)
     private int mViewportWidth, mViewportHeight;
     private int mViewportXoff, mViewportYoff;
 
@@ -46,9 +39,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Constructs the Renderer.  We need references to the BrickBreakerState, so we can tell it to
-     * update and draw things, and to the SurfaceView, so we can tell it to stop animating
-     * when the game is over.
+     * Constructs the Renderer.  
      */
     public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState, BrickBreakerSurfaceView surfaceView,
             TextResources.Configuration textConfig) {
@@ -59,11 +50,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Handles initialization when the surface is created.  This generally happens when the
-     * activity is started or resumed.  In particular, this is called whenever the device
-     * is rotated.
-     * <p>
-     * All OpenGL state, including programs, must be (re-)generated here.
+     * Handles initialization when the surface is created.  
      */
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -87,7 +74,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocButtonQuit(mContext);
         BrickBreakerState.allocButtonReloadLevel(mContext);
         BrickBreakerState.allocButtonNextLevel(mContext);
-        BrickBreakerState.allocDebugStuff();
+        //BrickBreakerState.allocDebugStuff();
 
         // Restore game state from static storage.
         BrickBreakerState.restore();
@@ -106,11 +93,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
 
         if (EXTRA_CHECK) Library.checkGlError("onSurfaceCreated end");
     }
-
-    /**
-     * Updates the configuration when the underlying surface changes.  Happens at least once
-     * after every onSurfaceCreated().
-     */
+    
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {      
 
@@ -156,7 +139,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
     
     //-----------------------
     /**
-     * Advances BrickBreaker state, then draws the new frame.
+     * Draws  the frames
      */
     @Override
     public void onDrawFrame(GL10 unused) {
@@ -165,10 +148,6 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
            		
         Log.v(TAG, "CREATING A NEW FRAME");
         BrickBreakerState.calculateNextFrame(mContext);
-
-        // Simulate slow game state update, to see impact on animation.
-        // try { Thread.sleep(33); }
-        // catch (InterruptedException ie) {}
 
         if (EXTRA_CHECK) Library.checkGlError("onDrawFrame start");
 
@@ -210,7 +189,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.drawButtons();
         TexturedBasicAlignedRect.finishedDrawing();
 
-        BrickBreakerState.drawDebugStuff();
+        //BrickBreakerState.drawDebugStuff();
 
         // Turn alpha blending off.
         GLES20.glDisable(GLES20.GL_BLEND);
@@ -224,13 +203,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         }
         
     }
-
-    /**
-     * Handles pausing of the BrickBreaker Activity.  This is called by the View (via queueEvent) at
-     * pause time. It tells BrickBreakerState to save its state.
-     *
-     * @param syncObj Object to notify when we have finished saving state.
-     */
+    
     public void onViewPause(ConditionVariable syncObj) {
     	// Saves game state into static storage
         mBrickBreakerState.save();

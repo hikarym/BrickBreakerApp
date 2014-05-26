@@ -10,23 +10,11 @@ import java.nio.FloatBuffer;
  * Base class for our graphical objects.
  */
 public class BaseRect {
-    /*
-     * We keep track of position and scale (size) here.  Rather than holding these in fields
-     * and copying them to the model/view matrix as needed, we just use the matrix as storage.
-     */
-
-    /**
-     * Model/view matrix for this object.  Updated by setPosition() and setScale().  This
-     * should be merged with the projection matrix when it's time to draw the object.
-     */
+    
+	// Model/view matrix for this object
     protected float[] mModelView;
 
-    /**
-     * Simple square, specified as a triangle strip.  The square is centered on (0,0) and has
-     * a size of 1x1.
-     * <p>
-     * Triangles are 0-1-2 and 2-1-3 (counter-clockwise winding).
-     */
+    // Simple square
     private static final float COORDS[] = {
         -0.5f, -0.5f,   // 0 bottom left
          0.5f, -0.5f,   // 1 bottom right
@@ -34,10 +22,7 @@ public class BaseRect {
          0.5f,  0.5f,   // 3 top right
     };
 
-    /**
-     * Texture coordinates.  These are flipped upside-down to match pixel data that starts
-     * at the top left (typical of many image formats).
-     */
+    // Texture coordinates. 
     private static final float TEX_COORDS[] = {
         0.0f,   1.0f,   // bottom left
         1.0f,   1.0f,   // bottom right
@@ -45,10 +30,8 @@ public class BaseRect {
         1.0f,   0.0f,   // top right
     };
 
-    /**
-     * Square, suitable for GL_LINE_LOOP.  (The standard COORDS will create an hourglass.)
-     * This is expected to have the same number of vertices and coords per vertex as COORDS.
-     */
+    
+    //Square, suitable for GL_LINE_LOOP. 
     private static final float OUTLINE_COORDS[] = {
         -0.5f, -0.5f,   // bottom left
          0.5f, -0.5f,   // bottom right
@@ -92,8 +75,7 @@ public class BaseRect {
     }
 
     /**
-     * Returns a FloatBuffer with the vertex data for a unit-size square.  The vertices are
-     * arranged for use with a ccw triangle strip.
+     * Returns a FloatBuffer with the vertex data for a unit-size square.  
      */
     public static FloatBuffer getVertexArray() {
         return sVertexArray;

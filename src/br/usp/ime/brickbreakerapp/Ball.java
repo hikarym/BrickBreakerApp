@@ -19,9 +19,6 @@ public class Ball extends TexturedAlignedRect {
 	private float mMotionX;
 	private float mMotionY;
 	
-	// Speed, expressed in terms of steps per second.  A speed of 60 will move the ball
-	// 60 arena-units per second, or 1 unit per frame on a 60Hz device.  This is not the same
-	// as 1 *pixel* per frame unless the arena units happen to match up.
 	private int mSpeed;
 	
 	public Ball() {
@@ -73,10 +70,7 @@ public class Ball extends TexturedAlignedRect {
     }
 
     /**
-     * Generates the ball texture.  This is a simple filled circle in a solid color, with
-     * a transparent black background.
-     *
-     * @return A direct ByteBuffer with pre-multiplied RGBA data.
+     * Generates the ball texture. 
      */
     private ByteBuffer generateBallTexture() {
         byte[] buf = new byte[TEX_SIZE * TEX_SIZE * BYTES_PER_PIXEL];
@@ -166,58 +160,4 @@ public class Ball extends TexturedAlignedRect {
         OPAQUE|MAGENTA, TRANSP|GREEN,   HALF|RED,       OPAQUE|BLACK,
         OPAQUE|CYAN,    OPAQUE|MAGENTA, OPAQUE|CYAN,    OPAQUE|BLUE,
     };
-
-    /**
-     * Generates a test texture.  We want to create a 4x4 block pattern with obvious color
-     * values in the corners, so that we can confirm orientation and coverage.  We also
-     * leave a couple of alpha holes to check that channel.
-     *
-     * Like most image formats, the pixel data begins with the top-left corner, which is
-     * upside-down relative to OpenGL conventions.  The texture coordinates should be flipped
-     * vertically.  Using an asymmetric patterns lets us check that we're doing that right.
-     *
-     * Colors use pre-multiplied alpha (so set glBlendFunc appropriately).
-     *
-     * @return A direct ByteBuffer with the 8888 RGBA data.
-     */
-    private ByteBuffer generateTestTexture() {
-        byte[] buf = new byte[TEX_SIZE * TEX_SIZE * BYTES_PER_PIXEL];
-        final int scale = TEX_SIZE / 4;        // convert 64x64 --> 4x4
-
-        for (int i = 0; i < buf.length; i += BYTES_PER_PIXEL) {
-            int texRow = (i / BYTES_PER_PIXEL) / TEX_SIZE;
-            int texCol = (i / BYTES_PER_PIXEL) % TEX_SIZE;
-
-            int gridRow = texRow / scale;  // 0-3
-            int gridCol = texCol / scale;  // 0-3
-            int gridIndex = (gridRow * 4) + gridCol;  // 0-15
-
-            int color = GRID[gridIndex];
-
-            // override the pixels in two corners to check coverage
-            if (i == 0) {
-                color = OPAQUE | WHITE;
-            } else if (i == buf.length - BYTES_PER_PIXEL) {
-                color = OPAQUE | WHITE;
-            }
-
-            // extract RGBA; use "int" instead of "byte" to get unsigned values
-            int red = color & 0xff;
-            int green = (color >> 8) & 0xff;
-            int blue = (color >> 16) & 0xff;
-            int alpha = (color >> 24) & 0xff;
-
-            // pre-multiply colors and store in buffer
-            float alphaM = alpha / 255.0f;
-            buf[i] = (byte) (red * alphaM);
-            buf[i+1] = (byte) (green * alphaM);
-            buf[i+2] = (byte) (blue * alphaM);
-            buf[i+3] = (byte) alpha;
-        }
-
-        ByteBuffer byteBuf = ByteBuffer.allocateDirect(buf.length);
-        byteBuf.put(buf);
-        byteBuf.position(0);
-        return byteBuf;
-    }
 }

@@ -17,9 +17,9 @@ import java.nio.FloatBuffer;
 public class TexturedAlignedRect extends BaseRect {
     private static final String TAG = MainActivity.TAG;
 
-    /*
-     * Similar to BasicAlignedRect, but we need to manage texture data as well.
-     */
+    
+    // Similar to BasicAlignedRect, but we need to manage texture data as well.
+    
 
     static final String VERTEX_SHADER_CODE =
             "uniform mat4 u_mvpMatrix;" +       // model/view/projection matrix
@@ -60,14 +60,6 @@ public class TexturedAlignedRect extends BaseRect {
     // Sanity check on draw prep.
     private static boolean sDrawPrepared;
 
-    /*
-     * Scratch storage for the model/view/projection matrix.  We don't actually need to retain
-     * it between calls, but we also don't want to re-allocate space for it every time we draw
-     * this object.
-     *
-     * Because all of our rendering happens on a single thread, we can make this static instead
-     * of per-object.  To avoid clashes within a thread, this should only be used in draw().
-     */
     private static float[] sTempMVP = new float[16];
 
 
@@ -149,11 +141,7 @@ public class TexturedAlignedRect extends BaseRect {
     }
 
     /**
-     * Specifies the rectangle within the texture map where the texture data is.  By default,
-     * the entire texture will be used.
-     * <p>
-     * Texture coordinates use the image coordinate system, i.e. (0,0) is in the top left.
-     * Remember that the bottom-right coordinates are exclusive.
+     * Specifies the rectangle within the texture map where the texture data is.  
      *
      * @param coords Coordinates within the texture.
      */

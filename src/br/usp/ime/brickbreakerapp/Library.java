@@ -14,6 +14,10 @@ import java.nio.ByteBuffer;
  */
 public class Library {
     private static final String TAG = MainActivity.TAG;
+    
+    private static int genRandomNumber(int min, int max){
+		return min + (int)(Math.random() * ((max - min) + 1));
+	}
 
     /**
      * Creates a texture from raw data.
@@ -143,13 +147,7 @@ public class Library {
 
 
     /**
-     * Utility method for checking for OpenGL errors.  Use like this:
-     *
-     * <pre>
-     * mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-     * MyGLRenderer.checkGlError("glGetUniformLocation");</pre>
-     *
-     * If an error was detected, this will throw an exception.
+     * Utility method for checking for OpenGL errors.  
      *
      * @param msg string to display in the error message (usually the name of the last
      *      GL operation)

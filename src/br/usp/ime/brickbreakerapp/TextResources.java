@@ -10,22 +10,9 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-/**
- * Text resources used in the game.  We render multiple strings into a single large texture,
- * and do all drawing from that.
- * <p>
- * There are more general solutions to this (see e.g. LabelMaker in the Sprite Text ApiDemo),
- * but our needs are rather simple.  Allocation is based on a simple greedy algorithm that
- * will likely leave lots of wasted space.
- * <p>
- * This demonstrates rendering text into a bitmap, converting a bitmap to a texture, and
- * using sub-sections of a texture image.
- */
 public class TextResources {
     private static final String TAG = MainActivity.TAG;
-
-    // Messages we show to the user, and a set of digits for the score.  Pass one of these
-    // as the argument to getTextureRect().
+    
     public static final int PAUSE = -2;
     public static final int NO_MESSAGE = -1;        // used to indicate no message shown
     public static final int READY = 0;
@@ -33,18 +20,9 @@ public class TextResources {
     public static final int WINNER = 2;             // YOU'RE WINNER !
     public static final int DIGIT_START = 3;
     private static final int STRING_COUNT = DIGIT_START + 10;
- 
-    // We use a square texture with this size.  With ARGB_4444 this eats up 512KB.  If we add
-    // more strings we might want to double the height.  (Texture sizes should always be powers
-    // of 2, but they don't have to be square.)
+    
     private static final int TEXTURE_SIZE = 512;
-
-    // How big the text should be when drawn on the bitmap (point size).  We want this to be
-    // small enough that we can fit lots of strings, but big enough that the text looks good
-    // even if we blow it up quite a bit.  If we had some text that was going to be small on
-    // screen, and other text that could be large, it would save space to render different
-    // strings at different sizes.  We don't have a space problem so we just render everything
-    // at the same size.
+    
     private static final int TEXT_SIZE = 70;
 
     // Fancy text parameters.
@@ -57,9 +35,8 @@ public class TextResources {
     // Handle to the image texture that holds all of the strings.
     public int mTextureHandle = -1;
 
-
     /**
-     * Text string configuration.  Immutable.
+     * Text string configuration.  
      */
     public static final class Configuration {
         // Strings to draw.
@@ -68,7 +45,7 @@ public class TextResources {
         // RGB colors to use when rendering the text.
         private final int[] mTextColors = new int[STRING_COUNT];
 
-        // Add a drop shadow?
+        // Add shadows
         private final boolean[] mTextShadows = new boolean[STRING_COUNT];
 
         /**
@@ -106,11 +83,7 @@ public class TextResources {
     }
 
     /**
-     * Initializes configuration data.  Returns an object that can be passed into the constructor.
-     * <p>
-     * This may be called once, and stored in a static field, or every time the Activity restarts.
-     * The former won't pick up changes to the device's language setting until the app process
-     * is killed, so the latter is recommended.
+     * Initializes configuration data. 
      */
     public static Configuration configure(Context context) {
         return new Configuration(context);
@@ -124,11 +97,6 @@ public class TextResources {
     }
 
     private void createTexture(Configuration config) {
-        /*
-         * We could retain a reference to the Bitmap and just regenerate the texture map from
-         * that if the Configuration hasn't changed, but it doesn't take long to draw, and we
-         * don't want to retain the Bitmap in memory (it's large).
-         */
 
         Bitmap bitmap = createTextBitmap(config);
 
@@ -251,16 +219,8 @@ public class TextResources {
 
     /**
      * Returns a Rect that bounds the text with the specified index.
-     * <p>
-     * The caller must not modify the returned Rect.
-     *
-     * @param index Message string index.  Use the constants defined in this class (e.g.
-     *      {@link #GAME_OVER}).
      */
     public Rect getTextureRect(int index) {
-        // Returning the actual Rect is bad practice, since the caller could modify it and
-        // screw things up in mysterious ways, but we need to avoid creating objects in the
-        // main game loop.
         return mTextPositions[index];
     }
 }

@@ -41,15 +41,7 @@ public class BasicAlignedRect extends BaseRect {
 
     // Sanity check on draw prep.
     private static boolean sDrawPrepared;
-
-    /*
-     * Scratch storage for the model/view/projection matrix.  We don't actually need to retain
-     * it between calls, but we also don't want to re-allocate space for it every time we draw
-     * this object.
-     *
-     * Because all of our rendering happens on a single thread, we can make this static instead
-     * of per-object.  To avoid clashes within a thread, this should only be used in draw().
-     */
+    
     static float[] sTempMVP = new float[16];
 
 
@@ -86,15 +78,9 @@ public class BasicAlignedRect extends BaseRect {
     }
 
     /**
-     * Returns a four-element array with the RGBA color info.  The caller must not modify
-     * the values in the returned array.
+     * Returns a four-element array with the RGBA color info.  
      */
     public float[] getColor() {
-        /*
-         * Normally this sort of function would make a copy of the color data and return that, but
-         * we want to avoid allocating objects.  We could also implement this as four separate
-         * methods, one for each component, but that's slower and annoying.
-         */
         return mColor;
     }
 
@@ -102,17 +88,6 @@ public class BasicAlignedRect extends BaseRect {
      * Performs setup common to all BasicAlignedRects.
      */
     public static void prepareToDraw() {
-        /*
-         * We could do this setup in every draw() call.  However, experiments on a couple of
-         * different devices indicated that we can increase the CPU time required to draw a
-         * frame by as much as 2x.  Doing the setup once, then drawing all objects of that
-         * type (basic, outline, textured) provides a substantial CPU cost savings.
-         *
-         * It's a lot more awkward this way -- we want to draw similar types of objects
-         * together whenever possible, and we have to wrap calls with prepare/finish -- but
-         * avoiding configuration changes can improve efficiency, and the explicit prepare
-         * calls highlight potential efficiency problems.
-         */
 
         // Select the program.
         GLES20.glUseProgram(sProgramHandle);

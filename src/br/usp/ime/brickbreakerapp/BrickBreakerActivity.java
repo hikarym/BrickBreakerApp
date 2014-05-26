@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 
 /**
- * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
+ * Activity for the actual game. 
  */
 //---Activity for the game
 public class BrickBreakerActivity extends Activity {
@@ -29,8 +29,7 @@ public class BrickBreakerActivity extends Activity {
 	
     // The Activity has one View, a GL surface.
     private BrickBreakerSurfaceView mGLView;
-
-    // Live game state.    
+    
     private BrickBreakerState mBrickBreakerState;
 
 
@@ -68,61 +67,8 @@ public class BrickBreakerActivity extends Activity {
         super.onResume();
         mGLView.onResume();
     }
-
-    /*
-	@Override
-	protected void onResume() {
-		Log.d(TAG, "MainActivity.onResume");
-		
-		super.onResume();
-		
-		restorePreferences();
-	}
-	
-	@Override
-	protected void onPause() {
-		Log.d(TAG, "MainActivity.onPause");
-		
-		super.onPause();
-		
-		savePreferences();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "MainActivity.onDestroy");
-		
-		super.onDestroy();
-		
-		savePreferences();
-	}
-	
-	
-	//---Copies settings to the saved preferences' file
-	private void savePreferences() {
-		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		
-		//editor.putInt(OptionFragment.DIFFICULTY_KEY, getDifficultyIndex());
-		//editor.putBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, getNeverLoseBall());
-		editor.putBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, isSoundEffectsEnabled());
-		editor.putString(OptionFragment.USERNAME_KEY, OptionFragment.getCurrentUsername());
-		//editor.putInt(OptionFragment.LEVEL_KEY, getLevelIndex());
-		editor.commit();
-	}
-	
-	//---Retrieves settings from the saved preferences' file
-	private void restorePreferences() {
-		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		//setDifficultyIndex(prefs.getInt(OptionFragment.DIFFICULTY_KEY, DIFFICULTY_DEFAULT));
-		//setNeverLoseBall(prefs.getBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, false));
-		//setLevel(prefs.getInt(OptionFragment.LEVEL_KEY, 1));
-		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
-		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.USERNAMainActivity.DEFAULT_SOUND_EFFECTS_STATUSEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
-	}
-	
-    */
-
+    
+    // Action onBackPressed
 	@Override
 	public void onBackPressed() {
 		Log.d(TAG, "BrickBreakerActivity.onBackPressed");

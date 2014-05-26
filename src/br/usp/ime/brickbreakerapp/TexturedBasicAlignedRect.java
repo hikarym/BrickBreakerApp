@@ -125,8 +125,7 @@ public class TexturedBasicAlignedRect extends BaseRect {
     }
 
     /**
-     * Returns a four-element array with the RGBA color info.  The caller must not modify
-     * the values in the returned array.
+     * Returns a four-element array with the RGBA color info.  
      */
     public float[] getColor() {
         return mColor;
