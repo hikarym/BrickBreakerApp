@@ -56,7 +56,7 @@ public class BrickBreakerState {
 	// Number of brick states
 	private static final int BRICK_STATES = 6;
 	// Number of levels
-	private static final int BRICK_LEVELS = 6;
+	private static final int BRICK_LEVELS = 7;
 	private int[][] mBrickStatesConfig = new int[BRICK_ROWS][BRICK_COLUMNS];
 	private Bitmap[] mBMPBrickTexture = new Bitmap[BRICK_STATES - 1];
 	private Bitmap[] mBMPBkgLevel = new Bitmap[BRICK_LEVELS];

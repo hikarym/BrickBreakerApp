@@ -73,8 +73,9 @@ public class LevelsFragment extends Fragment {
 				int position, long id) {
 					Intent intent = null;
 					
-					if(position + 1 >= MIN_LEVEL && position < MAX_LEVEL){
-						BrickBreakerActivity.setLevelIndex(position + 1);
+					position++;
+					if(position >= MIN_LEVEL && position <= MAX_LEVEL){
+						BrickBreakerActivity.setLevelIndex(position);
 						intent = new Intent(getActivity(), BrickBreakerActivity.class);
 				        startActivity(intent);
 					}
@@ -85,7 +86,7 @@ public class LevelsFragment extends Fragment {
 						builder.setTitle("Error on load!");
 						builder.setIcon(android.R.drawable.ic_dialog_alert);
 						
-						builder.setMessage("Level " + (position + 1) + " not found!");
+						builder.setMessage("Level " + (position) + " not found!");
 						builder.setPositiveButton(R.string.ok, null);
 						builder.show();
 					}
