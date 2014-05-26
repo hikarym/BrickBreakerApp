@@ -12,13 +12,13 @@ public class LevelParameters {
                 param.paddleSize = 1.2f;//2.0f
                 //Scale growth of score 
                 param.scoreMultiplier = 0.75f;
-                param.maxLives = 4;
+                param.maxLives = 3;
                 param.minSpeed = 200;
                 param.maxSpeed = 500;//500
                 
                 // configuration of bricks
                 // NIVEL I: NORMAL BRICKS
-                param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};   
+                param.configStr = new String[]{"111111111","101010101", "101040101", "101010101", "101010101", "111111111"};
                 //param.configStr = new String[]{"000000000","000000000", "000000000", "000145550", "000000000", "000000000"};
                 param.backgroundTextureImg = "drawable/background_1";
                 break;

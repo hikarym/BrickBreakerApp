@@ -145,13 +145,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		
 		savePreferences();
-		
-		//mMusicService.stopMusic();
-		//doMusicUnbindService();
-		
-		// Stop listening for button presses
-		//mAudioManager.unregisterMediaButtonEventReceiver(RemoteControlReceiver);------------------------------
-		
+
 		// Closes the BbSQLiteHelper
 		mBbScoreDB.close();
 	}
