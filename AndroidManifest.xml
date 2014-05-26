@@ -21,21 +21,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-        <!-- BroadcastReceiver for volume -->
-        <!--
-		<receiver
-		    android:name=".RemoteControlReceiver">
-		    
-			<intent-filter>
-				<action android:name="android.intent.action.MEDIA_BUTTON" />
-			</intent-filter>
-			
-			
-			<intent-filter>
-				<action android:name="android.media.VOLUME_CHANGED_ACTION" />
-			</intent-filter>
-		</receiver>
-		-->
 		<!-- Service for music -->
 		<service
 		    android:name="MusicService"

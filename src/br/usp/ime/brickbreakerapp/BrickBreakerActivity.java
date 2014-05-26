@@ -1,14 +1,17 @@
 package br.usp.ime.brickbreakerapp;
 
 import br.usp.ime.brickbreakerapp.LevelParameters.ParametersConfig;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.CheckBox;
 
 /**
  * Activity for the actual game.  This is largely just a wrapper for our GLSurfaceView.
@@ -33,6 +36,8 @@ public class BrickBreakerActivity extends Activity {
     // Live game state.    
     private BrickBreakerState mBrickBreakerState;
 
+	private FragmentManager mFragmentManager = null;
+	private Fragment mSettingsFragment = null; // Helper to handle the settings fragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,9 +52,11 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState = new BrickBreakerState();
         configureBrickBreakerState();
 
-        // Create a GLSurfaceView, and set it as the Activity's "content view".  
+        // Create a GLSurfaceView, and set it as the Activity's "content view".
+        //mGLView = (BrickBreakerSurfaceView) findViewById(R.id.glSurfaceView);
         mGLView = new BrickBreakerSurfaceView(this, mBrickBreakerState, textConfig);
         setContentView(mGLView);
+        //setContentView(R.layout.activity_brickbreaker);
     }
     
     @Override
@@ -68,67 +75,14 @@ public class BrickBreakerActivity extends Activity {
         super.onResume();
         mGLView.onResume();
     }
-
-    /*
-	@Override
-	protected void onResume() {
-		Log.d(TAG, "MainActivity.onResume");
-		
-		super.onResume();
-		
-		restorePreferences();
-	}
-	
-	@Override
-	protected void onPause() {
-		Log.d(TAG, "MainActivity.onPause");
-		
-		super.onPause();
-		
-		savePreferences();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "MainActivity.onDestroy");
-		
-		super.onDestroy();
-		
-		savePreferences();
-	}
-	
-	
-	//---Copies settings to the saved preferences' file
-	private void savePreferences() {
-		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		
-		//editor.putInt(OptionFragment.DIFFICULTY_KEY, getDifficultyIndex());
-		//editor.putBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, getNeverLoseBall());
-		editor.putBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, isSoundEffectsEnabled());
-		editor.putString(OptionFragment.USERNAME_KEY, OptionFragment.getCurrentUsername());
-		//editor.putInt(OptionFragment.LEVEL_KEY, getLevelIndex());
-		editor.commit();
-	}
-	
-	//---Retrieves settings from the saved preferences' file
-	private void restorePreferences() {
-		SharedPreferences prefs = getSharedPreferences(OptionFragment.PREFS_NAME, MODE_PRIVATE);
-		//setDifficultyIndex(prefs.getInt(OptionFragment.DIFFICULTY_KEY, DIFFICULTY_DEFAULT));
-		//setNeverLoseBall(prefs.getBoolean(OptionFragment.NEVER_LOSE_BALL_KEY, false));
-		//setLevel(prefs.getInt(OptionFragment.LEVEL_KEY, 1));
-		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.SOUND_EFFECTS_ENABLED_KEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
-		setSoundEffectsEnabled(prefs.getBoolean(OptionFragment.USERNAMainActivity.DEFAULT_SOUND_EFFECTS_STATUSEY, MainActivity.DEFAULT_SOUND_EFFECTS_STATUS));
-	}
-	
-    */
-
+    
 	@Override
 	public void onBackPressed() {
 		Log.d(TAG, "BrickBreakerActivity.onBackPressed");
-		
-		onPause();
 
+    	super.onPause();
+        mGLView.onPause();
+        
         AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Dialog))
 				.setTitle(R.string.app_name)
 				.setIcon(android.R.drawable.ic_dialog_alert)
@@ -160,7 +114,7 @@ public class BrickBreakerActivity extends Activity {
         int[][] mBrickStatesConfig = new int[rows][columns];
 
         if(sLevelGame > MAX_LEVEL){            
-        	throw new RuntimeException("bad difficulty index " + sLevelGame);
+        	throw new RuntimeException("bad level index " + sLevelGame);
         }
         
         // Configure the level of game
@@ -178,10 +132,6 @@ public class BrickBreakerActivity extends Activity {
         mBrickBreakerState.setBrickStatesConfig(mBrickStatesConfig);
         mBrickBreakerState.setBackgroundLevel(param.backgroundTextureImg);
         
-        
-        
-        
-
         SoundResources.setSoundEffectsEnabled(sSfxEnabled);
     }
 	
@@ -252,7 +202,7 @@ public class BrickBreakerActivity extends Activity {
         if (lastScore > highScore) {
             Log.d(TAG, "new high score!  (" + highScore + " vs. " + lastScore + ")");
             
-            /**************************************************************************************************************************************/
+            /*****************************************************************************************/
             // put fragment here!!!!!! CONGRATS!!! and the like
         }
     }
@@ -260,4 +210,33 @@ public class BrickBreakerActivity extends Activity {
     public void finishActivity(){
     	finish();
     }
+	
+	//-----Show settings
+	public void onClickSettings(View view) {
+		Log.d(TAG, "BrickBreakerActivity.onClickSettings");
+		
+		mSettingsFragment = new SettingsFragment();
+		
+		mFragmentManager.beginTransaction()
+				.setCustomAnimations(R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+						R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+				.replace(R.id.container, mSettingsFragment)
+				.addToBackStack(null)
+				.commit();
+	}
+
+/************************************* Settings Fragment's Buttons *********************************************/
+    
+	//---onClick handler for "sound effects enabled"
+	public void onClickSoundEffectsEnabled(View view) {
+		Log.d(TAG, "MainActivity.onClickSoundEffectsEnabled");
+		
+		setSoundEffectsEnabled(((CheckBox) view).isChecked());
+		
+		// Save the sound effects preference
+		MainActivity.putBoolPref(MainActivity.SFX_ENABLED_KEY, isSoundEffectsEnabled());
+		
+		// There's no need to create a new fragment because we know it's running when this method is executed.
+		mSettingsFragment.onResume();
+	}
 }

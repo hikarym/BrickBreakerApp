@@ -22,33 +22,20 @@ public class LevelsFragment extends Fragment {
 	public static final String TAG = "LevelsFragment";
 
     public static final int MIN_LEVEL = 1;
-	public static final int MAX_LEVEL = 6;
+	public static final int MAX_LEVEL = 7;
 	
-	private static List<String> mLevelList;
 	private static Integer[] mImageIDs = {
+			            R.drawable.background_1,
+			            R.drawable.background_2,
 			            R.drawable.background_3,
 			            R.drawable.background_4,
 			            R.drawable.background_5,
 			            R.drawable.background_6,
-			            R.drawable.background_7,
-			            R.drawable.background_8
+			            R.drawable.background_7
 					};
 	
 	private View mLevelsView;
 	private GridView mGridView;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		Log.d(MainActivity.TAG, TAG + ".onCreate");
-		
-		super.onCreate(savedInstanceState);
-		
-		mLevelList = new ArrayList<String>();
-		
-		for(int i = 1; i <= MAX_LEVEL; i++)
-			mLevelList.add("Level " + i);
-		
-	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,21 +66,21 @@ public class LevelsFragment extends Fragment {
 	private void setUpGridView() {
 		Log.d(MainActivity.TAG, TAG + ".setUpGridView");
 		
-		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), 
-				mImageIDs));
+		mGridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), mImageIDs));
 		
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 				int position, long id) {
 					Intent intent = null;
-					if(position>-1 && position < 7){
+					
+					if(position + 1 >= MIN_LEVEL && position < MAX_LEVEL){
 						BrickBreakerActivity.setLevelIndex(position + 1);
 						intent = new Intent(getActivity(), BrickBreakerActivity.class);
 				        startActivity(intent);
 					}
 					else{
 						AlertDialog.Builder builder = new AlertDialog.Builder(
-								new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Dialog));
+								new ContextThemeWrapper(getActivity(), android.R.style.Theme_Dialog));
 						
 						builder.setTitle("Error on load!");
 						builder.setIcon(android.R.drawable.ic_dialog_alert);

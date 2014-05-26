@@ -50,8 +50,8 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
      * update and draw things, and to the SurfaceView, so we can tell it to stop animating
      * when the game is over.
      */
-    public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState, BrickBreakerSurfaceView surfaceView,
-            TextResources.Configuration textConfig) {
+    public BrickBreakerSurfaceRenderer(Context context, BrickBreakerState BrickBreakerState,
+    		BrickBreakerSurfaceView surfaceView, TextResources.Configuration textConfig) {
     	mContext = context;
         mSurfaceView = surfaceView;
         mBrickBreakerState = BrickBreakerState;
@@ -87,6 +87,7 @@ public class BrickBreakerSurfaceRenderer implements GLSurfaceView.Renderer {
         BrickBreakerState.allocButtonQuit(mContext);
         BrickBreakerState.allocButtonReloadLevel(mContext);
         BrickBreakerState.allocButtonNextLevel(mContext);
+        //BrickBreakerState.allocButtonSettings(mContext);
         BrickBreakerState.allocDebugStuff();
 
         // Restore game state from static storage.
